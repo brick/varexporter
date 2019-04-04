@@ -45,7 +45,7 @@ PHP;
         $object->bar = 'World';
 
         $expected = <<<'PHP'
-(function() {
+(static function() {
     $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
     $object->foo = 'Hello';
     $object->bar = 'World';
@@ -99,7 +99,7 @@ PHP;
         $object->bar = 'Bar';
 
         $expected = <<<'PHP'
-(function() {
+(static function() {
     $object = (new ReflectionClass(\Brick\VarExporter\Tests\Classes\PrivateConstructor::class))->newInstanceWithoutConstructor();
     $object->foo = 'Foo';
     $object->bar = 'Bar';
@@ -116,7 +116,7 @@ PHP;
         $object = new ParameterizedRequiredConstructor('FOO', 123);
 
         $expected = <<<'PHP'
-(function() {
+(static function() {
     $object = (new ReflectionClass(\Brick\VarExporter\Tests\Classes\ParameterizedRequiredConstructor::class))->newInstanceWithoutConstructor();
     $object->foo = 'FOO';
     $object->bar = 123;
@@ -133,7 +133,7 @@ PHP;
         $object = new ParameterizedOptionalConstructor();
 
         $expected = <<<'PHP'
-(function() {
+(static function() {
     $object = new \Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor;
     $object->foo = 'DefaultFoo';
     $object->bar = 0;

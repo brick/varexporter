@@ -203,7 +203,7 @@ First of all, it checks if your custom class has a `__set_state()` method. If it
 If the class doesn't have a `__set_state()` method, then it checks if the class has only public properties. If so, it produces an output similar to:
 
 ```php
-(function() {
+(static function() {
     $object = new \My\CustomClass;
     $object->foo = 'Hello';
     $object->bar = 'World';
@@ -217,7 +217,7 @@ Which produces a valid instance of the object.
 If the class has public properties only, but either a non-public constructor, or a constructor with required parameters, `VarExporter` will happily handle it, too:
 
 ```php
-(function() {
+(static function() {
     $object = (new ReflectionClass(\My\CustomClass::class))->newInstanceWithoutConstructor();
     $object->foo = 'Hello';
     $object->bar = 'World';

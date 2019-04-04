@@ -82,7 +82,7 @@ class VarExporterTest extends AbstractTestCase
             'empty' => (object) []
         ]
     ],
-    'aCustomObject' => (function() {
+    'aCustomObject' => (static function() {
         $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
         $object->foo = 'hello';
         $object->bar = \Brick\VarExporter\Tests\Classes\SetState::__set_state([
@@ -105,7 +105,7 @@ PHP;
         $object->{'$ref'} = '#/components/schemas/User';
 
         $expected = <<<'PHP'
-(function() {
+(static function() {
     $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
     $object->foo = null;
     $object->bar = null;

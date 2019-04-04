@@ -142,7 +142,7 @@ final class VarExporter
             return $newObject;
         }
 
-        $result = '(function() {' . PHP_EOL;
+        $result = '(static function() {' . PHP_EOL;
         $result .= $this->indent($nestingLevel + 1);
         $result .= '$object = ' . $newObject . ';' . PHP_EOL;
 

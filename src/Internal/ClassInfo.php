@@ -102,8 +102,15 @@ final class ClassInfo extends \Exception
     {
         $result = [];
 
+        $isParentClass = false;
+
         for ($current = $this->reflectionClass; $current; $current = $current->getParentClass()) {
             foreach ($current->getProperties() as $property) {
+                if ($isParentClass && ! $property->isPrivate()) {
+                    // property already handled in the child class.
+                    continue;
+                }
+
                 $name = $property->getName();
 
                 if (array_key_exists($name, $result)) {
@@ -116,6 +123,8 @@ final class ClassInfo extends \Exception
                 $property->setAccessible(true);
                 $result[$name] = $property->getValue($object);
             }
+
+            $isParentClass = true;
         }
 
         return $result;

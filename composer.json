@@ -1,0 +1,26 @@
+{
+  "name": "brick/varexporter",
+  "description": "A pretty alternative to var_export(), which can export objects without __set_state()",
+  "type": "library",
+  "keywords": [
+    "var_export"
+  ],
+  "license": "MIT",
+  "require": {
+    "php": ">=7.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^8.0",
+    "php-coveralls/php-coveralls": "^2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Brick\\VarExporter\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Brick\\VarExporter\\Tests\\": "tests/"
+    }
+  }
+}

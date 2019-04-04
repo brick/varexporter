@@ -121,7 +121,7 @@ final class VarExporter
 
         foreach ($values as $key => $value) {
             $result .= $this->indent($nestingLevel + 1);
-            $result .= '$object->' . $this->escapeObjectVar($key) . ' = ' . $this->doExport($value, $nestingLevel + 1) . ';' . PHP_EOL;
+            $result .= '$object->' . $this->escapePropName($key) . ' = ' . $this->doExport($value, $nestingLevel + 1) . ';' . PHP_EOL;
         }
 
         $result .= PHP_EOL;
@@ -139,7 +139,7 @@ final class VarExporter
      *
      * @return string
      */
-    private function escapeObjectVar(string $var) : string
+    private function escapePropName(string $var) : string
     {
         if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $var) === 1) {
             return $var;

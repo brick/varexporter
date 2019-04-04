@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Tests;
 
+use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\VarExporter;
 use PHPUnit\Framework\TestCase;
 
@@ -11,9 +13,11 @@ class VarExporterTest extends TestCase
 {
     public function testMixedVar()
     {
-        $myObject = new MyClass;
+        $myObject = new PublicPropertiesOnly();
         $myObject->foo = 'hello';
-        $myObject->bar = 'world';
+        $myObject->bar = new SetState();
+        $myObject->bar->foo = 'SetState.foo';
+        $myObject->bar->bar = 'SetState.bar';
 
         $exporter = new VarExporter();
 
@@ -32,7 +36,7 @@ class VarExporterTest extends TestCase
                 'c' => [
                     'd' => 'e',
                     'f' => [
-                        'g' => 'h'
+                        'g' => [[]]
                     ]
                 ]
             ],
@@ -68,7 +72,9 @@ class VarExporterTest extends TestCase
         'c' => [
             'd' => 'e',
             'f' => [
-                'g' => 'h'
+                'g' => [
+                    []
+                ]
             ]
         ]
     ],
@@ -81,9 +87,13 @@ class VarExporterTest extends TestCase
         ]
     ],
     'aCustomObject' => (function() {
-        $object = new \Brick\VarExporter\Tests\MyClass;
+        $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
         $object->foo = 'hello';
-        $object->bar = 'world';
+        $object->bar = \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+            'foo' => 'SetState.foo',
+            'bar' => 'SetState.bar',
+            'baz' => 'defaultValue'
+        ]);
 
         return $object;
     })()

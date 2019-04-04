@@ -126,6 +126,10 @@ final class VarExporter
             return '\\' . get_class($object) . '::__set_state(' . $this->exportArray($vars, $nestingLevel) . ')';
         }
 
+        if ($classInfo->hasNonPublicProps) {
+            throw new ExportException('Class "' . get_class($object) . '" has non-public properties, and must implement __set_state().');
+        }
+
         $values = get_object_vars($object);
 
         $newObject = 'new ' . '\\' . get_class($object);

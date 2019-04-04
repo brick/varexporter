@@ -29,6 +29,15 @@ final class ClassInfo extends \Exception
     public $hasSetState = false;
 
     /**
+     * Whether the given class has any non-public, non-static properties.
+     *
+     * Such classes cannot be safely exported, and must provide a __set_state() method.
+     *
+     * @var bool
+     */
+    public $hasNonPublicProps = false;
+
+    /**
      * ClassInfo constructor.
      *
      * @param string $className The fully qualified class name.
@@ -42,6 +51,15 @@ final class ClassInfo extends \Exception
         if ($class->hasMethod('__set_state')) {
             $method = $class->getMethod('__set_state');
             $this->hasSetState = $method->isPublic() && $method->isStatic();
+        }
+
+        for ($currentClass = $class; $currentClass; $currentClass = $currentClass->getParentClass()) {
+            foreach ($currentClass->getProperties() as $property) {
+                if (! $property->isPublic() && ! $property->isStatic()) {
+                    $this->hasNonPublicProps = true;
+                    break 2;
+                }
+            }
         }
     }
 

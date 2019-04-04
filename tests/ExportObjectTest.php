@@ -51,7 +51,7 @@ PHP;
     $object->bar = 'World';
 
     return $object;
-)()
+})()
 PHP;
 
         $this->assertExportEquals($expected, $object);
@@ -105,7 +105,7 @@ PHP;
     $object->bar = 'Bar';
 
     return $object;
-)()
+})()
 PHP;
 
         $this->assertExportEquals($expected, $object);
@@ -122,7 +122,7 @@ PHP;
     $object->bar = 123;
 
     return $object;
-)()
+})()
 PHP;
 
         $this->assertExportEquals($expected, $object);
@@ -139,7 +139,7 @@ PHP;
     $object->bar = 0;
 
     return $object;
-)()
+})()
 PHP;
 
         $this->assertExportEquals($expected, $object);

@@ -156,7 +156,7 @@ final class VarExporter
         $result .= 'return $object;' . PHP_EOL;
 
         $result .= $this->indent($nestingLevel);
-        $result .= ')()';
+        $result .= '})()';
 
         return $result;
     }

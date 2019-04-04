@@ -86,7 +86,7 @@ class VarExporterTest extends TestCase
         $object->bar = 'world';
 
         return $object;
-    )()
+    })()
 ]
 PHP;
 
@@ -128,7 +128,7 @@ PHP;
     $object->bar = 'World';
 
     return $object;
-)()
+})()
 PHP;
 
         $this->assertSame($expected, $result);

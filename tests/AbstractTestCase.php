@@ -21,9 +21,16 @@ abstract class AbstractTestCase extends TestCase
     public function assertExportEquals(string $expected, $var) : void
     {
         $exporter = new VarExporter();
-        $result = $exporter->export($var);
 
-        self::assertSame($expected, $result);
+        // test the string output of export()
+
+        $exported = $exporter->export($var);
+        self::assertSame($expected, $exported);
+
+        // test that the exported value is valid PHP, and equal (by value) to the original var
+
+        $exportedVar = eval('return ' . $exported . ';');
+        $this->assertEquals($var, $exportedVar);
     }
 
     /**

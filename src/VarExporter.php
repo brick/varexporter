@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter;
 
-class VarExporter
+final class VarExporter
 {
     /**
      * @param mixed $var A variable to export.

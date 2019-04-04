@@ -92,9 +92,38 @@ PHP;
 
         $this->assertSame($expected, $result);
     }
+
+    public function testExportClassWithSetState()
+    {
+        $exporter = new VarExporter();
+        $result = $exporter->export(new SetStateClass());
+
+        $expected = <<<'PHP'
+\Brick\VarExporter\Tests\SetStateClass::__set_state([
+    'a' => 1,
+    'b' => 2,
+    'c' => [
+        3,
+        4
+    ]
+])
+PHP;
+
+        $this->assertSame($expected, $result);
+    }
 }
 
 class MyClass {
     public $foo;
     public $bar;
+}
+
+class SetStateClass {
+    private $a = 1;
+    protected $b = 2;
+    public $c = [3, 4];
+
+    public static function __set_state($state)
+    {
+    }
 }

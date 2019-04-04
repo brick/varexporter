@@ -229,3 +229,9 @@ If the class has public properties only, but either a non-public constructor, or
 On the other hand, if the class has any non-public property, you'll get an `ExportException`:
 
 > Class "My\CustomClass" has non-public properties, and must implement __set_state().
+
+## Any drawbacks?
+
+Just like `var_export()`, the main drawback of `VarExporter` is that it cannot handle circular references, such as object `A` pointing to `B`, and `B` pointing to `A`.
+
+In pretty much every other case, it offers an elegant and very efficient way to cache data to PHP files, and a solid alternative to serialization.

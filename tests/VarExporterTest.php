@@ -7,9 +7,8 @@ namespace Brick\VarExporter\Tests;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\VarExporter;
-use PHPUnit\Framework\TestCase;
 
-class VarExporterTest extends TestCase
+class VarExporterTest extends AbstractTestCase
 {
     public function testMixedVar()
     {
@@ -19,9 +18,7 @@ class VarExporterTest extends TestCase
         $myObject->bar->foo = 'SetState.foo';
         $myObject->bar->bar = 'SetState.bar';
 
-        $exporter = new VarExporter();
-
-        $result = $exporter->export([
+        $var = [
             'aString' => 'Hello',
             'aTrue' => true,
             'aFalse' => false,
@@ -49,7 +46,7 @@ class VarExporterTest extends TestCase
                 ]
             ],
             'aCustomObject' => $myObject
-        ]);
+        ];
 
         $expected = <<<'PHP'
 [
@@ -100,6 +97,6 @@ class VarExporterTest extends TestCase
 ]
 PHP;
 
-        $this->assertSame($expected, $result);
+        $this->assertExportEquals($expected, $var);
     }
 }

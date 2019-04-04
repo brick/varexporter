@@ -15,7 +15,9 @@ class VarExporterTest extends TestCase
         $myObject->foo = 'hello';
         $myObject->bar = 'world';
 
-        $result = VarExporter::export([
+        $exporter = new VarExporter();
+
+        $result = $exporter->export([
             'aString' => 'Hello',
             'aTrue' => true,
             'aFalse' => false,

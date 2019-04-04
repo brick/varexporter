@@ -124,7 +124,9 @@ it is totally useless as it assumes that `stdClass` has a static `__set_state()`
 
 > Error: Call to undefined method stdClass::__set_state()
 
-What does `VarExporter::export()` do instead? Well, it outputs an array to object cast, which is both syntactically valid **and** executable:
+#### What does `VarExporter` do instead?
+
+Well, it outputs an array to object cast, which is both syntactically valid **and** executable:
 
 ```php
 echo $exporter->export(json_decode('
@@ -145,3 +147,85 @@ echo $exporter->export(json_decode('
     ]
 ]
 ```
+
+### Exporting custom objects
+
+As we've seen above, `var_export()` assumes that every object has static `__set_state()` method that takes an associative array of property names to values, and returns a object.
+
+This means that if you want to export an instance of a class outside of your control, you're screwed up. This also means that you have to write boilerplate code that looks like:
+
+```
+class Foo
+{
+    public $a;
+    public $b;
+    public $c;
+
+    public static function __set_state(array $array) : self
+    {
+        $object = new self;
+
+        $object->a = $array['a'];
+        $object->b = $array['b'];
+        $object->c = $array['c'];
+
+        return $object;
+    }
+}
+```
+
+Or the more dynamic, reusable, and less IDE-friendly version:
+
+```php
+public static function __set_state(array $array) : self
+{
+    $object = new self;
+
+    foreach ($array as $key => $value) {
+        $object->{$key} = $value;
+    }
+
+    return $object;
+}
+```
+
+#### What does `VarExporter` do instead?
+
+First of all, it checks if your custom class has a `__set_state()` method. If it does, then it uses it just like `var_export()` would do:
+
+```php
+\My\CustomClass::__set_state([
+    'foo' => 'Hello',
+    'bar' => 'World'
+])
+```
+
+If the class doesn't have a `__set_state()` method, then it checks if the class has only public properties. If so, it produces an output similar to:
+
+```php
+(function() {
+    $object = new \My\CustomClass;
+    $object->foo = 'Hello';
+    $object->bar = 'World';
+
+    return $object;
+})()
+```
+
+Which produces a valid instance of the object.
+
+If the class has public properties only, but either a non-public constructor, or a constructor with required parameters, `VarExporter` will happily handle it, too:
+
+```php
+(function() {
+    $object = (new ReflectionClass(\My\CustomClass::class))->newInstanceWithoutConstructor();
+    $object->foo = 'Hello';
+    $object->bar = 'World';
+
+    return $object;
+})()
+```
+
+On the other hand, if the class has any non-public property, you'll get an `ExportException`:
+
+> Class "My\CustomClass" has non-public properties, and must implement __set_state().

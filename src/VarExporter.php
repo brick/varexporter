@@ -13,9 +13,9 @@ class VarExporter
      *
      * @throws ExportException
      */
-    public static function export($var) : string
+    public function export($var) : string
     {
-        return self::doExport($var, 0);
+        return $this->doExport($var, 0);
     }
 
     /**
@@ -26,7 +26,7 @@ class VarExporter
      *
      * @throws ExportException
      */
-    private static function doExport($var, int $nestingLevel) : string
+    private function doExport($var, int $nestingLevel) : string
     {
         switch ($type = gettype($var)) {
             case 'boolean':
@@ -40,10 +40,10 @@ class VarExporter
                 return 'null';
 
             case 'array':
-                return self::exportArray($var, $nestingLevel);
+                return $this->exportArray($var, $nestingLevel);
 
             case 'object':
-                return self::exportObject($var, $nestingLevel);
+                return $this->exportObject($var, $nestingLevel);
 
             default:
                 throw new ExportException(sprintf('Type "%s" is not supported.', $type));
@@ -58,7 +58,7 @@ class VarExporter
      *
      * @throws ExportException
      */
-    private static function exportArray(array $array, int $nestingLevel) : string
+    private function exportArray(array $array, int $nestingLevel) : string
     {
         if (! $array) {
             return '[]';
@@ -73,14 +73,14 @@ class VarExporter
 
         foreach ($array as $key => $value) {
             $isLast = (++$current === $count);
-            $result .= self::indent($nestingLevel + 1);
+            $result .= $this->indent($nestingLevel + 1);
 
             if (! $isNumeric) {
                 $result .= var_export($key, true);
                 $result .= ' => ';
             }
 
-            $result .= self::doExport($value, $nestingLevel + 1);
+            $result .= $this->doExport($value, $nestingLevel + 1);
 
             if (! $isLast) {
                 $result .= ',';
@@ -89,7 +89,7 @@ class VarExporter
             $result .= PHP_EOL;
         }
 
-        $result .= self::indent($nestingLevel);
+        $result .= $this->indent($nestingLevel);
         $result .= ']';
 
         return $result;
@@ -103,10 +103,10 @@ class VarExporter
      *
      * @throws ExportException
      */
-    private static function exportObject($object, int $nestingLevel) : string
+    private function exportObject($object, int $nestingLevel) : string
     {
         if ($object instanceof \stdClass) {
-            return '(object) ' . self::exportArray((array) $object, $nestingLevel);
+            return '(object) ' . $this->exportArray((array) $object, $nestingLevel);
         }
 
         $values = get_object_vars($object);
@@ -116,19 +116,19 @@ class VarExporter
         }
 
         $result = '(function() {' . PHP_EOL;
-        $result .= self::indent($nestingLevel + 1);
+        $result .= $this->indent($nestingLevel + 1);
         $result .= '$object = new \\' . get_class($object) . ';' . PHP_EOL;
 
         foreach ($values as $key => $value) {
-            $result .= self::indent($nestingLevel + 1);
-            $result .= '$object->' . self::escapeObjectVar($key) . ' = ' . self::doExport($value, $nestingLevel + 1) . ';' . PHP_EOL;
+            $result .= $this->indent($nestingLevel + 1);
+            $result .= '$object->' . $this->escapeObjectVar($key) . ' = ' . $this->doExport($value, $nestingLevel + 1) . ';' . PHP_EOL;
         }
 
         $result .= PHP_EOL;
-        $result .= self::indent($nestingLevel + 1);
+        $result .= $this->indent($nestingLevel + 1);
         $result .= 'return $object;' . PHP_EOL;
 
-        $result .= self::indent($nestingLevel);
+        $result .= $this->indent($nestingLevel);
         $result .= ')()';
 
         return $result;
@@ -139,7 +139,7 @@ class VarExporter
      *
      * @return string
      */
-    private static function escapeObjectVar(string $var) : string
+    private function escapeObjectVar(string $var) : string
     {
         if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $var) === 1) {
             return $var;
@@ -153,7 +153,7 @@ class VarExporter
      *
      * @return string
      */
-    private static function indent(int $nestingLevel) : string
+    private function indent(int $nestingLevel) : string
     {
         return str_repeat(' ', 4 * $nestingLevel);
     }

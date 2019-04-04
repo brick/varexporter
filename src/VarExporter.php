@@ -111,13 +111,15 @@ final class VarExporter
 
         $values = get_object_vars($object);
 
+        $newObject = 'new ' . '\\' . get_class($object);
+
         if (! $values) {
-            return 'new ' . '\\' . get_class($object);
+            return $newObject;
         }
 
         $result = '(function() {' . PHP_EOL;
         $result .= $this->indent($nestingLevel + 1);
-        $result .= '$object = new \\' . get_class($object) . ';' . PHP_EOL;
+        $result .= '$object = ' . $newObject . ';' . PHP_EOL;
 
         foreach ($values as $key => $value) {
             $result .= $this->indent($nestingLevel + 1);

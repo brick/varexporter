@@ -38,6 +38,15 @@ final class ClassInfo extends \Exception
     public $hasNonPublicProps = false;
 
     /**
+     * Whether the given class has a non-public constructor, or a constructor with required parameters.
+     *
+     * In this case, we'll bypass the constructor with ReflectionClass::newInstanceWithoutConstructor().
+     *
+     * @var bool
+     */
+    public $bypassConstructor;
+
+    /**
      * ClassInfo constructor.
      *
      * @param string $className The fully qualified class name.
@@ -59,6 +68,14 @@ final class ClassInfo extends \Exception
                     $this->hasNonPublicProps = true;
                     break 2;
                 }
+            }
+        }
+
+        $constructor = $class->getConstructor();
+
+        if ($constructor) {
+            if (! $constructor->isPublic() || $constructor->getNumberOfRequiredParameters() !== 0) {
+                $this->bypassConstructor = true;
             }
         }
     }

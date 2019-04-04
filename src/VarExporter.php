@@ -130,9 +130,13 @@ final class VarExporter
             throw new ExportException('Class "' . get_class($object) . '" has non-public properties, and must implement __set_state().');
         }
 
-        $values = get_object_vars($object);
+        if ($classInfo->bypassConstructor) {
+            $newObject = '(new ReflectionClass(\\' . get_class($object) . '::class))->newInstanceWithoutConstructor()';
+        } else {
+            $newObject = 'new ' . '\\' . get_class($object);
+        }
 
-        $newObject = 'new ' . '\\' . get_class($object);
+        $values = get_object_vars($object);
 
         if (! $values) {
             return $newObject;

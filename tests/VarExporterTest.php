@@ -111,11 +111,44 @@ PHP;
 
         $this->assertSame($expected, $result);
     }
+
+    public function testExportClassWithPrivateConstructor()
+    {
+        $object = MyClassWithPrivateConstructor::create();
+        $object->foo = 'Hello';
+        $object->bar = 'World';
+
+        $exporter = new VarExporter();
+        $result = $exporter->export($object);
+
+        $expected = <<<'PHP'
+(function() {
+    $object = (new ReflectionClass(\Brick\VarExporter\Tests\MyClassWithPrivateConstructor::class))->newInstanceWithoutConstructor();
+    $object->foo = 'Hello';
+    $object->bar = 'World';
+
+    return $object;
+)()
+PHP;
+
+        $this->assertSame($expected, $result);
+    }
 }
 
 class MyClass {
     public $foo;
     public $bar;
+}
+
+class MyClassWithPrivateConstructor extends MyClass {
+    private function __construct()
+    {
+    }
+
+    public static function create()
+    {
+        return new self;
+    }
 }
 
 class SetStateClass {

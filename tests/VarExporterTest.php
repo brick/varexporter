@@ -6,7 +6,6 @@ namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SetState;
-use Brick\VarExporter\VarExporter;
 
 class VarExporterTest extends AbstractTestCase
 {
@@ -98,5 +97,24 @@ class VarExporterTest extends AbstractTestCase
 PHP;
 
         $this->assertExportEquals($expected, $var);
+    }
+
+    public function testExportObjectPropWithSpecialChars()
+    {
+        $object = new PublicPropertiesOnly;
+        $object->{'$ref'} = '#/components/schemas/User';
+
+        $expected = <<<'PHP'
+(function() {
+    $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+    $object->foo = null;
+    $object->bar = null;
+    $object->{'$ref'} = '#/components/schemas/User';
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
     }
 }

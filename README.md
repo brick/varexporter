@@ -289,6 +289,21 @@ By default, `export()` will refuse to handle such objects and throw an exception
 Skips dynamic properties on custom classes in the output. By default, any dynamic property set on a custom class is
 exported; if this flag is set, dynamic properties are only allowed on stdClass objects, and ignored on other objects.
 
+## Error handling
+
+Any error occurring on `export()` will throw an `ExportException`:
+
+```php
+use Brick\VarExporter\VarExporter;
+use Brick\VarExporter\ExportException;
+
+try {
+    VarExporter::export(fopen('php://memory', 'r'));
+} catch (ExportException $e) {
+    // Type "resource" is not supported.
+}
+```
+
 ## Limitations
 
 - Exporting internal classes, including closures, is currently not supported. `VarExporter` will throw an `ExportException` if it finds one.

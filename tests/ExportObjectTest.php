@@ -104,6 +104,25 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
+    public function testExportClassWithSetStateAndDynamicProperties()
+    {
+        $object = new SetState;
+        $object->foo = 'Hello';
+        $object->bar = 'World';
+        $object->dynamic = 'Dynamic property';
+
+        $expected = <<<'PHP'
+\Brick\VarExporter\Tests\Classes\SetState::__set_state([
+    'foo' => 'Hello',
+    'bar' => 'World',
+    'dynamic' => 'Dynamic property',
+    'baz' => 'defaultValue'
+])
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
     public function testExportClassWithSetStateAndOverriddenPrivateProperties()
     {
         $object = new SetStateWithOverriddenPrivateProperties;

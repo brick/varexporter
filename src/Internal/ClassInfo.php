@@ -104,7 +104,9 @@ final class ClassInfo extends \Exception
 
         $isParentClass = false;
 
-        for ($current = $this->reflectionClass; $current; $current = $current->getParentClass()) {
+        $current = new \ReflectionObject($object);
+
+        while ($current) {
             foreach ($current->getProperties() as $property) {
                 if ($isParentClass && ! $property->isPrivate()) {
                     // property already handled in the child class.
@@ -124,6 +126,7 @@ final class ClassInfo extends \Exception
                 $result[$name] = $property->getValue($object);
             }
 
+            $current = $current->getParentClass();
             $isParentClass = true;
         }
 

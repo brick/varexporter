@@ -14,6 +14,13 @@ class SetState extends PublicAndPrivateProperties
         $object->bar = $array['bar'];
         $object->setBaz($array['baz']);
 
+        // dynamic properties
+        foreach ($array as $key => $value) {
+            if ($key !== 'foo' && $key !== 'bar' && $key !== 'baz') {
+                $object->{$key} = $value;
+            }
+        }
+
         return $object;
     }
 }

@@ -28,7 +28,9 @@ class ReflectionExporter extends ObjectExporter
     {
         $result = [];
 
-        $result[] = '$class = new \ReflectionClass(\\' . get_class($object) . '::class);';
+        $className = '\\' . $reflectionObject->getName();
+
+        $result[] = '$class = new \ReflectionClass(' . $className . '::class);';
         $result[] = '$object = $class->newInstanceWithoutConstructor();';
 
         $current = new \ReflectionObject($object);

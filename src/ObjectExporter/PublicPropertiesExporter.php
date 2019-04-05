@@ -38,7 +38,7 @@ class PublicPropertiesExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        $newObject = 'new ' . '\\' . get_class($object);
+        $newObject = 'new ' . '\\' . $reflectionObject->getName();
 
         $values = get_object_vars($object);
 

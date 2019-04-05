@@ -27,6 +27,8 @@ class InternalClassExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        throw new ExportException('Class "' . get_class($object) . '" is internal, and cannot be exported.');
+        $className = $reflectionObject->getName();
+
+        throw new ExportException('Class "' . $className . '" is internal, and cannot be exported.');
     }
 }

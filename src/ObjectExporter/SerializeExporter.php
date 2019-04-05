@@ -29,11 +29,13 @@ class SerializeExporter extends ObjectExporter
     {
         $result = [];
 
+        $className = '\\' . $reflectionObject->getName();
+
         if ($reflectionObject->getConstructor() !== null) {
-            $result[] = '$class = new \ReflectionClass(\\' . get_class($object) . '::class);';
+            $result[] = '$class = new \ReflectionClass(' . $className . '::class);';
             $result[] = '$object = $class->newInstanceWithoutConstructor();';
         } else {
-            $result[] = '$object = new \\' . get_class($object) . ';';
+            $result[] = '$object = new ' . $className . ';';
         }
 
         $result[] = '';

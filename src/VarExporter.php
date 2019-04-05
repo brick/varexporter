@@ -152,8 +152,10 @@ final class VarExporter
 
         // This may only happen when $allowReflection is false, as ReflectionExporter accepts any object.
 
+        $className = $reflectionObject->getName();
+
         throw new ExportException(
-            'Class "' . get_class($object) . '" cannot be exported without resorting to reflection. ' .
+            'Class "' . $className . '" cannot be exported without resorting to reflection. ' .
             'Either implement __set_state() or __serialize() and __unserialize(), ' .
             'or explicitly enable exporting with reflection by passing true to the VarExporter constructor.'
         );

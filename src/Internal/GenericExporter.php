@@ -20,7 +20,7 @@ final class GenericExporter
     /**
      * @param bool $allowReflection
      */
-    public function __construct(bool $allowReflection = false)
+    public function __construct(bool $allowReflection)
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);

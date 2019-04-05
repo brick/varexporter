@@ -33,7 +33,7 @@ class SetStateExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        $vars = $this->getObjectVars($object);
+        $vars = $this->getObjectVars($object, $reflectionObject);
 
         $exportedVars = $this->varExporter->exportArray($vars);
         $exportedVars = $this->varExporter->wrap($exportedVars, '\\' . get_class($object) . '::__set_state(',  ')');
@@ -53,16 +53,15 @@ class SetStateExporter extends ObjectExporter
      *
      * This way we offer a better safety guarantee, while staying compatible with var_export() in the output.
      *
-     * @param object $object
+     * @param object            $object
+     * @param \ReflectionObject $reflectionObject
      *
      * @return array
      *
      * @throws ExportException
      */
-    private function getObjectVars($object) : array
+    private function getObjectVars($object, \ReflectionObject $reflectionObject) : array
     {
-        $reflectionObject = new \ReflectionObject($object);
-
         $current = $reflectionObject;
         $isParentClass = false;
 

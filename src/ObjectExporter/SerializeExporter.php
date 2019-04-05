@@ -25,30 +25,30 @@ class SerializeExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        if ($reflectionObject->getConstructor() !== null) {
-            $result  = $this->varExporter->indent($nestingLevel + 1);
-            $result .= '$class = new \ReflectionClass(\\' . get_class($object) . '::class);' . PHP_EOL;
+        $result = [];
 
-            $result .= $this->varExporter->indent($nestingLevel + 1);
-            $result .= '$object = $class->newInstanceWithoutConstructor();'. PHP_EOL;
+        if ($reflectionObject->getConstructor() !== null) {
+            $result[] = '$class = new \ReflectionClass(\\' . get_class($object) . '::class);';
+            $result[] = '$object = $class->newInstanceWithoutConstructor();';
         } else {
-            $result  = $this->varExporter->indent($nestingLevel + 1);
-            $result .= '$object = new \\' . get_class($object) . ';' . PHP_EOL;
+            $result[] = '$object = new \\' . get_class($object) . ';';
         }
 
-        $result .= PHP_EOL;
+        $result[] = '';
 
         $values = $object->__serialize();
+        $exportedValues = $this->varExporter->doExport($values);
 
-        $result .= $this->varExporter->indent($nestingLevel + 1);
-        $result .= '$object->__unserialize(' . $this->varExporter->doExport($values, $nestingLevel + 1) . ');' . PHP_EOL;
-        $result .= PHP_EOL;
+        $exportedValues[0] = '$object->__unserialize(' . $exportedValues[0];
+        $exportedValues[count($exportedValues) - 1] .= ');';
 
-        $result .= $this->varExporter->indent($nestingLevel + 1);
-        $result .= 'return $object;' . PHP_EOL;
+        $result = array_merge($result, $exportedValues);
 
-        return $this->wrapInClosure($result, $nestingLevel);
+        $result[] = '';
+        $result[] = 'return $object;';
+
+        return $this->wrapInClosure($result);
     }
 }

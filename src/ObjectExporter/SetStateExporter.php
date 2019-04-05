@@ -31,11 +31,15 @@ class SetStateExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject) : array
     {
         $vars = $this->getObjectVars($object);
+        $exportedVars = $this->varExporter->exportArray($vars);
 
-        return '\\' . get_class($object) . '::__set_state(' . $this->varExporter->exportArray($vars, $nestingLevel) . ')';
+        $exportedVars[0] = '\\' . get_class($object) . '::__set_state(' . $exportedVars[0];
+        $exportedVars[count($exportedVars) - 1] .= ')';
+
+        return $exportedVars;
     }
 
     /**

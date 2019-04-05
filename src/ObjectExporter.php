@@ -39,28 +39,29 @@ abstract class ObjectExporter
      *
      * @param object            $object           The object to export.
      * @param \ReflectionObject $reflectionObject A reflection of the object.
-     * @param int               $nestingLevel     The current output nesting level.
      *
-     * @return string
+     * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    abstract public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string;
+    abstract public function export($object, \ReflectionObject $reflectionObject) : array;
 
     /**
      * Wraps the given PHP code in a static closure.
      *
-     * @param string $code
-     * @param int    $nestingLevel
+     * @param string[] $code The lines of code.
      *
-     * @return string
+     * @return string[] The lines of code, wrapped in a closure.
      */
-    final protected function wrapInClosure(string $code, int $nestingLevel) : string
+    final protected function wrapInClosure(array $code) : array
     {
-        $result  = '(static function() {' . PHP_EOL;
-        $result .= $code;
-        $result .= $this->varExporter->indent($nestingLevel);
-        $result .= '})()';
+        $result = [];
+
+        $result[] = '(static function() {';
+
+        $result = array_merge($result, $this->varExporter->indent($code));
+
+        $result[] = '})()';
 
         return $result;
     }

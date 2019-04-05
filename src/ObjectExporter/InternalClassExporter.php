@@ -25,7 +25,7 @@ class InternalClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject) : array
     {
         throw new ExportException('Class "' . get_class($object) . '" is internal, and cannot be exported.');
     }

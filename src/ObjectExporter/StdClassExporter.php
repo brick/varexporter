@@ -24,8 +24,12 @@ class StdClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        return '(object) ' . $this->varExporter->exportArray((array) $object, $nestingLevel);
+        $exported = $this->varExporter->exportArray((array) $object);
+
+        $exported[0] = '(object) ' . $exported[0];
+
+        return $exported;
     }
 }

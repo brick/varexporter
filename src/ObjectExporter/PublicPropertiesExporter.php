@@ -36,28 +36,31 @@ class PublicPropertiesExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject) : array
     {
         $newObject = 'new ' . '\\' . get_class($object);
 
         $values = get_object_vars($object);
 
         if (! $values) {
-            return $newObject;
+            return [$newObject];
         }
 
-        $result  = $this->varExporter->indent($nestingLevel + 1);
-        $result .= '$object = ' . $newObject . ';' . PHP_EOL;
+        $result = [];
+
+        $result[] = '$object = ' . $newObject . ';';
 
         foreach ($values as $key => $value) {
-            $result .= $this->varExporter->indent($nestingLevel + 1);
-            $result .= '$object->' . $this->escapePropName($key) . ' = ' . $this->varExporter->doExport($value, $nestingLevel + 1) . ';' . PHP_EOL;
+            $exportedValue = $this->varExporter->doExport($value);
+            $exportedValue[0] = '$object->' . $this->escapePropName($key) . ' = ' . $exportedValue[0];
+            $exportedValue[count($exportedValue) - 1] .= ';';
+
+            $result = array_merge($result, $exportedValue);
         }
 
-        $result .= PHP_EOL;
-        $result .= $this->varExporter->indent($nestingLevel + 1);
-        $result .= 'return $object;' . PHP_EOL;
+        $result[] = '';
+        $result[] = 'return $object;';
 
-        return $this->wrapInClosure($result, $nestingLevel);
+        return $this->wrapInClosure($result);
     }
 }

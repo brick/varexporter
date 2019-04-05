@@ -33,7 +33,7 @@ final class VarExporter
     }
 
     /**
-     * @param mixed $var       A variable to export.
+     * @param mixed $var       The variable to export.
      * @param bool  $addReturn Whether to prepend the output with 'return ' and append a semicolon and a newline.
      *                         This makes the code ready to be executed in a PHP file - or eval(), for that matter.
      * @return string
@@ -42,7 +42,8 @@ final class VarExporter
      */
     public function export($var, bool $addReturn = false) : string
     {
-        $export = $this->doExport($var, 0);
+        $lines = $this->doExport($var);
+        $export = implode(PHP_EOL, $lines);
 
         if ($addReturn) {
             return 'return ' . $export . ';' .  PHP_EOL;
@@ -52,31 +53,30 @@ final class VarExporter
     }
 
     /**
-     * @param mixed $var
-     * @param int   $nestingLevel
+     * @param mixed $var The variable to export.
      *
-     * @return string
+     * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    public function doExport($var, int $nestingLevel) : string
+    public function doExport($var) : array
     {
         switch ($type = gettype($var)) {
             case 'boolean':
             case 'integer':
             case 'double':
             case 'string':
-                return var_export($var, true);
+                return [var_export($var, true)];
 
             case 'NULL':
                 // lowercase null
-                return 'null';
+                return ['null'];
 
             case 'array':
-                return $this->exportArray($var, $nestingLevel);
+                return $this->exportArray($var);
 
             case 'object':
-                return $this->exportObject($var, $nestingLevel);
+                return $this->exportObject($var);
 
             default:
                 // resources
@@ -85,20 +85,21 @@ final class VarExporter
     }
 
     /**
-     * @param array $array
-     * @param int   $nestingLevel
+     * @param array $array The array to export.
      *
-     * @return string
+     * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    public function exportArray(array $array, int $nestingLevel) : string
+    public function exportArray(array $array) : array
     {
         if (! $array) {
-            return '[]';
+            return ['[]'];
         }
 
-        $result = '[' . PHP_EOL;
+        $result = [];
+
+        $result[] = '[';
 
         $isNumeric = array_keys($array) === range(0, count($array) - 1);
 
@@ -107,43 +108,41 @@ final class VarExporter
 
         foreach ($array as $key => $value) {
             $isLast = (++$current === $count);
-            $result .= $this->indent($nestingLevel + 1);
+
+            $exported = $this->doExport($value);
 
             if (! $isNumeric) {
-                $result .= var_export($key, true);
-                $result .= ' => ';
+                $exported[0] = var_export($key, true) . ' => ' . $exported[0];
             }
-
-            $result .= $this->doExport($value, $nestingLevel + 1);
 
             if (! $isLast) {
-                $result .= ',';
+                $exported[count($exported) - 1] .= ',';
             }
 
-            $result .= PHP_EOL;
+            $exported = $this->indent($exported);
+
+            $result = array_merge($result, $exported);
         }
 
-        $result .= $this->indent($nestingLevel);
-        $result .= ']';
+        $result[] = ']';
 
         return $result;
     }
 
     /**
-     * @param object $object
-     * @param int    $nestingLevel
+     * @param object $object The object to export.
      *
-     * @return string
+     * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    private function exportObject($object, int $nestingLevel) : string
+    private function exportObject($object) : array
     {
         $reflectionObject = new \ReflectionObject($object);
 
         foreach ($this->objectExporters as $objectExporter) {
             if ($objectExporter->supports($object, $reflectionObject)) {
-                return $objectExporter->export($object, $reflectionObject, $nestingLevel);
+                return $objectExporter->export($object, $reflectionObject);
             }
         }
 
@@ -157,12 +156,20 @@ final class VarExporter
     }
 
     /**
-     * @param int $nestingLevel
+     * Indents every non-empty line.
      *
-     * @return string
+     * @param string[] $lines The lines of code.
+     *
+     * @return string[] The indented lines of code.
      */
-    public function indent(int $nestingLevel) : string
+    public function indent(array $lines) : array
     {
-        return str_repeat(' ', 4 * $nestingLevel);
+        foreach ($lines as & $value) {
+            if ($value !== '') {
+                $value = '    ' . $value;
+            }
+        }
+
+        return $lines;
     }
 }

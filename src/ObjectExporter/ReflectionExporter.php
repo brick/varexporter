@@ -24,13 +24,12 @@ class ReflectionExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        $result  = $this->varExporter->indent($nestingLevel + 1);
-        $result .= '$class = new \ReflectionClass(\\' . get_class($object) . '::class);' . PHP_EOL;
+        $result = [];
 
-        $result .= $this->varExporter->indent($nestingLevel + 1);
-        $result .= '$object = $class->newInstanceWithoutConstructor();'. PHP_EOL;
+        $result[] = '$class = new \ReflectionClass(\\' . get_class($object) . '::class);';
+        $result[] = '$object = $class->newInstanceWithoutConstructor();';
 
         $current = new \ReflectionObject($object);
         $isParentClass = false;
@@ -42,33 +41,31 @@ class ReflectionExporter extends ObjectExporter
                     continue;
                 }
 
-                $result .= PHP_EOL;
+                $result[] = '';
 
                 $property->setAccessible(true);
 
                 $name = $property->getName();
                 $value = $property->getValue($object);
 
-                $exportedValue = $this->varExporter->doExport($value, $nestingLevel + 1);
+                $exportedValue = $this->varExporter->doExport($value);
 
                 if ($property->isPublic()) {
                     // public properties AND dynamic properties
-                    $result .= $this->varExporter->indent($nestingLevel + 1);
-                    $result .= '$object->' . $this->escapePropName($name) . ' = ' . $exportedValue . ';' . PHP_EOL;
+                    $exportedValue[0] = '$object->' . $this->escapePropName($name) . ' = ' . $exportedValue[0];
+                    $exportedValue[count($exportedValue) - 1] .= ';';
+                    $result = array_merge($result, $exportedValue);
                 } else {
                     if ($isParentClass) {
-                        $result .= $this->varExporter->indent($nestingLevel + 1);
-                        $result .= '$property = new \ReflectionProperty(\\' . $current->getName() . '::class, ' . var_export($name, true) . ');' . PHP_EOL;
+                        $result[] = '$property = new \ReflectionProperty(\\' . $current->getName() . '::class, ' . var_export($name, true) . ');';
                     } else {
-                        $result .= $this->varExporter->indent($nestingLevel + 1);
-                        $result .= '$property = $class->getProperty(' . var_export($name, true) . ');' . PHP_EOL;
+                        $result[] = '$property = $class->getProperty(' . var_export($name, true) . ');';
                     }
 
-                    $result .= $this->varExporter->indent($nestingLevel + 1);
-                    $result .= '$property->setAccessible(true);' . PHP_EOL;
-
-                    $result .= $this->varExporter->indent($nestingLevel + 1);
-                    $result .= '$property->setValue($object, ' . $exportedValue . ');' . PHP_EOL;
+                    $result[] = '$property->setAccessible(true);';
+                    $exportedValue[0] = '$property->setValue($object, ' . $exportedValue[0];
+                    $exportedValue[count($exportedValue) - 1] .= ');';
+                    $result = array_merge($result, $exportedValue);
                 }
             }
 
@@ -76,11 +73,9 @@ class ReflectionExporter extends ObjectExporter
             $isParentClass = true;
         }
 
-        $result .= PHP_EOL;
+        $result[] = '';
+        $result[] = 'return $object;';
 
-        $result .= $this->varExporter->indent($nestingLevel + 1);
-        $result .= 'return $object;' . PHP_EOL;
-
-        return $this->wrapInClosure($result, $nestingLevel);
+        return $this->wrapInClosure($result);
     }
 }

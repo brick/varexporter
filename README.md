@@ -92,8 +92,6 @@ array (
 
 Note: unlike `var_export()`, `export()` always returns the exported variable, and never outputs it.
 
-Note: `export()` is not a static method, as the exporter keeps an internal cache of class information, which speeds up the process of exporting multiple objects of the same class. As such, reusing a `VarExporter` instance several times can be slightly faster than creating a new instance every time.
-
 ### Exporting stdClass objects
 
 You come across a `stdClass` object every time you cast an array to an object, or use `json_decode()` with the second argument set to `false` (which is the default).

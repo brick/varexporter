@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Tests;
 
+use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor;
 use Brick\VarExporter\Tests\Classes\ParameterizedRequiredConstructor;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
@@ -38,6 +39,33 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
+    public function testExportClassWithNoProperties()
+    {
+        $object = new NoProperties;
+
+        $expected = 'new \Brick\VarExporter\Tests\Classes\NoProperties';
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    public function testExportClassWithDynamicPropertiesOnly()
+    {
+        $object = new NoProperties;
+        $object->dynamicProp = 'Hello';
+        $object->{'$weird%Prop'} = 'World';
+
+        $expected = <<<'PHP'
+(static function() {
+    $object = new \Brick\VarExporter\Tests\Classes\NoProperties;
+    $object->dynamicProp = 'Hello';
+    $object->{'$weird%Prop'} = 'World';
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
     public function testExportClassWithPublicPropertiesOnly()
     {
         $object = new PublicPropertiesOnly;

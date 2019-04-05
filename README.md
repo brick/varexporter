@@ -73,7 +73,7 @@ This code will output:
 ]
 ```
 
-Compare this to the `var_export` output:
+Compare this to the `var_export()` output:
 
 ```php
 array (
@@ -241,7 +241,9 @@ If performs several checks to find the most appropriate export method, in this o
         $class = new \ReflectionClass(\My\CustomClass::class);
         $object = $class->newInstanceWithoutConstructor();
 
-        $object->publicProp = 'Hello';
+        $object->publicProp = 'Foo';
+
+        $object->dynamicProp = 'Bar';
 
         $property = $class->getProperty('protectedProp');
         $property->setAccessible(true);
@@ -257,13 +259,19 @@ If performs several checks to find the most appropriate export method, in this o
 
     The reflection method is very powerful: it can export any custom class, with `private`/`protected`/`public` properties, constructors, and even dynamic properties and overridden private properties.
 
-    At the same time, this method is quickly verbose in output, slower (reflection comes at a cost), and fragile: any change to the class being exported may require a new export of its instances, as the reflection code could be out of date.
+    At the same time, this method is quickly verbose in output, slower (reflection comes at a cost), and fragile: any change to the internals of a class being exported may require a new export of its instances, as the reflection code could be out of date.
 
     For this reason, **exporting using reflection is disabled by default**, and you'll get an `ExportException` if `export()` has to fall back to using reflection. To explicitly enable it, use the [`ALLOW_REFLECTION`](#varexporterallow_reflection) option.
 
 ## Options
 
-`VarExporter::export()` accepts a bitmask of options as a second parameter. Here are the available options:
+`export()` accepts a bitmask of options as a second parameter:
+
+```php
+VarExporter::export($var, VarExporter::ADD_RETURN | VarExporter::ALLOW_REFLECTION);
+```
+
+Available options:
 
 ### `VarExporter::ADD_RETURN`
 

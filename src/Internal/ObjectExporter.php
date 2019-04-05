@@ -57,15 +57,11 @@ abstract class ObjectExporter
      */
     final protected function wrapInClosure(array $code) : array
     {
-        $result = [];
-
-        $result[] = '(static function() {';
-
-        $result = array_merge($result, $this->exporter->indent($code));
-
-        $result[] = '})()';
-
-        return $result;
+        return array_merge(
+            ['(static function() {'],
+            $this->exporter->indent($code),
+            ['})()']
+        );
     }
 
     /**

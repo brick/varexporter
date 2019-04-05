@@ -18,16 +18,16 @@ class PublicPropertiesExporter extends ObjectExporter
      */
     public function supports($object, \ReflectionObject $reflectionObject) : bool
     {
+        if ($reflectionObject->getConstructor() !== null) {
+            return false;
+        }
+
         for ($currentClass = $reflectionObject; $currentClass; $currentClass = $currentClass->getParentClass()) {
             foreach ($currentClass->getProperties() as $property) {
                 if (! $property->isPublic() && ! $property->isStatic()) {
                     return false;
                 }
             }
-        }
-
-        if ($reflectionObject->getConstructor() !== null) {
-            return false;
         }
 
         return true;

@@ -2,24 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Brick\VarExporter\ObjectExporter;
+namespace Brick\VarExporter\Internal\ObjectExporter;
 
-use Brick\VarExporter\ExportException;
-use Brick\VarExporter\ObjectExporter;
+use Brick\VarExporter\Internal\ObjectExporter;
 
 /**
- * Throws on internal classes.
+ * Handles stdClass objects.
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
-class InternalClassExporter extends ObjectExporter
+class StdClassExporter extends ObjectExporter
 {
     /**
      * {@inheritDoc}
      */
     public function supports($object, \ReflectionObject $reflectionObject) : bool
     {
-        return $reflectionObject->isInternal();
+        return $object instanceof \stdClass;
     }
 
     /**
@@ -27,8 +26,10 @@ class InternalClassExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        $className = $reflectionObject->getName();
+        $exported = $this->varExporter->exportArray((array) $object);
 
-        throw new ExportException('Class "' . $className . '" is internal, and cannot be exported.');
+        $exported[0] = '(object) ' . $exported[0];
+
+        return $exported;
     }
 }

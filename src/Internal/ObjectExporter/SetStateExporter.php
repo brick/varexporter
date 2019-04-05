@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Brick\VarExporter\ObjectExporter;
+namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\ExportException;
-use Brick\VarExporter\ObjectExporter;
+use Brick\VarExporter\Internal\ObjectExporter;
 
 /**
  * Handles instances of classes with a __set_state() method.

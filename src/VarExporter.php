@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter;
 
+use Brick\VarExporter\Internal\ObjectExporter;
+
 final class VarExporter
 {
     /**

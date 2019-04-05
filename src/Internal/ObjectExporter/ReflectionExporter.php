@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Brick\VarExporter\ObjectExporter;
+namespace Brick\VarExporter\Internal\ObjectExporter;
 
-use Brick\VarExporter\ObjectExporter;
+use Brick\VarExporter\Internal\ObjectExporter;
 
 /**
  * Handles any class through reflection.

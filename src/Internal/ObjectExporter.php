@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Brick\VarExporter;
+namespace Brick\VarExporter\Internal;
+
+use Brick\VarExporter\ExportException;
+use Brick\VarExporter\VarExporter;
 
 /**
  * An exporter that can only handle a particular type of object.

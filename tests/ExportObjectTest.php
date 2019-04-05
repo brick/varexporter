@@ -57,6 +57,27 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
+    public function testExportObjectWithPublicAndDynamicProperties()
+    {
+        $object = new PublicPropertiesOnly;
+        $object->foo = 'Hello';
+        $object->bar = 'World';
+        $object->dynamic = 'Dynamic';
+
+        $expected = <<<'PHP'
+(static function() {
+    $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+    $object->foo = 'Hello';
+    $object->bar = 'World';
+    $object->dynamic = 'Dynamic';
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
     public function testExportClassWithPublicAndPrivateProperties()
     {
         $object = new PublicAndPrivateProperties;

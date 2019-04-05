@@ -91,7 +91,7 @@ array (
 
 Note: unlike `var_export()`, `export()` always returns the exported variable, and never outputs it.
 
-### Exporting stdClass objects
+## Exporting stdClass objects
 
 You come across a `stdClass` object every time you cast an array to an object, or use `json_decode()` with the second argument set to `false` (which is the default).
 
@@ -122,7 +122,7 @@ it is totally useless as it assumes that `stdClass` has a static `__set_state()`
 
 > Error: Call to undefined method stdClass::__set_state()
 
-#### What does `VarExporter` do instead?
+### What does `VarExporter` do instead?
 
 It outputs an array to object cast, which is syntactically valid, readable **and** executable:
 
@@ -146,7 +146,7 @@ echo VarExporter::export(json_decode('
 ]
 ```
 
-### Exporting custom objects
+## Exporting custom objects
 
 As we've seen above, `var_export()` assumes that every object has a static [__set_state()](https://www.php.net/manual/en/language.oop5.magic.php#object.set-state) method that takes an associative array of property names to values, and returns a object.
 
@@ -189,7 +189,7 @@ public static function __set_state(array $array) : self
 
 If your class has a parent with private properties, you may have to do some gymnastics to write the value, and if your class overrides a private property of its parent, you're out of luck as `var_export()` puts all properties in the same bag, outputting an array with a duplicate key.
 
-#### What does `VarExporter` do instead?
+### What does `VarExporter` do instead?
 
 If performs several checks to find the most appropriate export method, in this order:
 
@@ -259,13 +259,13 @@ If performs several checks to find the most appropriate export method, in this o
 
     At the same time, this method is quickly verbose in output, slower (reflection comes at a cost), and fragile: any change to the class being exported may require a new export of its instances, as the reflection code could be out of date.
 
-    For this reason, **exporting using reflection is disabled by default**, and you'll get an `ExportException` if `export()` has to fall back to using reflection. To explicitly enable it, use the `ALLOW_REFLECTION` option.
+    For this reason, **exporting using reflection is disabled by default**, and you'll get an `ExportException` if `export()` has to fall back to using reflection. To explicitly enable it, use the [`ALLOW_REFLECTION`](#varexporterallow_reflection) option.
 
-### Options
+## Options
 
 `VarExporter::export()` accepts a bitmask of options as a second parameter. Here are the available options:
 
-#### `VarExporter::ADD_RETURN`
+### `VarExporter::ADD_RETURN`
 
 Wraps the output in a return statement:
 
@@ -275,15 +275,16 @@ return (...);
 
 This makes the code ready to be executed in a PHP file―or eval(), for that matter.
 
-#### `VarExporter::ALLOW_REFLECTION`
+### `VarExporter::ALLOW_REFLECTION`
 
 Allows classes with a constructor or non-public properties to be exported using reflection.
 
 By default, `export()` will refuse to handle such objects and throw an exception. Set this flag to allow it.
-Note that even when this flag is not set, reflection may still be used to create an empty shell for
-`__unserialize()`.
 
-#### `VarExporter::SKIP_DYNAMIC_PROPERTIES`
+*Note that even when this flag is not set, reflection may still be used to create an empty shell for
+`__unserialize()`.*
+
+### `VarExporter::SKIP_DYNAMIC_PROPERTIES`
 
 Skips dynamic properties on custom classes in the output. By default, any dynamic property set on a custom class is
 exported; if this flag is set, dynamic properties are only allowed on stdClass objects, and ignored on other objects.

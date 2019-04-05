@@ -140,4 +140,23 @@ PHP;
 
         $exporter->export($object);
     }
+
+    public function testExportResource()
+    {
+        $handle = fopen('php://memory', 'rb+');
+
+        // bury it deep
+        $object = (object) [
+            'foo' => (object) [
+                'bar' => $handle
+            ]
+        ];
+
+        $exporter = new VarExporter();
+
+        $this->expectException(ExportException::class);
+        $this->expectExceptionMessage('Type "resource" is not supported.');
+
+        $exporter->export($object);
+    }
 }

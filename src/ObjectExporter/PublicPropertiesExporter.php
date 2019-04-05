@@ -9,6 +9,8 @@ use Brick\VarExporter\ObjectExporter;
 
 /**
  * Handles instances of classes with public properties only, and no constructor.
+ *
+ * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
 class PublicPropertiesExporter extends ObjectExporter
 {

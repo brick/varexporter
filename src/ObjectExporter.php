@@ -8,6 +8,8 @@ use Brick\VarExporter\Internal\ClassInfo;
 
 /**
  * An exporter that can only handle a particular type of object.
+ *
+ * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
 abstract class ObjectExporter
 {

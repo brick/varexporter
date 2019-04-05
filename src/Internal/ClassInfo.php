@@ -9,8 +9,7 @@ use Brick\VarExporter\ExportException;
 /**
  * Holds computed information about a class.
  *
- * @internal This class is for internal use by VarExporter, and not part of the public API.
- *           It may change at any time, without warning.
+ * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
 final class ClassInfo extends \Exception
 {

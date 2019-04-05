@@ -5,26 +5,25 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Internal;
 
 use Brick\VarExporter\ExportException;
-use Brick\VarExporter\VarExporter;
 
 /**
- * An exporter that can only handle a particular type of object.
+ * An exporter that handles a specific type of object.
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
 abstract class ObjectExporter
 {
     /**
-     * @var VarExporter
+     * @var GenericExporter
      */
-    protected $varExporter;
+    protected $exporter;
 
     /**
-     * @param VarExporter $varExporter
+     * @param GenericExporter $exporter
      */
-    public function __construct(VarExporter $varExporter)
+    public function __construct(GenericExporter $exporter)
     {
-        $this->varExporter = $varExporter;
+        $this->exporter = $exporter;
     }
 
     /**
@@ -62,7 +61,7 @@ abstract class ObjectExporter
 
         $result[] = '(static function() {';
 
-        $result = array_merge($result, $this->varExporter->indent($code));
+        $result = array_merge($result, $this->exporter->indent($code));
 
         $result[] = '})()';
 

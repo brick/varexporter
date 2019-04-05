@@ -26,7 +26,7 @@ class StdClassExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        $exported = $this->varExporter->exportArray((array) $object);
+        $exported = $this->exporter->exportArray((array) $object);
 
         $exported[0] = '(object) ' . $exported[0];
 

@@ -51,8 +51,8 @@ class PublicPropertiesExporter extends ObjectExporter
         $result[] = '$object = ' . $newObject . ';';
 
         foreach ($values as $key => $value) {
-            $exportedValue = $this->varExporter->doExport($value);
-            $exportedValue = $this->varExporter->wrap($exportedValue, '$object->' . $this->escapePropName($key) . ' = ', ';');
+            $exportedValue = $this->exporter->export($value);
+            $exportedValue = $this->exporter->wrap($exportedValue, '$object->' . $this->escapePropName($key) . ' = ', ';');
 
             $result = array_merge($result, $exportedValue);
         }

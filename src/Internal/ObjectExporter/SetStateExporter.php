@@ -37,8 +37,8 @@ class SetStateExporter extends ObjectExporter
 
         $className = $reflectionObject->getName();
 
-        $exportedVars = $this->varExporter->exportArray($vars);
-        $exportedVars = $this->varExporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
+        $exportedVars = $this->exporter->exportArray($vars);
+        $exportedVars = $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
 
         return $exportedVars;
     }

@@ -30,6 +30,7 @@ final class VarExporter
         $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
         $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
         $this->objectExporters[] = new ObjectExporter\PublicPropertiesExporter($this);
+        $this->objectExporters[] = new ObjectExporter\ReflectionExporter($this);
     }
 
     /**
@@ -145,10 +146,6 @@ final class VarExporter
             if ($objectExporter->supports($object, $classInfo)) {
                 return $objectExporter->export($object, $classInfo, $nestingLevel);
             }
-        }
-
-        if ($classInfo->hasNonPublicProps) {
-            throw new ExportException('Class "' . get_class($object) . '" has non-public properties, and must implement __set_state().');
         }
 
         // This will never happen, as the last strategy can handle any object.

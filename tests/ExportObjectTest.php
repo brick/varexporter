@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\Tests\Classes\NoProperties;
+use Brick\VarExporter\Tests\Classes\Hierarchy;
 use Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor;
 use Brick\VarExporter\Tests\Classes\ParameterizedRequiredConstructor;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
@@ -107,15 +108,6 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithPublicAndPrivateProperties()
-    {
-        $object = new PublicAndPrivateProperties;
-
-        $expectedMessage = 'Class "Brick\VarExporter\Tests\Classes\PublicAndPrivateProperties" has non-public properties, and must implement __set_state().';
-
-        $this->assertExportThrows($expectedMessage, $object);
-    }
-
     public function testExportClassWithSetState()
     {
         $object = new SetState;
@@ -163,16 +155,17 @@ PHP;
 
     public function testExportClassWithPrivateConstructor()
     {
-        $this->markTestSkipped('Not supported yet.'); // @todo
-
         $object = PrivateConstructor::create();
         $object->foo = 'Foo';
         $object->bar = 'Bar';
 
         $expected = <<<'PHP'
 (static function() {
-    $object = (new ReflectionClass(\Brick\VarExporter\Tests\Classes\PrivateConstructor::class))->newInstanceWithoutConstructor();
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\PrivateConstructor::class);
+    $object = $class->newInstanceWithoutConstructor();
+
     $object->foo = 'Foo';
+
     $object->bar = 'Bar';
 
     return $object;
@@ -184,14 +177,15 @@ PHP;
 
     public function testExportClassWithParameterizedRequiredConstructor()
     {
-        $this->markTestSkipped('Not supported yet.'); // @todo
-
         $object = new ParameterizedRequiredConstructor('FOO', 123);
 
         $expected = <<<'PHP'
 (static function() {
-    $object = (new ReflectionClass(\Brick\VarExporter\Tests\Classes\ParameterizedRequiredConstructor::class))->newInstanceWithoutConstructor();
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ParameterizedRequiredConstructor::class);
+    $object = $class->newInstanceWithoutConstructor();
+
     $object->foo = 'FOO';
+
     $object->bar = 123;
 
     return $object;
@@ -203,14 +197,15 @@ PHP;
 
     public function testExportClassWithParameterizedOptionalConstructor()
     {
-        $this->markTestSkipped('Not supported yet.'); // @todo
-
         $object = new ParameterizedOptionalConstructor();
 
         $expected = <<<'PHP'
 (static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor;
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor::class);
+    $object = $class->newInstanceWithoutConstructor();
+
     $object->foo = 'DefaultFoo';
+
     $object->bar = 0;
 
     return $object;
@@ -233,6 +228,67 @@ PHP;
         'foo' => 'Test',
         'bar' => 1234
     ]);
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    public function testExportClassHierarchyUsingReflection()
+    {
+        $object = Hierarchy\C::create();
+        $object->dynamicProperty = 'A property declared dynamically';
+
+        $expected = <<<'PHP'
+(static function() {
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
+    $object = $class->newInstanceWithoutConstructor();
+
+    $property = $class->getProperty('privateInC');
+    $property->setAccessible(true);
+    $property->setValue($object, 'private in C');
+
+    $property = $class->getProperty('protectedInC');
+    $property->setAccessible(true);
+    $property->setValue($object, 'protected in C');
+
+    $object->publicInC = 'public in C';
+
+    $property = $class->getProperty('privateOverridden');
+    $property->setAccessible(true);
+    $property->setValue($object, 'in C');
+
+    $property = $class->getProperty('protectedInB');
+    $property->setAccessible(true);
+    $property->setValue($object, 'protected in B');
+
+    $object->publicInB = 'public in B';
+
+    $property = $class->getProperty('protectedInA');
+    $property->setAccessible(true);
+    $property->setValue($object, 'protected in A');
+
+    $object->publicInA = 'public in A';
+
+    $object->dynamicProperty = 'A property declared dynamically';
+
+    $property = new \ReflectionProperty(\Brick\VarExporter\Tests\Classes\Hierarchy\B::class, 'privateInB');
+    $property->setAccessible(true);
+    $property->setValue($object, 'private in B');
+
+    $property = new \ReflectionProperty(\Brick\VarExporter\Tests\Classes\Hierarchy\B::class, 'privateOverridden');
+    $property->setAccessible(true);
+    $property->setValue($object, 'in B');
+
+    $property = new \ReflectionProperty(\Brick\VarExporter\Tests\Classes\Hierarchy\A::class, 'privateInA');
+    $property->setAccessible(true);
+    $property->setValue($object, 'private in A');
+
+    $property = new \ReflectionProperty(\Brick\VarExporter\Tests\Classes\Hierarchy\A::class, 'privateOverridden');
+    $property->setAccessible(true);
+    $property->setValue($object, 'in A');
 
     return $object;
 })()

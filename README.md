@@ -151,7 +151,7 @@ echo $exporter->export(json_decode('
 
 ### Exporting custom objects
 
-As we've seen above, `var_export()` assumes that every object has a static `__set_state()` method that takes an associative array of property names to values, and returns a object.
+As we've seen above, `var_export()` assumes that every object has a static [__set_state()](https://www.php.net/manual/en/language.oop5.magic.php#object.set-state) method that takes an associative array of property names to values, and returns a object.
 
 This means that if you want to export an instance of a class outside of your control, you're screwed up. This also means that you have to write boilerplate code for your classes, that looks like:
 
@@ -190,7 +190,7 @@ public static function __set_state(array $array) : self
 }
 ```
 
-And if you want to export a class that has an overridden private property, you're out of luck as `var_export()` puts all properties in the same bag, outputting an array with a duplicate key.
+If your class has a parent with private properties, you may have to do some gymnastics to write the value, and if your class overrides a private property of its parent, you're out of luck as `var_export()` puts all properties in the same bag, outputting an array with a duplicate key.
 
 #### What does `VarExporter` do instead?
 
@@ -239,12 +239,10 @@ And if you want to export a class that has an overridden private property, you'r
 
     ```php
     (static function() {
-        $class = new ReflectionClass(\My\CustomClass::class);
+        $class = new \ReflectionClass(\My\CustomClass::class);
         $object = $class->newInstanceWithoutConstructor();
 
-        $object->foo = 'Hello';
-
-        $object->bar = 'World';
+        $object->publicProp = 'Hello';
 
         $property = $class->getProperty('protectedProp');
         $property->setAccessible(true);

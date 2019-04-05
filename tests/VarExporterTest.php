@@ -6,6 +6,7 @@ namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SetState;
+use Brick\VarExporter\VarExporter;
 
 class VarExporterTest extends AbstractTestCase
 {
@@ -116,5 +117,13 @@ PHP;
 PHP;
 
         $this->assertExportEquals($expected, $object);
+    }
+
+    public function testAddReturn()
+    {
+        $exporter = new VarExporter();
+        $result = $exporter->export([], true);
+
+        $this->assertSame('return [];' . PHP_EOL, $result);
     }
 }

@@ -16,15 +16,22 @@ final class VarExporter
     private $classInfo = [];
 
     /**
-     * @param mixed $var A variable to export.
-     *
+     * @param mixed $var       A variable to export.
+     * @param bool  $addReturn Whether to prepend the output with 'return ' and append a semicolon and a newline.
+     *                         This makes the code ready to be executed in a PHP file - or eval(), for that matter.
      * @return string
      *
      * @throws ExportException
      */
-    public function export($var) : string
+    public function export($var, bool $addReturn = false) : string
     {
-        return $this->doExport($var, 0);
+        $export = $this->doExport($var, 0);
+
+        if ($addReturn) {
+            return 'return ' . $export . ';' .  PHP_EOL;
+        }
+
+        return $export;
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Tests;
 
+use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\VarExporter;
@@ -125,5 +126,18 @@ PHP;
         $result = $exporter->export([], true);
 
         $this->assertSame('return [];' . PHP_EOL, $result);
+    }
+
+    public function testExportInternalClass()
+    {
+        $object = new \stdClass;
+        $object->iterator = new \ArrayIterator();
+
+        $exporter = new VarExporter();
+
+        $this->expectException(ExportException::class);
+        $this->expectExceptionMessage('Class "ArrayIterator" is internal, and cannot be exported.');
+
+        $exporter->export($object);
     }
 }

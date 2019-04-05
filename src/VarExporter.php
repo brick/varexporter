@@ -127,6 +127,10 @@ final class VarExporter
 
         $classInfo = $this->getClassInfo($object);
 
+        if ($classInfo->reflectionClass->isInternal()) {
+            throw new ExportException('Class "' . get_class($object) . '" is internal, and cannot be exported.');
+        }
+
         if ($classInfo->hasSetState) {
             $vars = $classInfo->getObjectVars($object);
 

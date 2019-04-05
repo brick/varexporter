@@ -52,13 +52,12 @@ If you need to upgrade to a newer release cycle, check the [release history](htt
 
 ## Quickstart
 
-Just grab an instance of `VarExporter`, and call its `export()` method:
+This library offers a single method, `VarExporter::export()` which works pretty much like `var_export()`:
 
 ```php
 use Brick\VarExporter\VarExporter;
 
-$exporter = new VarExporter;
-echo $exporter->export([1, 2, ['foo' => 'bar', 'baz' => []]]);
+echo VarExporter::export([1, 2, ['foo' => 'bar', 'baz' => []]]);
 ```
 
 This code will output:
@@ -128,7 +127,7 @@ it is totally useless as it assumes that `stdClass` has a static `__set_state()`
 It outputs an array to object cast, which is syntactically valid, readable **and** executable:
 
 ```php
-echo $exporter->export(json_decode('
+echo VarExporter::export(json_decode('
     {
         "foo": "bar",
         "baz": {
@@ -260,11 +259,34 @@ If performs several checks to find the most appropriate export method, in this o
 
     At the same time, this method is quickly verbose in output, slower (reflection comes at a cost), and fragile: any change to the class being exported may require a new export of its instances, as the reflection code could be out of date.
 
-    For this reason, **exporting using reflection is disabled by default**, and you'll get an `ExportException` if `VarExporter` has to fall back to using reflection. To explicitly enable it, just pass `true` to the `VarExporter` constructor:
+    For this reason, **exporting using reflection is disabled by default**, and you'll get an `ExportException` if `export()` has to fall back to using reflection. To explicitly enable it, use the `ALLOW_REFLECTION` option.
 
-    ```php
-        $exporter = new VarExporter(true);
-    ```
+### Options
+
+`VarExporter::export()` accepts a bitmask of options as a second parameter. Here are the available options:
+
+#### `VarExporter::ADD_RETURN`
+
+Wraps the output in a return statement:
+
+```php
+return (...);
+```
+
+This makes the code ready to be executed in a PHP file―or eval(), for that matter.
+
+#### `VarExporter::ALLOW_REFLECTION`
+
+Allows classes with a constructor or non-public properties to be exported using reflection.
+
+By default, `export()` will refuse to handle such objects and throw an exception. Set this flag to allow it.
+Note that even when this flag is not set, reflection may still be used to create an empty shell for
+`__unserialize()`.
+
+#### `VarExporter::SKIP_DYNAMIC_PROPERTIES`
+
+Skips dynamic properties on custom classes in the output. By default, any dynamic property set on a custom class is
+exported; if this flag is set, dynamic properties are only allowed on stdClass objects, and ignored on other objects.
 
 ## Limitations
 

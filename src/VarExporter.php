@@ -9,34 +9,36 @@ use Brick\VarExporter\Internal\GenericExporter;
 final class VarExporter
 {
     /**
-     * @var GenericExporter
+     * Whether to prepend the output with `return ` and append a semicolon and a newline.
+     * This makes the code ready to be executed in a PHP file―or eval(), for that matter.
      */
-    protected $exporter;
+    public const ADD_RETURN = 1 << 0;
 
     /**
-     * VarExporter constructor.
+     * Whether to allow classes with a constructor or non-public properties to be exported using reflection.
+     * By default, `export()` will refuse to handle such objects and throw an exception. Set this flag to allow it.
+     * Note that even when this flag is not set, reflection may still be used to create an empty shell for
+     * `__unserialize()`.
+     */
+    public const ALLOW_REFLECTION = 1 << 1;
+
+    /**
+     * @param mixed $var     The variable to export.
+     * @param int   $options A bitmask of options. Possible values are `VarExporter::*` constants.
+     *                       Combine multiple options with a bitwise OR `|` operator.
      *
-     * @param bool $allowReflection Whether to allow classes with a constructor or non-public properties to be exported
-     *                              using reflection. Disabled by default. Note that even when this is false, reflection
-     *                              may still used to create an empty instance for __unserialize(), but is never used to
-     *                              bypass a constructor in another context, or set non-public properties.
-     */
-    public function __construct(bool $allowReflection = false)
-    {
-        $this->exporter = new GenericExporter($allowReflection);
-    }
-
-    /**
-     * @param mixed $var       The variable to export.
-     * @param bool  $addReturn Whether to prepend the output with 'return ' and append a semicolon and a newline.
-     *                         This makes the code ready to be executed in a PHP file - or eval(), for that matter.
      * @return string
      *
      * @throws ExportException
      */
-    public function export($var, bool $addReturn = false) : string
+    public static function export($var, int $options = 0) : string
     {
-        $lines = $this->exporter->export($var);
+        $addReturn       = (bool) ($options & self::ADD_RETURN);
+        $allowReflection = (bool) ($options & self::ALLOW_REFLECTION);
+
+        $exporter = new GenericExporter($allowReflection);
+
+        $lines = $exporter->export($var);
         $export = implode(PHP_EOL, $lines);
 
         if ($addReturn) {

@@ -13,24 +13,27 @@ abstract class AbstractTestCase extends TestCase
     /**
      * Asserts the return value of export() for the given variable.
      *
-     * @param string $expected        The expected export() output.
-     * @param mixed  $var             The variable to export.
-     * @param bool   $allowReflection Whether the VarExporter should allow exporting using reflection.
+     * @param string $expected The expected export() output.
+     * @param mixed  $var      The variable to export.
+     * @param int    $options  The options to pass to export().
      *
      * @return void
      */
-    public function assertExportEquals(string $expected, $var, bool $allowReflection = false) : void
+    public function assertExportEquals(string $expected, $var, int $options = 0) : void
     {
-        $exporter = new VarExporter($allowReflection);
-
         // test the string output of export()
 
-        $exported = $exporter->export($var);
+        $exported = VarExporter::export($var, $options);
         self::assertSame($expected, $exported);
 
-        // test that the exported value is valid PHP, and equal (by value) to the original var
+        // test that the exported value is valid PHP, and equal (by value) to the original var;
+        // first of all wrap the output in a return statement, only if this was not already requested
 
-        $exportedVar = eval('return ' . $exported . ';');
+        if (0 === ($options & VarExporter::ADD_RETURN)) {
+            $exported = 'return ' . $exported . ';';
+        }
+
+        $exportedVar = eval($exported);
         $this->assertEquals($var, $exportedVar);
     }
 
@@ -39,15 +42,16 @@ abstract class AbstractTestCase extends TestCase
      *
      * @param string $expectedMessage The expected exception message.
      * @param mixed  $var             The variable to export.
+     * @param int    $options         The options to pass to export().
      *
      * @return void
      */
-    public function assertExportThrows(string $expectedMessage, $var) : void
+    public function assertExportThrows(string $expectedMessage, $var, int $options = 0) : void
     {
         $this->expectException(ExportException::class);
         $this->expectExceptionMessage($expectedMessage);
 
         $exporter = new VarExporter();
-        $exporter->export($var);
+        $exporter->export($var, $options);
     }
 }

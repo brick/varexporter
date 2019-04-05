@@ -14,6 +14,7 @@ use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\Tests\Classes\SetStateWithOverriddenPrivateProperties;
+use Brick\VarExporter\VarExporter;
 
 /**
  * Tests exporting various objects.
@@ -172,7 +173,7 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, true);
+        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
     }
 
     public function testExportClassWithPublicPropertiesAndConstructor()
@@ -192,7 +193,7 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, true);
+        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
     }
 
     public function testExportClassWithConstructorThrowExceptionByDefault()
@@ -314,6 +315,6 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, true);
+        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
     }
 }

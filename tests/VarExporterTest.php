@@ -122,10 +122,10 @@ PHP;
 
     public function testAddReturn()
     {
-        $exporter = new VarExporter();
-        $result = $exporter->export([], true);
+        $var = [];
+        $expected = 'return [];' . PHP_EOL;
 
-        $this->assertSame('return [];' . PHP_EOL, $result);
+        $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
 
     public function testExportInternalClass()
@@ -133,12 +133,9 @@ PHP;
         $object = new \stdClass;
         $object->iterator = new \ArrayIterator();
 
-        $exporter = new VarExporter();
+        $expectedMessage = 'Class "ArrayIterator" is internal, and cannot be exported.';
 
-        $this->expectException(ExportException::class);
-        $this->expectExceptionMessage('Class "ArrayIterator" is internal, and cannot be exported.');
-
-        $exporter->export($object);
+        $this->assertExportThrows($expectedMessage, $object);
     }
 
     public function testExportResource()

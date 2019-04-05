@@ -42,15 +42,6 @@ final class ClassInfo extends \Exception
     public $hasConstructor = false;
 
     /**
-     * Whether the given class has a non-public constructor, or a constructor with required parameters.
-     *
-     * In this case, we'll bypass the constructor with ReflectionClass::newInstanceWithoutConstructor().
-     *
-     * @var bool
-     */
-    public $bypassConstructor;
-
-    /**
      * @var bool
      */
     public $hasSerializeMagicMethods = false;
@@ -84,10 +75,6 @@ final class ClassInfo extends \Exception
 
         if ($constructor) {
             $this->hasConstructor = true;
-
-            if (! $constructor->isPublic() || $constructor->getNumberOfRequiredParameters() !== 0) {
-                $this->bypassConstructor = true;
-            }
         }
 
         if ($class->hasMethod('__serialize') && $class->hasMethod('__unserialize')) {

@@ -33,8 +33,7 @@ class PublicPropertiesExporter extends ObjectExporter
             return $newObject;
         }
 
-        $result = '(static function() {' . PHP_EOL;
-        $result .= $this->varExporter->indent($nestingLevel + 1);
+        $result  = $this->varExporter->indent($nestingLevel + 1);
         $result .= '$object = ' . $newObject . ';' . PHP_EOL;
 
         foreach ($values as $key => $value) {
@@ -46,9 +45,6 @@ class PublicPropertiesExporter extends ObjectExporter
         $result .= $this->varExporter->indent($nestingLevel + 1);
         $result .= 'return $object;' . PHP_EOL;
 
-        $result .= $this->varExporter->indent($nestingLevel);
-        $result .= '})()';
-
-        return $result;
+        return $this->wrapInClosure($result, $nestingLevel);
     }
 }

@@ -25,6 +25,24 @@ abstract class ObjectExporter
     }
 
     /**
+     * Wraps the given PHP code in a static closure.
+     *
+     * @param string $code
+     * @param int    $nestingLevel
+     *
+     * @return string
+     */
+    final protected function wrapInClosure(string $code, int $nestingLevel) : string
+    {
+        $result  = '(static function() {' . PHP_EOL;
+        $result .= $code;
+        $result .= $this->varExporter->indent($nestingLevel);
+        $result .= '})()';
+
+        return $result;
+    }
+
+    /**
      * Returns whether this exporter supports the given object.
      *
      * @param object    $object    The object to export.

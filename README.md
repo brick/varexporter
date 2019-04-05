@@ -194,7 +194,9 @@ If your class has a parent with private properties, you may have to do some gymn
 
 #### What does `VarExporter` do instead?
 
-- First of all, it checks if your custom class has a `__set_state()` method. If it does, then it uses it just like `var_export()` would do:
+If performs several checks to find the most appropriate export method, in this order:
+
+- If your custom class has a `__set_state()` method, `VarExporter` uses it just like `var_export()` would do:
 
     ```php
     \My\CustomClass::__set_state([

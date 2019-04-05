@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Internal;
 
 use Brick\VarExporter\ExportException;
-
+/**
+ * The main exporter implementation, that handles variables of any type.
+ *
+ * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
+ */
 final class GenericExporter
 {
     /**

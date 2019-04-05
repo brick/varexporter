@@ -23,6 +23,13 @@ final class VarExporter
     public const ALLOW_REFLECTION = 1 << 1;
 
     /**
+     * Whether to skip dynamic properties on custom classes. By default, any dynamic property set on a custom class is
+     * exported; if this flag is set, dynamic properties are only allowed on stdClass objects, and ignored on other
+     * objects.
+     */
+    public const SKIP_DYNAMIC_PROPERTIES = 1 << 2;
+
+    /**
      * @param mixed $var     The variable to export.
      * @param int   $options A bitmask of options. Possible values are `VarExporter::*` constants.
      *                       Combine multiple options with a bitwise OR `|` operator.
@@ -33,10 +40,11 @@ final class VarExporter
      */
     public static function export($var, int $options = 0) : string
     {
-        $addReturn       = (bool) ($options & self::ADD_RETURN);
-        $allowReflection = (bool) ($options & self::ALLOW_REFLECTION);
+        $addReturn             = (bool) ($options & self::ADD_RETURN);
+        $allowReflection       = (bool) ($options & self::ALLOW_REFLECTION);
+        $skipDynamicProperties = (bool) ($options & self::SKIP_DYNAMIC_PROPERTIES);
 
-        $exporter = new GenericExporter($allowReflection);
+        $exporter = new GenericExporter($allowReflection, $skipDynamicProperties);
 
         $lines = $exporter->export($var);
         $export = implode(PHP_EOL, $lines);

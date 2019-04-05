@@ -33,7 +33,10 @@ class ReflectionExporter extends ObjectExporter
         $result[] = '$class = new \ReflectionClass(' . $className . '::class);';
         $result[] = '$object = $class->newInstanceWithoutConstructor();';
 
-        $current = new \ReflectionObject($object);
+        $current = $this->exporter->skipDynamicProperties
+            ? new \ReflectionClass($object) // properties from class definition only
+            : $reflectionObject;            // properties from class definition + dynamic properties
+
         $isParentClass = false;
 
         while ($current) {

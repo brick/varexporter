@@ -26,7 +26,7 @@ abstract class AbstractTestCase extends TestCase
         $exported = VarExporter::export($var, $options);
         self::assertSame($expected, $exported);
 
-        // test that the exported value is valid PHP, and equal (by value) to the original var;
+        // test that the exported value is valid PHP;
         // first of all wrap the output in a return statement, only if this was not already requested
 
         if (0 === ($options & VarExporter::ADD_RETURN)) {
@@ -34,7 +34,13 @@ abstract class AbstractTestCase extends TestCase
         }
 
         $exportedVar = eval($exported);
-        $this->assertEquals($var, $exportedVar);
+
+        // test that the output is equal (by value) to the original var;
+        // only test if SKIP_DYNAMIC_PROPERTIES is not set, as this might create a non-equal object
+
+        if (0 === ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES)) {
+            $this->assertEquals($var, $exportedVar);
+        }
     }
 
     /**

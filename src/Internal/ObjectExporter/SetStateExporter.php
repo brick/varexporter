@@ -33,9 +33,12 @@ class SetStateExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        $vars = $this->getObjectVars($object, $reflectionObject);
-
         $className = $reflectionObject->getName();
+
+        $vars = $this->getObjectVars($object, $this->exporter->skipDynamicProperties
+            ? new \ReflectionClass($className) // properties from class definition only
+            : $reflectionObject                // properties from class definition + dynamic properties
+        );
 
         $exportedVars = $this->exporter->exportArray($vars);
         $exportedVars = $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
@@ -55,16 +58,16 @@ class SetStateExporter extends ObjectExporter
      *
      * This way we offer a better safety guarantee, while staying compatible with var_export() in the output.
      *
-     * @param object            $object
-     * @param \ReflectionObject $reflectionObject
+     * @param object           $object          The object to dump.
+     * @param \ReflectionClass $reflectionClass A ReflectionClass or ReflectionObject instance for the object.
      *
-     * @return array
+     * @return array An associative array of property name to value.
      *
      * @throws ExportException
      */
-    private function getObjectVars($object, \ReflectionObject $reflectionObject) : array
+    private function getObjectVars($object, \ReflectionClass $reflectionClass) : array
     {
-        $current = $reflectionObject;
+        $current = $reflectionClass;
         $isParentClass = false;
 
         $result = [];
@@ -80,7 +83,7 @@ class SetStateExporter extends ObjectExporter
 
                 if (array_key_exists($name, $result)) {
                     throw new ExportException(
-                        'Class "' . $reflectionObject->getName() . '" has overridden private properties. ' .
+                        'Class "' . $reflectionClass->getName() . '" has overridden private properties. ' .
                         'This is not supported for exporting objects with __set_state().'
                     );
                 }

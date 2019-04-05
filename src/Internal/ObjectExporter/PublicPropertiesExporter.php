@@ -46,6 +46,10 @@ class PublicPropertiesExporter extends ObjectExporter
             return [$newObject];
         }
 
+        if ($this->exporter->skipDynamicProperties) {
+            $values = $this->filterOutDynamicProperties($values, $reflectionObject->getName());
+        }
+
         $result = [];
 
         $result[] = '$object = ' . $newObject . ';';
@@ -61,5 +65,24 @@ class PublicPropertiesExporter extends ObjectExporter
         $result[] = 'return $object;';
 
         return $this->wrapInClosure($result);
+    }
+
+    /**
+     * @param array  $values
+     * @param string $className
+     *
+     * @return array
+     */
+    private function filterOutDynamicProperties(array $values, string $className) : array
+    {
+        // Using ReflectionClass, which unlike ReflectionObject, only returns the properties defined on the class,
+        // and not dynamic properties.
+        $reflectionClass = new \ReflectionClass($className);
+
+        $properties = array_map(function(\ReflectionProperty $property) : string {
+            return $property->getName();
+        }, $reflectionClass->getProperties());
+
+        return array_intersect_key($values, array_flip($properties));
     }
 }

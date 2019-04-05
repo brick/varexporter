@@ -18,9 +18,15 @@ final class GenericExporter
     private $objectExporters = [];
 
     /**
-     * @param bool $allowReflection
+     * @var bool
      */
-    public function __construct(bool $allowReflection)
+    public $skipDynamicProperties;
+
+    /**
+     * @param bool $allowReflection
+     * @param bool $skipDynamicProperties
+     */
+    public function __construct(bool $allowReflection, bool $skipDynamicProperties)
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
@@ -31,6 +37,8 @@ final class GenericExporter
         if ($allowReflection) {
             $this->objectExporters[] = new ObjectExporter\ReflectionExporter($this);
         }
+
+        $this->skipDynamicProperties = $skipDynamicProperties;
     }
 
     /**

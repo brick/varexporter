@@ -21,32 +21,6 @@ final class ClassInfo extends \Exception
     public $reflectionClass;
 
     /**
-     * Whether the given class has a public, static, __set_state() method.
-     *
-     * @var bool
-     */
-    public $hasSetState = false;
-
-    /**
-     * Whether the given class has any non-public, non-static properties.
-     *
-     * Such classes cannot be safely exported, and must provide a __set_state() method.
-     *
-     * @var bool
-     */
-    public $hasNonPublicProps = false;
-
-    /**
-     * @var bool
-     */
-    public $hasConstructor = false;
-
-    /**
-     * @var bool
-     */
-    public $hasSerializeMagicMethods = false;
-
-    /**
      * ClassInfo constructor.
      *
      * @param string $className The fully qualified class name.
@@ -56,30 +30,6 @@ final class ClassInfo extends \Exception
     public function __construct(string $className)
     {
         $this->reflectionClass = $class = new \ReflectionClass($className);
-
-        if ($class->hasMethod('__set_state')) {
-            $method = $class->getMethod('__set_state');
-            $this->hasSetState = $method->isPublic() && $method->isStatic();
-        }
-
-        for ($currentClass = $class; $currentClass; $currentClass = $currentClass->getParentClass()) {
-            foreach ($currentClass->getProperties() as $property) {
-                if (! $property->isPublic() && ! $property->isStatic()) {
-                    $this->hasNonPublicProps = true;
-                    break 2;
-                }
-            }
-        }
-
-        $constructor = $class->getConstructor();
-
-        if ($constructor) {
-            $this->hasConstructor = true;
-        }
-
-        if ($class->hasMethod('__serialize') && $class->hasMethod('__unserialize')) {
-            $this->hasSerializeMagicMethods = true;
-        }
     }
 
     /**

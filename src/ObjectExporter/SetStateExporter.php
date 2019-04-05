@@ -19,7 +19,13 @@ class SetStateExporter extends ObjectExporter
      */
     public function supports($object, ClassInfo $classInfo) : bool
     {
-        return $classInfo->hasSetState;
+        if ($classInfo->reflectionClass->hasMethod('__set_state')) {
+            $method = $classInfo->reflectionClass->getMethod('__set_state');
+
+            return $method->isPublic() && $method->isStatic();
+        }
+
+        return false;
     }
 
     /**

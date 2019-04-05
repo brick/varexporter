@@ -19,7 +19,10 @@ class SerializeExporter extends ObjectExporter
      */
     public function supports($object, ClassInfo $classInfo) : bool
     {
-        return $classInfo->hasSerializeMagicMethods;
+        $class = $classInfo->reflectionClass;
+
+        return $class->hasMethod('__serialize')
+            && $class->hasMethod('__unserialize');
     }
 
     /**
@@ -27,7 +30,7 @@ class SerializeExporter extends ObjectExporter
      */
     public function export($object, ClassInfo $classInfo, int $nestingLevel) : string
     {
-        if ($classInfo->hasConstructor) {
+        if ($classInfo->reflectionClass->getConstructor() !== null) {
             $result  = $this->varExporter->indent($nestingLevel + 1);
             $result .= '$class = new \ReflectionClass(\\' . get_class($object) . '::class);' . PHP_EOL;
 

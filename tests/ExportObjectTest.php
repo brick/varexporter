@@ -6,8 +6,7 @@ namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\Hierarchy;
-use Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor;
-use Brick\VarExporter\Tests\Classes\ParameterizedRequiredConstructor;
+use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicAndPrivateProperties;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
@@ -176,33 +175,13 @@ PHP;
         $this->assertExportEquals($expected, $object, true);
     }
 
-    public function testExportClassWithParameterizedRequiredConstructor()
+    public function testExportClassWithPublicPropertiesAndConstructor()
     {
-        $object = new ParameterizedRequiredConstructor('FOO', 123);
+        $object = new PublicPropertiesWithConstructor();
 
         $expected = <<<'PHP'
 (static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ParameterizedRequiredConstructor::class);
-    $object = $class->newInstanceWithoutConstructor();
-
-    $object->foo = 'FOO';
-
-    $object->bar = 123;
-
-    return $object;
-})()
-PHP;
-
-        $this->assertExportEquals($expected, $object, true);
-    }
-
-    public function testExportClassWithParameterizedOptionalConstructor()
-    {
-        $object = new ParameterizedOptionalConstructor();
-
-        $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor::class);
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor::class);
     $object = $class->newInstanceWithoutConstructor();
 
     $object->foo = 'DefaultFoo';
@@ -218,9 +197,9 @@ PHP;
 
     public function testExportClassWithConstructorThrowExceptionByDefault()
     {
-        $object = new ParameterizedOptionalConstructor();
+        $object = new PublicPropertiesWithConstructor();
 
-        $this->assertExportThrows('Class "Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor" cannot be exported without resorting to reflection.', $object);
+        $this->assertExportThrows('Class "Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor" cannot be exported without resorting to reflection.', $object);
     }
 
     public function testExportClassWithPrivatePropertiesThrowExceptionByDefault()

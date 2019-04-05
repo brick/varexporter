@@ -40,7 +40,7 @@ class PublicPropertiesExporter extends ObjectExporter
 
         foreach ($values as $key => $value) {
             $result .= $this->varExporter->indent($nestingLevel + 1);
-            $result .= '$object->' . $this->varExporter->escapePropName($key) . ' = ' . $this->varExporter->doExport($value, $nestingLevel + 1) . ';' . PHP_EOL;
+            $result .= '$object->' . $this->escapePropName($key) . ' = ' . $this->varExporter->doExport($value, $nestingLevel + 1) . ';' . PHP_EOL;
         }
 
         $result .= PHP_EOL;

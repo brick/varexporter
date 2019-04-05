@@ -155,20 +155,6 @@ final class VarExporter
     }
 
     /**
-     * @param string $var
-     *
-     * @return string
-     */
-    public function escapePropName(string $var) : string
-    {
-        if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $var) === 1) {
-            return $var;
-        }
-
-        return '{' . var_export($var, true) . '}';
-    }
-
-    /**
      * @param int $nestingLevel
      *
      * @return string

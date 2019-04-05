@@ -55,7 +55,7 @@ class ReflectionExporter extends ObjectExporter
                 if ($property->isPublic()) {
                     // public properties AND dynamic properties
                     $result .= $this->varExporter->indent($nestingLevel + 1);
-                    $result .= '$object->' . $this->varExporter->escapePropName($name) . ' = ' . $exportedValue . ';' . PHP_EOL;
+                    $result .= '$object->' . $this->escapePropName($name) . ' = ' . $exportedValue . ';' . PHP_EOL;
                 } else {
                     if ($isParentClass) {
                         $result .= $this->varExporter->indent($nestingLevel + 1);

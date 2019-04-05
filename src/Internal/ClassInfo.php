@@ -51,6 +51,11 @@ final class ClassInfo extends \Exception
     public $bypassConstructor;
 
     /**
+     * @var bool
+     */
+    public $hasSerializeMagicMethods = false;
+
+    /**
      * ClassInfo constructor.
      *
      * @param string $className The fully qualified class name.
@@ -83,6 +88,10 @@ final class ClassInfo extends \Exception
             if (! $constructor->isPublic() || $constructor->getNumberOfRequiredParameters() !== 0) {
                 $this->bypassConstructor = true;
             }
+        }
+
+        if ($class->hasMethod('__serialize') && $class->hasMethod('__unserialize')) {
+            $this->hasSerializeMagicMethods = true;
         }
     }
 

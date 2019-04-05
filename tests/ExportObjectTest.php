@@ -10,6 +10,7 @@ use Brick\VarExporter\Tests\Classes\ParameterizedRequiredConstructor;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicAndPrivateProperties;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\Tests\Classes\SetStateWithOverriddenPrivateProperties;
 
@@ -211,6 +212,27 @@ PHP;
     $object = new \Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor;
     $object->foo = 'DefaultFoo';
     $object->bar = 0;
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    public function testExportClassWithSerializeMagicMethods()
+    {
+        $object = new SerializeMagicMethods('Test', 1234);
+
+        $expected = <<<'PHP'
+(static function() {
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\SerializeMagicMethods::class);
+    $object = $class->newInstanceWithoutConstructor();
+
+    $object->__unserialize([
+        'foo' => 'Test',
+        'bar' => 1234
+    ]);
 
     return $object;
 })()

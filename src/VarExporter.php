@@ -28,6 +28,7 @@ final class VarExporter
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
+        $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
         $this->objectExporters[] = new ObjectExporter\PublicPropertiesExporter($this);
     }
 

@@ -9,14 +9,8 @@ namespace Brick\VarExporter\Tests\Classes;
  */
 class SerializeMagicMethods
 {
-    private $foo;
-    private $bar;
-
-    public function __construct(string $foo, int $bar)
-    {
-        $this->foo = $foo;
-        $this->bar = $bar;
-    }
+    public $foo;
+    public $bar;
 
     public function __serialize() : array
     {

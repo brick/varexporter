@@ -12,6 +12,7 @@ use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicAndPrivateProperties;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
+use Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\Tests\Classes\SetStateWithOverriddenPrivateProperties;
 
@@ -224,18 +225,44 @@ PHP;
 
     public function testExportClassWithPrivatePropertiesThrowExceptionByDefault()
     {
-        $object = new PublicAndPrivateProperties();
+        $object = new PublicAndPrivateProperties;
 
         $this->assertExportThrows('Class "Brick\VarExporter\Tests\Classes\PublicAndPrivateProperties" cannot be exported without resorting to reflection.', $object);
     }
 
     public function testExportClassWithSerializeMagicMethods()
     {
-        $object = new SerializeMagicMethods('Test', 1234);
+        $object = new SerializeMagicMethods;
+
+        $object->foo = 'Foo';
+        $object->bar = [1, 2];
 
         $expected = <<<'PHP'
 (static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\SerializeMagicMethods::class);
+    $object = new \Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
+
+    $object->__unserialize([
+        'foo' => 'Foo',
+        'bar' => [
+            1,
+            2
+        ]
+    ]);
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    public function testExportClassWithSerializeMagicMethodsAndConstructor()
+    {
+        $object = new SerializeMagicMethodsWithConstructor('Test', 1234);
+
+        $expected = <<<'PHP'
+(static function() {
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor::class);
     $object = $class->newInstanceWithoutConstructor();
 
     $object->__unserialize([

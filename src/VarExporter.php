@@ -101,9 +101,9 @@ final class VarExporter
 
         $result[] = '[';
 
-        $isNumeric = array_keys($array) === range(0, count($array) - 1);
-
         $count = count($array);
+        $isNumeric = array_keys($array) === range(0, $count - 1);
+
         $current = 0;
 
         foreach ($array as $key => $value) {

@@ -52,8 +52,7 @@ class ReflectionExporter extends ObjectExporter
 
                 if ($property->isPublic()) {
                     // public properties AND dynamic properties
-                    $exportedValue[0] = '$object->' . $this->escapePropName($name) . ' = ' . $exportedValue[0];
-                    $exportedValue[count($exportedValue) - 1] .= ';';
+                    $exportedValue = $this->varExporter->wrap($exportedValue, '$object->' . $this->escapePropName($name) . ' = ', ';');
                     $result = array_merge($result, $exportedValue);
                 } else {
                     if ($isParentClass) {
@@ -63,8 +62,8 @@ class ReflectionExporter extends ObjectExporter
                     }
 
                     $result[] = '$property->setAccessible(true);';
-                    $exportedValue[0] = '$property->setValue($object, ' . $exportedValue[0];
-                    $exportedValue[count($exportedValue) - 1] .= ');';
+
+                    $exportedValue = $this->varExporter->wrap($exportedValue, '$property->setValue($object, ', ');');
                     $result = array_merge($result, $exportedValue);
                 }
             }

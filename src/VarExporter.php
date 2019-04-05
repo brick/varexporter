@@ -111,14 +111,18 @@ final class VarExporter
 
             $exported = $this->doExport($value);
 
+            $prepend = '';
+            $append = '';
+
             if (! $isNumeric) {
-                $exported[0] = var_export($key, true) . ' => ' . $exported[0];
+                $prepend = var_export($key, true) . ' => ';
             }
 
             if (! $isLast) {
-                $exported[count($exported) - 1] .= ',';
+                $append = ',';
             }
 
+            $exported = $this->wrap($exported, $prepend, $append);
             $exported = $this->indent($exported);
 
             $result = array_merge($result, $exported);
@@ -169,6 +173,21 @@ final class VarExporter
                 $value = '    ' . $value;
             }
         }
+
+        return $lines;
+    }
+
+    /**
+     * @param string[] $lines   The lines of code.
+     * @param string   $prepend The string to prepend to the first line.
+     * @param string   $append  The string to append to the last line.
+     *
+     * @return string[]
+     */
+    public function wrap(array $lines, string $prepend, string $append) : array
+    {
+        $lines[0] = $prepend . $lines[0];
+        $lines[count($lines) - 1] .= $append;
 
         return $lines;
     }

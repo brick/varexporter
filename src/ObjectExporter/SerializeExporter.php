@@ -39,10 +39,9 @@ class SerializeExporter extends ObjectExporter
         $result[] = '';
 
         $values = $object->__serialize();
-        $exportedValues = $this->varExporter->doExport($values);
 
-        $exportedValues[0] = '$object->__unserialize(' . $exportedValues[0];
-        $exportedValues[count($exportedValues) - 1] .= ');';
+        $exportedValues = $this->varExporter->doExport($values);
+        $exportedValues = $this->varExporter->wrap($exportedValues, '$object->__unserialize(', ');');
 
         $result = array_merge($result, $exportedValues);
 

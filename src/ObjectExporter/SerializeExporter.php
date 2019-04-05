@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\ObjectExporter;
 
-use Brick\VarExporter\Internal\ClassInfo;
 use Brick\VarExporter\ObjectExporter;
 
 /**
@@ -17,20 +16,18 @@ class SerializeExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function supports($object, ClassInfo $classInfo) : bool
+    public function supports($object, \ReflectionObject $reflectionObject) : bool
     {
-        $class = $classInfo->reflectionClass;
-
-        return $class->hasMethod('__serialize')
-            && $class->hasMethod('__unserialize');
+        return $reflectionObject->hasMethod('__serialize')
+            && $reflectionObject->hasMethod('__unserialize');
     }
 
     /**
      * {@inheritDoc}
      */
-    public function export($object, ClassInfo $classInfo, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
     {
-        if ($classInfo->reflectionClass->getConstructor() !== null) {
+        if ($reflectionObject->getConstructor() !== null) {
             $result  = $this->varExporter->indent($nestingLevel + 1);
             $result .= '$class = new \ReflectionClass(\\' . get_class($object) . '::class);' . PHP_EOL;
 

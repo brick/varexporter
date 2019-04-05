@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\ObjectExporter;
 
-use Brick\VarExporter\Internal\ClassInfo;
 use Brick\VarExporter\ObjectExporter;
 
 /**
@@ -17,7 +16,7 @@ class ReflectionExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function supports($object, ClassInfo $classInfo) : bool
+    public function supports($object, \ReflectionObject $reflectionObject) : bool
     {
         return true;
     }
@@ -25,7 +24,7 @@ class ReflectionExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, ClassInfo $classInfo, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
     {
         $result  = $this->varExporter->indent($nestingLevel + 1);
         $result .= '$class = new \ReflectionClass(\\' . get_class($object) . '::class);' . PHP_EOL;

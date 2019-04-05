@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Brick\VarExporter\ObjectExporter;
 
 use Brick\VarExporter\ExportException;
-use Brick\VarExporter\Internal\ClassInfo;
 use Brick\VarExporter\ObjectExporter;
 
 /**
@@ -18,10 +17,10 @@ class SetStateExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function supports($object, ClassInfo $classInfo) : bool
+    public function supports($object, \ReflectionObject $reflectionObject) : bool
     {
-        if ($classInfo->reflectionClass->hasMethod('__set_state')) {
-            $method = $classInfo->reflectionClass->getMethod('__set_state');
+        if ($reflectionObject->hasMethod('__set_state')) {
+            $method = $reflectionObject->getMethod('__set_state');
 
             return $method->isPublic() && $method->isStatic();
         }
@@ -32,7 +31,7 @@ class SetStateExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, ClassInfo $classInfo, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
     {
         $vars = $this->getObjectVars($object);
 

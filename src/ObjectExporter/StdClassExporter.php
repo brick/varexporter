@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\ObjectExporter;
 
-use Brick\VarExporter\Internal\ClassInfo;
 use Brick\VarExporter\ObjectExporter;
 
 /**
@@ -17,7 +16,7 @@ class StdClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function supports($object, ClassInfo $classInfo) : bool
+    public function supports($object, \ReflectionObject $reflectionObject) : bool
     {
         return $object instanceof \stdClass;
     }
@@ -25,7 +24,7 @@ class StdClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, ClassInfo $classInfo, int $nestingLevel) : string
+    public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string
     {
         return '(object) ' . $this->varExporter->exportArray((array) $object, $nestingLevel);
     }

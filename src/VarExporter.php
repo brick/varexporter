@@ -4,17 +4,8 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter;
 
-use Brick\VarExporter\Internal\ClassInfo;
-
 final class VarExporter
 {
-    /**
-     * A map of class name to ClassInfo instances.
-     *
-     * @var ClassInfo[]
-     */
-    private $classInfo = [];
-
     /**
      * @var ObjectExporter[]
      */
@@ -148,11 +139,11 @@ final class VarExporter
      */
     private function exportObject($object, int $nestingLevel) : string
     {
-        $classInfo = $this->getClassInfo($object);
+        $reflectionObject = new \ReflectionObject($object);
 
         foreach ($this->objectExporters as $objectExporter) {
-            if ($objectExporter->supports($object, $classInfo)) {
-                return $objectExporter->export($object, $classInfo, $nestingLevel);
+            if ($objectExporter->supports($object, $reflectionObject)) {
+                return $objectExporter->export($object, $reflectionObject, $nestingLevel);
             }
         }
 
@@ -173,23 +164,5 @@ final class VarExporter
     public function indent(int $nestingLevel) : string
     {
         return str_repeat(' ', 4 * $nestingLevel);
-    }
-
-    /**
-     * Returns a ClassInfo instance for the given object.
-     *
-     * @param object $object
-     *
-     * @return ClassInfo
-     */
-    private function getClassInfo($object) : ClassInfo
-    {
-        $className = get_class($object);
-
-        if (! isset($this->classInfo[$className])) {
-            $this->classInfo[$className] = new ClassInfo($className);
-        }
-
-        return $this->classInfo[$className];
     }
 }

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter;
 
-use Brick\VarExporter\Internal\ClassInfo;
-
 /**
  * An exporter that can only handle a particular type of object.
  *
@@ -29,25 +27,25 @@ abstract class ObjectExporter
     /**
      * Returns whether this exporter supports the given object.
      *
-     * @param object    $object    The object to export.
-     * @param ClassInfo $classInfo A ClassInfo instance for the object's class.
+     * @param object            $object           The object to export.
+     * @param \ReflectionObject $reflectionObject A reflection of the object.
      *
      * @return bool
      */
-    abstract public function supports($object, ClassInfo $classInfo) : bool;
+    abstract public function supports($object, \ReflectionObject $reflectionObject) : bool;
 
     /**
      * Exports the given object.
      *
-     * @param object    $object       The object to export.
-     * @param ClassInfo $classInfo    A ClassInfo instance for the object's class.
-     * @param int       $nestingLevel The current output nesting level.
+     * @param object            $object           The object to export.
+     * @param \ReflectionObject $reflectionObject A reflection of the object.
+     * @param int               $nestingLevel     The current output nesting level.
      *
      * @return string
      *
      * @throws ExportException
      */
-    abstract public function export($object, ClassInfo $classInfo, int $nestingLevel) : string;
+    abstract public function export($object, \ReflectionObject $reflectionObject, int $nestingLevel) : string;
 
     /**
      * Wraps the given PHP code in a static closure.

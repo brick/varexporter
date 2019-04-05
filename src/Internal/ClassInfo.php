@@ -117,9 +117,8 @@ final class ClassInfo extends \Exception
     {
         $result = [];
 
-        $isParentClass = false;
-
         $current = new \ReflectionObject($object);
+        $isParentClass = false;
 
         while ($current) {
             foreach ($current->getProperties() as $property) {

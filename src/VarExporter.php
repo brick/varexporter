@@ -16,6 +16,22 @@ final class VarExporter
     private $classInfo = [];
 
     /**
+     * @var ObjectExporter[]
+     */
+    private $objectExporters = [];
+
+    /**
+     * VarExporter constructor.
+     */
+    public function __construct()
+    {
+        $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
+        $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
+        $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
+        $this->objectExporters[] = new ObjectExporter\PublicPropertiesExporter($this);
+    }
+
+    /**
      * @param mixed $var       A variable to export.
      * @param bool  $addReturn Whether to prepend the output with 'return ' and append a semicolon and a newline.
      *                         This makes the code ready to be executed in a PHP file - or eval(), for that matter.
@@ -42,7 +58,7 @@ final class VarExporter
      *
      * @throws ExportException
      */
-    private function doExport($var, int $nestingLevel) : string
+    public function doExport($var, int $nestingLevel) : string
     {
         switch ($type = gettype($var)) {
             case 'boolean':
@@ -62,6 +78,7 @@ final class VarExporter
                 return $this->exportObject($var, $nestingLevel);
 
             default:
+                // resources
                 throw new ExportException(sprintf('Type "%s" is not supported.', $type));
         }
     }
@@ -74,7 +91,7 @@ final class VarExporter
      *
      * @throws ExportException
      */
-    private function exportArray(array $array, int $nestingLevel) : string
+    public function exportArray(array $array, int $nestingLevel) : string
     {
         if (! $array) {
             return '[]';
@@ -121,55 +138,22 @@ final class VarExporter
      */
     private function exportObject($object, int $nestingLevel) : string
     {
-        if ($object instanceof \stdClass) {
-            return '(object) ' . $this->exportArray((array) $object, $nestingLevel);
-        }
-
         $classInfo = $this->getClassInfo($object);
 
-        if ($classInfo->reflectionClass->isInternal()) {
-            throw new ExportException('Class "' . get_class($object) . '" is internal, and cannot be exported.');
-        }
-
-        if ($classInfo->hasSetState) {
-            $vars = $classInfo->getObjectVars($object);
-
-            return '\\' . get_class($object) . '::__set_state(' . $this->exportArray($vars, $nestingLevel) . ')';
+        foreach ($this->objectExporters as $objectExporter) {
+            if ($objectExporter->supports($object, $classInfo)) {
+                return $objectExporter->export($object, $classInfo, $nestingLevel);
+            }
         }
 
         if ($classInfo->hasNonPublicProps) {
             throw new ExportException('Class "' . get_class($object) . '" has non-public properties, and must implement __set_state().');
         }
 
-        if ($classInfo->bypassConstructor) {
-            $newObject = '(new ReflectionClass(\\' . get_class($object) . '::class))->newInstanceWithoutConstructor()';
-        } else {
-            $newObject = 'new ' . '\\' . get_class($object);
-        }
+        // This will never happen, as the last strategy can handle any object.
+        // We need to make static analysis happy, though.
 
-        $values = get_object_vars($object);
-
-        if (! $values) {
-            return $newObject;
-        }
-
-        $result = '(static function() {' . PHP_EOL;
-        $result .= $this->indent($nestingLevel + 1);
-        $result .= '$object = ' . $newObject . ';' . PHP_EOL;
-
-        foreach ($values as $key => $value) {
-            $result .= $this->indent($nestingLevel + 1);
-            $result .= '$object->' . $this->escapePropName($key) . ' = ' . $this->doExport($value, $nestingLevel + 1) . ';' . PHP_EOL;
-        }
-
-        $result .= PHP_EOL;
-        $result .= $this->indent($nestingLevel + 1);
-        $result .= 'return $object;' . PHP_EOL;
-
-        $result .= $this->indent($nestingLevel);
-        $result .= '})()';
-
-        return $result;
+        throw new ExportException('No exporter can handle the given object.');
     }
 
     /**
@@ -177,7 +161,7 @@ final class VarExporter
      *
      * @return string
      */
-    private function escapePropName(string $var) : string
+    public function escapePropName(string $var) : string
     {
         if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $var) === 1) {
             return $var;
@@ -191,7 +175,7 @@ final class VarExporter
      *
      * @return string
      */
-    private function indent(int $nestingLevel) : string
+    public function indent(int $nestingLevel) : string
     {
         return str_repeat(' ', 4 * $nestingLevel);
     }

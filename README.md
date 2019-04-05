@@ -232,6 +232,8 @@ On the other hand, if the class has any non-public property, you'll get an `Expo
 
 ## Any drawbacks?
 
-Just like `var_export()`, the main drawback of `VarExporter` is that it cannot handle circular references, such as object `A` pointing to `B`, and `B` pointing to `A`.
+Just like `var_export()`, `VarExporter` cannot currently maintain object identity (two instances of the same object, once exported, will create 2 identical (`==`) yet distinct (`!==`) objects).
+
+And just like `var_export()`, it cannot currently handle circular references, such as object `A` pointing to `B`, and `B` pointing to `A`.
 
 In pretty much every other case, it offers an elegant and very efficient way to cache data to PHP files, and a solid alternative to serialization.

@@ -172,7 +172,7 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object);
+        $this->assertExportEquals($expected, $object, true);
     }
 
     public function testExportClassWithParameterizedRequiredConstructor()
@@ -192,7 +192,7 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object);
+        $this->assertExportEquals($expected, $object, true);
     }
 
     public function testExportClassWithParameterizedOptionalConstructor()
@@ -212,7 +212,21 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object);
+        $this->assertExportEquals($expected, $object, true);
+    }
+
+    public function testExportClassWithConstructorThrowExceptionByDefault()
+    {
+        $object = new ParameterizedOptionalConstructor();
+
+        $this->assertExportThrows('Class "Brick\VarExporter\Tests\Classes\ParameterizedOptionalConstructor" cannot be exported without resorting to reflection.', $object);
+    }
+
+    public function testExportClassWithPrivatePropertiesThrowExceptionByDefault()
+    {
+        $object = new PublicAndPrivateProperties();
+
+        $this->assertExportThrows('Class "Brick\VarExporter\Tests\Classes\PublicAndPrivateProperties" cannot be exported without resorting to reflection.', $object);
     }
 
     public function testExportClassWithSerializeMagicMethods()
@@ -294,6 +308,6 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object);
+        $this->assertExportEquals($expected, $object, true);
     }
 }

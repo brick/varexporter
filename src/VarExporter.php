@@ -22,15 +22,23 @@ final class VarExporter
 
     /**
      * VarExporter constructor.
+     *
+     * @param bool $allowReflection Whether to allow classes with a constructor or non-public properties to be exported
+     *                              using reflection. Disabled by default. Note that even when this is false, reflection
+     *                              may still used to create an empty instance for __unserialize(), but is never used to
+     *                              bypass a constructor in another context, or set non-public properties.
      */
-    public function __construct()
+    public function __construct(bool $allowReflection = false)
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
         $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
         $this->objectExporters[] = new ObjectExporter\PublicPropertiesExporter($this);
-        $this->objectExporters[] = new ObjectExporter\ReflectionExporter($this);
+
+        if ($allowReflection) {
+            $this->objectExporters[] = new ObjectExporter\ReflectionExporter($this);
+        }
     }
 
     /**
@@ -148,10 +156,13 @@ final class VarExporter
             }
         }
 
-        // This will never happen, as the last strategy can handle any object.
-        // We need to make static analysis happy, though.
+        // This may only happen when $allowReflection is false, as ReflectionExporter accepts any object.
 
-        throw new ExportException('No exporter can handle the given object.');
+        throw new ExportException(
+            'Class "' . get_class($object) . '" cannot be exported without resorting to reflection. ' .
+            'Either implement __set_state() or __serialize() and __unserialize(), ' .
+            'or explicitly enable exporting with reflection by passing true to the VarExporter constructor.'
+        );
     }
 
     /**

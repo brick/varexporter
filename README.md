@@ -235,7 +235,7 @@ If your class has a parent with private properties, you may have to do some gymn
     })()
     ```
 
-- Finally, if the class does not meet any of the conditions above, it is exported using reflection, which looks like:
+- Finally, if the class does not meet any of the conditions above, it can be exported using reflection, which looks like:
 
     ```php
     (static function() {
@@ -258,9 +258,13 @@ If your class has a parent with private properties, you may have to do some gymn
 
     The reflection method is very powerful: it can export any custom class, with `private`/`protected`/`public` properties, constructors, and even dynamic properties and overridden private properties.
 
-    At the same time, this method is quickly verbose in output, slower (reflection comes at a cost), and more fragile: any change to the class being exported may require a new export of its instances, as the reflection code could be out of date.
+    At the same time, this method is quickly verbose in output, slower (reflection comes at a cost), and fragile: any change to the class being exported may require a new export of its instances, as the reflection code could be out of date.
 
-    Use with care.
+    For this reason, **exporting using reflection is disabled by default**, and you'll get an `ExportException` if `VarExporter` has to fall back to using reflection. To explicitly enable it, just pass `true` to the `VarExporter` constructor:
+
+    ```php
+        $exporter = new VarExporter(true);
+    ```
 
 ## Limitations
 

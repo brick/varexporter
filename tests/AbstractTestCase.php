@@ -13,14 +13,15 @@ abstract class AbstractTestCase extends TestCase
     /**
      * Asserts the return value of export() for the given variable.
      *
-     * @param string $expected The expected export() output.
-     * @param mixed  $var      The variable to export.
+     * @param string $expected        The expected export() output.
+     * @param mixed  $var             The variable to export.
+     * @param bool   $allowReflection Whether the VarExporter should allow exporting using reflection.
      *
      * @return void
      */
-    public function assertExportEquals(string $expected, $var) : void
+    public function assertExportEquals(string $expected, $var, bool $allowReflection = false) : void
     {
-        $exporter = new VarExporter();
+        $exporter = new VarExporter($allowReflection);
 
         // test the string output of export()
 

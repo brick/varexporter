@@ -11,7 +11,7 @@ A PHP library that offers a pretty and powerful alternative to `var_export()`.
 
 ## Introduction
 
-PHP's [var_export()](https://www.php.net/manual/en/function.var-export.php) function is a handy way to dump a variable as executable PHP code.
+PHP's [var_export()](https://www.php.net/manual/en/function.var-export.php) function is a handy way to export a variable as executable PHP code.
  
 It is particularly useful to store data that can be cached by OPCache, and later retrieved very fast, much faster than unserializing data using `unserialize()` or `json_decode()`.
 
@@ -23,7 +23,7 @@ It also suffers from several drawbacks:
 - It cannot handle objects with public properties, without implementing `__set_state()` explicitly
 - It does not complain when exporting an object with overridden private properties, and outputs and array with duplicate keys
 
-This library aims to provide a prettier, safer, and more complete alternative to `var_export()`.
+This library aims to provide a prettier, safer, and powerful alternative to `var_export()`.
 
 ### Installation
 
@@ -91,7 +91,7 @@ array (
 
 Note: unlike `var_export()`, `export()` always returns the exported variable, and never outputs it.
 
-Note: `export()` is not a static method, as the exporter keeps an internal cache of class information, which speeds up the process of exporting multiple objects of the same class. As such, reusing a `VarExporter` instance several times will be slightly faster than creating a new instance every time.
+Note: `export()` is not a static method, as the exporter keeps an internal cache of class information, which speeds up the process of exporting multiple objects of the same class. As such, reusing a `VarExporter` instance several times can be slightly faster than creating a new instance every time.
 
 ### Exporting stdClass objects
 
@@ -110,7 +110,7 @@ var_export(json_decode('
 '));
 ```
 
-```
+```php
 stdClass::__set_state(array(
    'foo' => 'bar',
    'baz' => 
@@ -126,7 +126,7 @@ it is totally useless as it assumes that `stdClass` has a static `__set_state()`
 
 #### What does `VarExporter` do instead?
 
-Well, it outputs an array to object cast, which is both syntactically valid **and** executable:
+It outputs an array to object cast, which is syntactically valid, readable **and** executable:
 
 ```php
 echo $exporter->export(json_decode('
@@ -154,7 +154,7 @@ As we've seen above, `var_export()` assumes that every object has static `__set_
 
 This means that if you want to export an instance of a class outside of your control, you're screwed up. This also means that you have to write boilerplate code that looks like:
 
-```
+```php
 class Foo
 {
     public $a;

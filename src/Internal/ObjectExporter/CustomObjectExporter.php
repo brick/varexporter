@@ -30,15 +30,14 @@ class CustomObjectExporter extends ObjectExporter
 
         $className = '\\' . $reflectionObject->getName();
 
+        $returnNewObject = true;
+
         if ($reflectionObject->getConstructor() !== null) {
             $result[] = '$class = new \ReflectionClass(' . $className . '::class);';
             $result[] = '$object = $class->newInstanceWithoutConstructor();';
-        } else {
-            if (! (array) $object) {
-                // no constructor, no properties
-                return ['new ' . $className];
-            }
 
+            $returnNewObject = false;
+        } else {
             $result[] = '$object = new ' . $className . ';';
         }
 
@@ -68,6 +67,8 @@ class CustomObjectExporter extends ObjectExporter
                 } else {
                     $nonPublicProperties[$name] = $value;
                 }
+
+                $returnNewObject = false;
             }
 
             if ($publicProperties) {
@@ -101,6 +102,11 @@ class CustomObjectExporter extends ObjectExporter
 
             $current = $current->getParentClass();
             $isParentClass = true;
+        }
+
+        if ($returnNewObject) {
+            // no constructor, no properties
+            return ['new ' . $className];
         }
 
         $result[] = '';

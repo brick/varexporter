@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Tests;
 
+use Brick\VarExporter\Tests\Classes\ConstructorAndNoProperties;
 use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\Hierarchy;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
@@ -77,9 +78,19 @@ PHP;
         $object->dynamicProp = 'Hello';
         $object->{'$weird%Prop'} = 'World';
 
+        $expected = 'new \Brick\VarExporter\Tests\Classes\NoProperties';
+
+        $this->assertExportEquals($expected, $object, VarExporter::SKIP_DYNAMIC_PROPERTIES);
+    }
+
+    public function testExportClassWithConstructorAndNoProperties()
+    {
+        $object = new ConstructorAndNoProperties();
+
         $expected = <<<'PHP'
 (static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\NoProperties;
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ConstructorAndNoProperties::class);
+    $object = $class->newInstanceWithoutConstructor();
 
     return $object;
 })()

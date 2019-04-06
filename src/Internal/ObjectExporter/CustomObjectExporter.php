@@ -83,8 +83,9 @@ class CustomObjectExporter extends ObjectExporter
             if ($nonPublicProperties) {
                 $code = [];
 
-                // @todo only generate @var if requested through an option
-                $code[] = '/** @var \\' . $current->getName() . ' $this */';
+                if ($this->exporter->addTypeHints) {
+                    $code[] = '/** @var \\' . $current->getName() . ' $this */';
+                }
 
                 foreach ($nonPublicProperties as $name => $value) {
                     $exportedValue = $this->exporter->export($value);

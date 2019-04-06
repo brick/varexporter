@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Internal;
 
 use Brick\VarExporter\ExportException;
+
 /**
  * The main exporter implementation, that handles variables of any type.
  *
@@ -20,13 +21,18 @@ final class GenericExporter
     /**
      * @var bool
      */
+    public $addTypeHints;
+
+    /**
+     * @var bool
+     */
     public $skipDynamicProperties;
 
     /**
-     * @param bool $allowReflection
+     * @param bool $addTypeHints
      * @param bool $skipDynamicProperties
      */
-    public function __construct(bool $allowReflection, bool $skipDynamicProperties)
+    public function __construct(bool $addTypeHints, bool $skipDynamicProperties)
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
@@ -34,6 +40,7 @@ final class GenericExporter
         $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
         $this->objectExporters[] = new ObjectExporter\CustomObjectExporter($this);
 
+        $this->addTypeHints          = $addTypeHints;
         $this->skipDynamicProperties = $skipDynamicProperties;
     }
 

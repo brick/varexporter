@@ -348,7 +348,6 @@ PHP;
     $object->dynamicProperty = 'A property declared dynamically';
 
     (function() {
-        /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\C $this */
         $this->privateInC = 'private in C';
         $this->protectedInC = 'protected in C';
         $this->privateOverridden = 'in C';
@@ -357,13 +356,11 @@ PHP;
     })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\C::class)();
 
     (function() {
-        /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\B $this */
         $this->privateInB = 'private in B';
         $this->privateOverridden = 'in B';
     })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\B::class)();
 
     (function() {
-        /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\A $this */
         $this->privateInA = 'private in A';
         $this->privateOverridden = 'in A';
     })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\A::class)();
@@ -375,7 +372,7 @@ PHP;
         $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
     }
 
-    public function testExportClassHierarchyUsingReflection_SkipDynamicProperties()
+    public function testExportClassHierarchyUsingReflection_AddTypeHints_SkipDynamicProperties()
     {
         $object = Hierarchy\C::create();
         $object->dynamicProperty = 'A property declared dynamically';
@@ -414,6 +411,6 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION | VarExporter::SKIP_DYNAMIC_PROPERTIES);
+        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION | VarExporter::ADD_TYPE_HINTS | VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
 }

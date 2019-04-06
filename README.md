@@ -191,9 +191,9 @@ If your class has a parent with private properties, you may have to do some gymn
 
 ### What does `VarExporter` do instead?
 
-If performs several checks to find the most appropriate export method, in this order:
+It determines the most appropriate method to export your object, in this order:
 
-- If your custom class has a `__set_state()` method, `VarExporter` uses it just like `var_export()` would do:
+- If your custom class has a `__set_state()` method, `VarExporter` uses it by default, just like `var_export()` would do:
 
     ```php
     \My\CustomClass::__set_state([
@@ -202,9 +202,13 @@ If performs several checks to find the most appropriate export method, in this o
     ])
     ```
 
-    The array passed to `__set_state()` will be built with the same semantics used by `var_export()`; this library aims to be 100% compatible in this regard. The only difference is when your class has overridden private properties: `var_export()` will output an array that contains the same key twice, while `VarExporter` will throw an `ExportException` to keep you on the safe side.
+    The array passed to `__set_state()` will be built with the same semantics used by `var_export()`; this library aims to be 100% compatible in this regard. The only difference is when your class has overridden private properties: `var_export()` will output an array that contains the same key twice (resulting in data loss), while `VarExporter` will throw an `ExportException` to keep you on the safe side.
 
-- If your class has `__serialize()` and `__unserialize()` methods ([introduced in PHP 7.4](https://wiki.php.net/rfc/custom_object_serialization), but this library accepts them in previous versions of PHP!), `VarExporter` will use the output of `__serialize()` to export the object, which will be given as input to `__unserialize()` to reconstruct the object:
+    Unlike `var_export()`, this method will only be used if actually implemented on the class.
+
+    You can disable exporting objects this way, even if they implement `__set_state()`, using the `NO_SET_STATE` option.
+
+- If your class has `__serialize()` and `__unserialize()` methods ([introduced in PHP 7.4](https://wiki.php.net/rfc/custom_object_serialization), but this library accepts them in previous versions of PHP!), `VarExporter` uses the output of `__serialize()` to export the object, and gives it as input to `__unserialize()` to reconstruct the object:
 
     ```php
     (static function() {
@@ -220,21 +224,35 @@ If performs several checks to find the most appropriate export method, in this o
     })()
     ```
 
-    This method is the recommended method for exporting complex custom objects: it is forward compatible with the new serialization mechanism introduced in PHP 7.4, flexible, safe, and composes very well under inheritance.
+    This method is recommended for exporting complex custom objects: it is forward compatible with the new serialization mechanism introduced in PHP 7.4, flexible, safe, and composes very well under inheritance.
 
-- If the class has only public properties, and no constructor, `VarExporter` produces an output similar to:
+    You can disable exporting objects this way, using the `NO_SERIALIZE` option.
+
+- If the class does not meet any of the conditions above, it is exported through direct property access, which in its simplest form looks like:
 
     ```php
     (static function() {
         $object = new \My\CustomClass;
-        $object->foo = 'Hello';
-        $object->bar = 'World';
-    
+
+        $object->publicProp = 'Foo';
+        $object->dynamicProp = 'Bar';
+
         return $object;
     })()
     ```
 
-- Finally, if the class does not meet any of the conditions above, it can be exported using reflection, which looks like:
+    If the class has a constructor, it will be bypassed using reflection:
+
+    ```php
+    (static function() {
+        $class = new \ReflectionClass(\My\CustomClass::class);
+        $object = $class->newInstanceWithoutConstructor();
+
+        ...
+    })()
+    ```
+
+    If the class has non-public properties, they will be accessed through closures bound to the object:
 
     ```php
     (static function() {
@@ -242,33 +260,28 @@ If performs several checks to find the most appropriate export method, in this o
         $object = $class->newInstanceWithoutConstructor();
 
         $object->publicProp = 'Foo';
-
         $object->dynamicProp = 'Bar';
 
-        $property = $class->getProperty('protectedProp');
-        $property->setAccessible(true);
-        $property->setValue($object, 'protected prop contents');
+        (function() {
+            $this->protectedProp = 'contents';
+        })->bindTo($object, \My\CustomClass::class)();
 
-        $property = new \ReflectionProperty(\My\ParentClass::class, 'privatePropInParent');
-        $property->setAccessible(true);
-        $property->setValue($object, 'private prop contents');
+        (function() {
+            $this->privatePropInParent = 'contents';
+        })->bindTo($object, \My\ParentClass::class)();
 
         return $object;
     })()
     ```
 
-    The reflection method is very powerful: it can export any custom class, with `private`/`protected`/`public` properties, constructors, and even dynamic properties and overridden private properties.
-
-    At the same time, this method is quickly verbose in output, slower (reflection comes at a cost), and fragile: any change to the internals of a class being exported may require a new export of its instances, as the reflection code could be out of date.
-
-    For this reason, **exporting using reflection is disabled by default**, and you'll get an `ExportException` if `export()` has to fall back to using reflection. To explicitly enable it, use the [`ALLOW_REFLECTION`](#varexporterallow_reflection) option.
+    You can disable exporting objects this way, using the `NOT_ANY_OBJECT` option.
 
 ## Options
 
-`export()` accepts a bitmask of options as a second parameter:
+`VarExporter::export()` accepts a bitmask of options as a second parameter:
 
 ```php
-VarExporter::export($var, VarExporter::ADD_RETURN | VarExporter::ALLOW_REFLECTION);
+VarExporter::export($var, VarExporter::ADD_RETURN | VarExporter::ADD_TYPE_HINTS);
 ```
 
 Available options:
@@ -281,12 +294,39 @@ Wraps the output in a return statement:
 return (...);
 ```
 
-This makes the code ready to be executed in a PHP file―or eval(), for that matter.
+This makes the code ready to be executed in a PHP file―or `eval()`, for that matter.
+
+### `VarExporter::ADD_TYPE_HINTS`
+
+Adds type hints to objects created through reflection, and to `$this` inside closures bound to an object.
+This allows the resulting code to be statically analyzed by external tools and IDEs:
+
+```php
+/** @var \My\CustomClass $object */
+$object = $class->newInstanceWithoutConstructor();
+
+(function() {
+    /** @var \My\CustomClass $this */
+    $this->privateProp = ...;
+})->bindTo($object, \My\CustomClass::class)();
+```
 
 ### `VarExporter::SKIP_DYNAMIC_PROPERTIES`
 
-Skips dynamic properties on custom classes in the output. By default, any dynamic property set on a custom class is
-exported; if this flag is set, dynamic properties are only allowed on stdClass objects, and ignored on other objects.
+Skips dynamic properties on custom classes in the output. Dynamic properties are properties that are not part of the class definition, and added to an object at runtime. By default, any dynamic property set on a custom class is
+exported; if this option is used, dynamic properties are only allowed on `stdClass` objects, and ignored on other objects.
+
+### `VarExporter::NO_SET_STATE`
+
+Disallows exporting objects through `__set_state()`.
+
+### `VarExporter::NO_SERIALIZE`
+
+Disallows exporting objects through `__serialize()` and `__unserialize()`.
+
+### `VarExporter::NOT_ANY_OBJECT`
+
+Disallows exporting any custom object using direct property access and bound closures.
 
 ## Error handling
 
@@ -309,7 +349,7 @@ try {
 
   To handle these, you can implement `__serialize()` and `__unserialize()` in classes that contain references to internal objects.
 
-- Just like `var_export()`, `VarExporter` cannot currently maintain object identity (two instances of the same object, once exported, will create 2 identical (`==`) yet distinct (`!==`) objects).
+- Just like `var_export()`, `VarExporter` cannot currently maintain object identity (two instances of the same object, once exported, will create 2 equal (`==`) yet distinct (`!==`) objects).
 
 - And just like `var_export()`, it cannot currently handle circular references, such as object `A` pointing to `B`, and `B` pointing back to `A`.
 

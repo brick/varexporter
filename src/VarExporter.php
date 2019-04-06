@@ -10,13 +10,13 @@ final class VarExporter
 {
     /**
      * Prepends the output with `return ` and append a semicolon and a newline.
-     * This makes the code ready to be executed in a PHP file―or eval(), for that matter.
+     * This makes the code ready to be executed in a PHP file―or `eval()`, for that matter.
      */
     public const ADD_RETURN = 1 << 0;
 
     /**
      * Adds type hints to objects created through reflection, and to `$this` inside closures bound to an object.
-     * This allows the code to be statically analyzed by external tools and IDEs.
+     * This allows the resulting code to be statically analyzed by external tools and IDEs.
      */
     public const ADD_TYPE_HINTS = 1 << 1;
 

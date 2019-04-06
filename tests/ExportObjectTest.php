@@ -155,9 +155,26 @@ PHP;
 
         $expected = <<<'PHP'
 \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+    'baz' => 'defaultValue',
     'foo' => 'Hello',
-    'bar' => 'World',
-    'baz' => 'defaultValue'
+    'bar' => 'World'
+])
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    public function testExportClassWithSetStateAndUnsetProperties()
+    {
+        $object = new SetState;
+        $object->foo = null;
+
+        unset($object->bar);
+
+        $expected = <<<'PHP'
+\Brick\VarExporter\Tests\Classes\SetState::__set_state([
+    'baz' => 'defaultValue',
+    'foo' => null
 ])
 PHP;
 
@@ -173,10 +190,10 @@ PHP;
 
         $expected = <<<'PHP'
 \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+    'baz' => 'defaultValue',
     'foo' => 'Hello',
     'bar' => 'World',
-    'dynamic' => 'Dynamic property',
-    'baz' => 'defaultValue'
+    'dynamic' => 'Dynamic property'
 ])
 PHP;
 
@@ -192,9 +209,9 @@ PHP;
 
         $expected = <<<'PHP'
 \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+    'baz' => 'defaultValue',
     'foo' => 'Hello',
-    'bar' => 'World',
-    'baz' => 'defaultValue'
+    'bar' => 'World'
 ])
 PHP;
 

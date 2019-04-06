@@ -35,10 +35,7 @@ class SetStateExporter extends ObjectExporter
     {
         $className = $reflectionObject->getName();
 
-        $vars = $this->getObjectVars($object, $this->exporter->skipDynamicProperties
-            ? new \ReflectionClass($className) // properties from class definition only
-            : $reflectionObject                // properties from class definition + dynamic properties
-        );
+        $vars = $this->getObjectVars($object);
 
         $exportedVars = $this->exporter->exportArray($vars);
         $exportedVars = $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
@@ -58,44 +55,53 @@ class SetStateExporter extends ObjectExporter
      *
      * This way we offer a better safety guarantee, while staying compatible with var_export() in the output.
      *
-     * @param object           $object          The object to dump.
-     * @param \ReflectionClass $reflectionClass A ReflectionClass or ReflectionObject instance for the object.
+     * @param object $object The object to dump.
      *
      * @return array An associative array of property name to value.
      *
      * @throws ExportException
      */
-    private function getObjectVars($object, \ReflectionClass $reflectionClass) : array
+    private function getObjectVars($object) : array
     {
-        $current = $reflectionClass;
-        $isParentClass = false;
-
         $result = [];
 
-        while ($current) {
-            foreach ($current->getProperties() as $property) {
-                if ($isParentClass && ! $property->isPrivate()) {
-                    // property already handled in the child class.
-                    continue;
-                }
+        foreach ((array) $object as $name => $value) {
+            $pos = strrpos($name, "\0");
 
-                $name = $property->getName();
-
-                if (array_key_exists($name, $result)) {
-                    throw new ExportException(
-                        'Class "' . $reflectionClass->getName() . '" has overridden private properties. ' .
-                        'This is not supported for exporting objects with __set_state().'
-                    );
-                }
-
-                $property->setAccessible(true);
-                $result[$name] = $property->getValue($object);
+            if ($pos !== false) {
+                $name = substr($name, $pos + 1);
             }
 
-            $current = $current->getParentClass();
-            $isParentClass = true;
+            if (array_key_exists($name, $result)) {
+                $className = get_class($object);
+
+                throw new ExportException(
+                    'Class "' . $className . '" has overridden private properties. ' .
+                    'This is not supported for exporting objects with __set_state().'
+                );
+            }
+
+            if ($this->exporter->skipDynamicProperties && $this->isDynamicProperty($object, $name)) {
+                continue;
+            }
+
+            $result[$name] = $value;
         }
 
         return $result;
+    }
+
+    /**
+     * @param object $object
+     * @param string $name
+     *
+     * @return bool
+     */
+    private function isDynamicProperty($object, string $name) : bool
+    {
+        $reflectionClass = new \ReflectionClass($object);
+        $reflectionObject = new \ReflectionObject($object);
+
+        return $reflectionObject->hasProperty($name) && ! $reflectionClass->hasProperty($name);
     }
 }

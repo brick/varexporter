@@ -88,9 +88,9 @@ class VarExporterTest extends AbstractTestCase
         $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
         $object->foo = 'hello';
         $object->bar = \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+            'baz' => 'defaultValue',
             'foo' => 'SetState.foo',
-            'bar' => 'SetState.bar',
-            'baz' => 'defaultValue'
+            'bar' => 'SetState.bar'
         ]);
 
         return $object;

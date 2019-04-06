@@ -10,9 +10,26 @@ class SetState extends PublicAndPrivateProperties
     {
         $object = new self;
 
-        $object->foo = $array['foo'];
-        $object->bar = $array['bar'];
-        $object->setBaz($array['baz']);
+        // note: these checks would usually not be necessary in a typical app; they're just here because
+        // we need to test our implementation against edge cases, such as unset properties.
+
+        if (array_key_exists('foo', $array)) {
+            $object->foo = $array['foo'];
+        } else {
+            unset($object->foo);
+        }
+
+        if (array_key_exists('bar', $array)) {
+            $object->bar = $array['bar'];
+        } else {
+            unset($object->bar);
+        }
+
+        if (array_key_exists('baz', $array)) {
+            $object->setBaz($array['baz']);
+        } else {
+            $object->unsetBaz();
+        }
 
         // dynamic properties
         foreach ($array as $key => $value) {

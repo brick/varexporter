@@ -12,4 +12,9 @@ class PublicAndPrivateProperties extends PublicPropertiesOnly
     {
         $this->baz = $baz;
     }
+
+    protected function unsetBaz() : void
+    {
+        unset($this->baz);
+    }
 }

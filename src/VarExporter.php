@@ -15,7 +15,7 @@ final class VarExporter
     public const ADD_RETURN = 1 << 0;
 
     /**
-     * Add type hints to bound closures when exporting custom objects through direct property access.
+     * Adds type hints to objects created through reflection, and to `$this` inside closures bound to an object.
      * This allows the code to be statically analyzed by external tools and IDEs.
      */
     public const ADD_TYPE_HINTS = 1 << 1;
@@ -26,6 +26,21 @@ final class VarExporter
      * objects.
      */
     public const SKIP_DYNAMIC_PROPERTIES = 1 << 2;
+
+    /**
+     * Disallows exporting objects through `__set_state()`.
+     */
+    public const NO_SET_STATE = 1 << 3;
+
+    /**
+     * Disallows exporting objects through `__serialize()` and `__unserialize()`.
+     */
+    public const NO_SERIALIZE = 1 << 4;
+
+    /**
+     * Disallows exporting plain objects using direct property access.
+     */
+    public const NOT_ANY_OBJECT = 1 << 5;
 
     /**
      * @param mixed $var     The variable to export.

@@ -36,12 +36,21 @@ final class GenericExporter
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
-        $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
-        $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
-        $this->objectExporters[] = new ObjectExporter\CustomObjectExporter($this);
+
+        if (! ($options & VarExporter::NO_SET_STATE)) {
+            $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
+        }
+
+        if (! ($options & VarExporter::NO_SERIALIZE)) {
+            $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
+        }
+
+        if (! ($options & VarExporter::NOT_ANY_OBJECT)) {
+            $this->objectExporters[] = new ObjectExporter\CustomObjectExporter($this);
+        }
 
         $this->addTypeHints          = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
-        $this->skipDynamicProperties = ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
+        $this->skipDynamicProperties = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
 
     /**

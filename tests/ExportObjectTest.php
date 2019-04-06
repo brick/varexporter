@@ -343,7 +343,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassHierarchyUsingReflection()
+    public function testExportClassHierarchy()
     {
         $object = Hierarchy\C::create();
         $object->dynamicProperty = 'A property declared dynamically';
@@ -383,7 +383,7 @@ PHP;
         $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
     }
 
-    public function testExportClassHierarchyUsingReflection_AddTypeHints_SkipDynamicProperties()
+    public function testExportClassHierarchy_AddTypeHints_SkipDynamicProperties()
     {
         $object = Hierarchy\C::create();
         $object->dynamicProperty = 'A property declared dynamically';

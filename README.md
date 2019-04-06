@@ -283,15 +283,6 @@ return (...);
 
 This makes the code ready to be executed in a PHP file―or eval(), for that matter.
 
-### `VarExporter::ALLOW_REFLECTION`
-
-Allows classes with a constructor or non-public properties to be exported using reflection.
-
-By default, `export()` will refuse to handle such objects and throw an exception. Set this flag to allow it.
-
-*Note that even when this flag is not set, reflection may still be used to create an empty shell for
-`__unserialize()`.*
-
 ### `VarExporter::SKIP_DYNAMIC_PROPERTIES`
 
 Skips dynamic properties on custom classes in the output. By default, any dynamic property set on a custom class is

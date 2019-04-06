@@ -21,19 +21,11 @@ final class VarExporter
     public const ADD_TYPE_HINTS = 1 << 1;
 
     /**
-     * Allows classes with a constructor or non-public properties to be exported using reflection.
-     * By default, `export()` will refuse to handle such objects and throw an exception. Set this flag to allow it.
-     * Note that even when this flag is not set, reflection may still be used to create an empty shell for
-     * `__unserialize()`.
-     */
-    public const ALLOW_REFLECTION = 1 << 2;
-
-    /**
      * Skips dynamic properties on custom classes in the output. By default, any dynamic property set on a custom class
      * is exported; if this flag is set, dynamic properties are only allowed on stdClass objects, and ignored on other
      * objects.
      */
-    public const SKIP_DYNAMIC_PROPERTIES = 1 << 3;
+    public const SKIP_DYNAMIC_PROPERTIES = 1 << 2;
 
     /**
      * @param mixed $var     The variable to export.

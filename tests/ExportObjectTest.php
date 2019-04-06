@@ -260,7 +260,7 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
+        $this->assertExportEquals($expected, $object);
     }
 
     public function testExportClassWithPublicPropertiesAndConstructor()
@@ -279,7 +279,7 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
+        $this->assertExportEquals($expected, $object);
     }
 
 //    public function testExportClassWithConstructorThrowExceptionByDefault()
@@ -403,7 +403,7 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
+        $this->assertExportEquals($expected, $object);
     }
 
     public function testExportClassHierarchy_AddTypeHints_SkipDynamicProperties()
@@ -447,7 +447,7 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION | VarExporter::ADD_TYPE_HINTS | VarExporter::SKIP_DYNAMIC_PROPERTIES);
+        $this->assertExportEquals($expected, $object, VarExporter::ADD_TYPE_HINTS | VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
 
     public function testExportClassHierarchyWithUnsetProperties()
@@ -499,6 +499,6 @@ PHP;
 })()
 PHP;
 
-        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
+        $this->assertExportEquals($expected, $object);
     }
 }

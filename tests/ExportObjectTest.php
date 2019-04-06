@@ -424,4 +424,56 @@ PHP;
 
         $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION | VarExporter::ADD_TYPE_HINTS | VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
+
+    public function testExportClassHierarchyWithUnsetProperties()
+    {
+        $object = Hierarchy\C::create();
+
+        $object->publicInA = null;
+        unset($object->publicInB);
+
+        (function() {
+            /** @var Hierarchy\C $this */
+            unset($this->privateInC);
+            unset($this->protectedInB);
+        })->bindTo($object, Hierarchy\C::class)();
+
+        (function() {
+            /** @var Hierarchy\A $this */
+            unset($this->privateOverridden);
+        })->bindTo($object, Hierarchy\A::class)();
+
+        $expected = <<<'PHP'
+(static function() {
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
+    $object = $class->newInstanceWithoutConstructor();
+
+    $object->publicInC = 'public in C';
+    $object->publicInA = null;
+    unset($object->publicInB);
+
+    (function() {
+        $this->protectedInC = 'protected in C';
+        $this->privateOverridden = 'in C';
+        $this->protectedInA = 'protected in A';
+        unset($this->privateInC);
+        unset($this->protectedInB);
+    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\C::class)();
+
+    (function() {
+        $this->privateInB = 'private in B';
+        $this->privateOverridden = 'in B';
+    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\B::class)();
+
+    (function() {
+        $this->privateInA = 'private in A';
+        unset($this->privateOverridden);
+    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\A::class)();
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object, VarExporter::ALLOW_REFLECTION);
+    }
 }

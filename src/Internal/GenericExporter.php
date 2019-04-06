@@ -32,11 +32,7 @@ final class GenericExporter
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
         $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
         $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
-        $this->objectExporters[] = new ObjectExporter\PublicPropertiesExporter($this);
-
-        if ($allowReflection) {
-            $this->objectExporters[] = new ObjectExporter\ReflectionExporter($this);
-        }
+        $this->objectExporters[] = new ObjectExporter\CustomObjectExporter($this);
 
         $this->skipDynamicProperties = $skipDynamicProperties;
     }

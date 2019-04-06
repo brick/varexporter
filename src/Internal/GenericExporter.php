@@ -151,15 +151,11 @@ final class GenericExporter
             }
         }
 
-        // This may only happen when $allowReflection is false, as ReflectionExporter accepts any object.
+        // This may only happen when an option is given to disallow specific export methods.
 
         $className = $reflectionObject->getName();
 
-        throw new ExportException(
-            'Class "' . $className . '" cannot be exported without resorting to reflection. ' .
-            'Either implement __set_state() or __serialize() and __unserialize(), ' .
-            'or explicitly enable exporting with reflection by passing true to the VarExporter constructor.'
-        );
+        throw new ExportException('Class "' . $className . '" cannot be exported using the current options.');
     }
 
     /**

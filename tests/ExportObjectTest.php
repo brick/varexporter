@@ -282,20 +282,6 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-//    public function testExportClassWithConstructorThrowExceptionByDefault()
-//    {
-//        $object = new PublicPropertiesWithConstructor();
-//
-//        $this->assertExportThrows('Class "Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor" cannot be exported without resorting to reflection.', $object);
-//    }
-//
-//    public function testExportClassWithPrivatePropertiesThrowExceptionByDefault()
-//    {
-//        $object = new PublicAndPrivateProperties;
-//
-//        $this->assertExportThrows('Class "Brick\VarExporter\Tests\Classes\PublicAndPrivateProperties" cannot be exported without resorting to reflection.', $object);
-//    }
-
     public function testExportClassWithSerializeMagicMethods()
     {
         $object = new SerializeMagicMethods;
@@ -500,5 +486,16 @@ PHP;
 PHP;
 
         $this->assertExportEquals($expected, $object);
+    }
+
+    public function testExportObjectWithRestrictiveOptions()
+    {
+        $object = new PublicPropertiesOnly();
+
+        $expectedMessage =
+            'Class "Brick\VarExporter\Tests\Classes\PublicPropertiesOnly" cannot be exported ' .
+            'using the current options.';
+
+        $this->assertExportThrows($expectedMessage, $object, VarExporter::NOT_ANY_OBJECT);
     }
 }

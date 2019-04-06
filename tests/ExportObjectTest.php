@@ -222,7 +222,7 @@ PHP;
     {
         $object = new SetStateWithOverriddenPrivateProperties;
 
-        $expectedMessage = 'Class "Brick\VarExporter\Tests\Classes\SetStateWithOverriddenPrivateProperties" has overridden private properties. This is not supported for exporting objects with __set_state().';
+        $expectedMessage = 'Class "Brick\VarExporter\Tests\Classes\SetStateWithOverriddenPrivateProperties" has overridden private property "baz". This is not supported for exporting objects with __set_state().';
 
         $this->assertExportThrows($expectedMessage, $object);
     }

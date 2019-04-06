@@ -76,7 +76,7 @@ class SetStateExporter extends ObjectExporter
                 $className = get_class($object);
 
                 throw new ExportException(
-                    'Class "' . $className . '" has overridden private properties. ' .
+                    'Class "' . $className . '" has overridden private property "' . $name . '". ' .
                     'This is not supported for exporting objects with __set_state().'
                 );
             }

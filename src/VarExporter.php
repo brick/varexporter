@@ -46,11 +46,9 @@ final class VarExporter
      */
     public static function export($var, int $options = 0) : string
     {
-        $addReturn             = (bool) ($options & self::ADD_RETURN);
-        $addTypeHints          = (bool) ($options & self::ADD_TYPE_HINTS);
-        $skipDynamicProperties = (bool) ($options & self::SKIP_DYNAMIC_PROPERTIES);
+        $addReturn = (bool) ($options & self::ADD_RETURN);
 
-        $exporter = new GenericExporter($addTypeHints, $skipDynamicProperties);
+        $exporter = new GenericExporter($options);
 
         $lines = $exporter->export($var);
         $export = implode(PHP_EOL, $lines);

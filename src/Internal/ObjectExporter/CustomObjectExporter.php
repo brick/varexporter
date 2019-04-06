@@ -37,6 +37,12 @@ class CustomObjectExporter extends ObjectExporter
 
         if ($reflectionObject->getConstructor() !== null) {
             $result[] = '$class = new \ReflectionClass(' . $className . '::class);';
+
+            if ($this->exporter->addTypeHints) {
+                $result[] = '';
+                $result[] = '/** @var ' . $className . ' $object */';
+            }
+
             $result[] = '$object = $class->newInstanceWithoutConstructor();';
 
             $returnNewObject = false;

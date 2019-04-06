@@ -343,6 +343,29 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
+    public function testExportClassWithSerializeMagicMethodsAndConstructor_AddTypeHints()
+    {
+        $object = new SerializeMagicMethodsWithConstructor('Test', 1234);
+
+        $expected = <<<'PHP'
+(static function() {
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor::class);
+
+    /** @var \Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor $object */
+    $object = $class->newInstanceWithoutConstructor();
+
+    $object->__unserialize([
+        'foo' => 'Test',
+        'bar' => 1234
+    ]);
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object, VarExporter::ADD_TYPE_HINTS);
+    }
+
     public function testExportClassHierarchy()
     {
         $object = Hierarchy\C::create();
@@ -391,6 +414,8 @@ PHP;
         $expected = <<<'PHP'
 (static function() {
     $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
+
+    /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\C $object */
     $object = $class->newInstanceWithoutConstructor();
 
     $object->publicInC = 'public in C';

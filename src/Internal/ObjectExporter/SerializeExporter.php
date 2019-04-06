@@ -33,6 +33,12 @@ class SerializeExporter extends ObjectExporter
 
         if ($reflectionObject->getConstructor() !== null) {
             $result[] = '$class = new \ReflectionClass(' . $className . '::class);';
+
+            if ($this->exporter->addTypeHints) {
+                $result[] = '';
+                $result[] = '/** @var ' . $className . ' $object */';
+            }
+
             $result[] = '$object = $class->newInstanceWithoutConstructor();';
         } else {
             $result[] = '$object = new ' . $className . ';';

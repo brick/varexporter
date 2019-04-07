@@ -14,7 +14,7 @@ use Brick\VarExporter\Internal\ObjectExporter;
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
-class CustomObjectExporter extends ObjectExporter
+class AnyObjectExporter extends ObjectExporter
 {
     /**
      * {@inheritDoc}

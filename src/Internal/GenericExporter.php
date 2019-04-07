@@ -46,7 +46,7 @@ final class GenericExporter
         }
 
         if (! ($options & VarExporter::NOT_ANY_OBJECT)) {
-            $this->objectExporters[] = new ObjectExporter\CustomObjectExporter($this);
+            $this->objectExporters[] = new ObjectExporter\AnyObjectExporter($this);
         }
 
         $this->addTypeHints          = (bool) ($options & VarExporter::ADD_TYPE_HINTS);

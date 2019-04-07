@@ -20,7 +20,7 @@ It also suffers from several drawbacks:
 - It outputs arrays as `array()` notation, instead of the short `[]` notation
 - It outputs numeric arrays with explicit and unnecessary `0 => ...` key => value syntax
 - It outputs invalid PHP code for `stdClass` objects, using `stdClass::__set_state()` which doesn't exist
-- It cannot handle objects with public properties, without implementing `__set_state()` explicitly
+- It cannot export custom objects that do not implement `__set_state()`
 - `__set_state()` does not play well with private properties in parent classes, which makes the implementation tedious
 - `var_export()` does not complain when exporting an object with overridden private properties, and outputs and array with duplicate keys
 

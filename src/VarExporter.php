@@ -53,14 +53,12 @@ final class VarExporter
      */
     public static function export($var, int $options = 0) : string
     {
-        $addReturn = (bool) ($options & self::ADD_RETURN);
-
         $exporter = new GenericExporter($options);
 
         $lines = $exporter->export($var);
         $export = implode(PHP_EOL, $lines);
 
-        if ($addReturn) {
+        if ($options & self::ADD_RETURN) {
             return 'return ' . $export . ';' .  PHP_EOL;
         }
 

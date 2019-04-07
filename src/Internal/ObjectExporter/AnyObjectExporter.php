@@ -163,7 +163,7 @@ class AnyObjectExporter extends ObjectExporter
      */
     private function escapePropName(string $var) : string
     {
-        if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $var) === 1) {
+        if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $var) === 1) {
             return $var;
         }
 

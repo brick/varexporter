@@ -9,7 +9,6 @@ use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\Hierarchy;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
-use Brick\VarExporter\Tests\Classes\PublicAndPrivateProperties;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor;
@@ -55,6 +54,7 @@ PHP;
     public function testExportClassWithDynamicPropertiesOnly()
     {
         $object = new NoProperties;
+        $object->x = 1.0;
         $object->dynamicProp = 'Hello';
         $object->{'$weird%Prop'} = 'World';
 
@@ -62,6 +62,7 @@ PHP;
 (static function() {
     $object = new \Brick\VarExporter\Tests\Classes\NoProperties;
 
+    $object->x = 1.0;
     $object->dynamicProp = 'Hello';
     $object->{'$weird%Prop'} = 'World';
 

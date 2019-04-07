@@ -7,7 +7,8 @@
   ],
   "license": "MIT",
   "require": {
-    "php": ">=7.1"
+    "php": ">=7.1",
+    "brick/reflection": "^0.2.2"
   },
   "require-dev": {
     "phpunit/phpunit": "^7.0",

@@ -17,7 +17,7 @@ class SetStateExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function supports($object, \ReflectionObject $reflectionObject) : bool
+    public function supports(\ReflectionObject $reflectionObject) : bool
     {
         if ($reflectionObject->hasMethod('__set_state')) {
             $method = $reflectionObject->getMethod('__set_state');

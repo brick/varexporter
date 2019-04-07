@@ -16,7 +16,7 @@ class SerializeExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function supports($object, \ReflectionObject $reflectionObject) : bool
+    public function supports(\ReflectionObject $reflectionObject) : bool
     {
         return $reflectionObject->hasMethod('__serialize')
             && $reflectionObject->hasMethod('__unserialize');

@@ -16,9 +16,9 @@ class StdClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function supports($object, \ReflectionObject $reflectionObject) : bool
+    public function supports(\ReflectionObject $reflectionObject) : bool
     {
-        return $object instanceof \stdClass;
+        return $reflectionObject->getName() === \stdClass::class;
     }
 
     /**

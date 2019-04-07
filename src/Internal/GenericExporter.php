@@ -146,7 +146,7 @@ final class GenericExporter
         $reflectionObject = new \ReflectionObject($object);
 
         foreach ($this->objectExporters as $objectExporter) {
-            if ($objectExporter->supports($object, $reflectionObject)) {
+            if ($objectExporter->supports($reflectionObject)) {
                 return $objectExporter->export($object, $reflectionObject);
             }
         }

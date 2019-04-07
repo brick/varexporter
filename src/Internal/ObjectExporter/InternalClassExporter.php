@@ -17,7 +17,7 @@ class InternalClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function supports($object, \ReflectionObject $reflectionObject) : bool
+    public function supports(\ReflectionObject $reflectionObject) : bool
     {
         return $reflectionObject->isInternal();
     }

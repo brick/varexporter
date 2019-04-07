@@ -29,12 +29,11 @@ abstract class ObjectExporter
     /**
      * Returns whether this exporter supports the given object.
      *
-     * @param object            $object           The object to export.
      * @param \ReflectionObject $reflectionObject A reflection of the object.
      *
      * @return bool
      */
-    abstract public function supports($object, \ReflectionObject $reflectionObject) : bool;
+    abstract public function supports(\ReflectionObject $reflectionObject) : bool;
 
     /**
      * Exports the given object.

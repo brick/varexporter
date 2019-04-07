@@ -21,7 +21,7 @@ It also suffers from several drawbacks:
 - It outputs numeric arrays with explicit and unnecessary `0 => ...` key => value syntax
 - It outputs invalid PHP code for `stdClass` objects, using `stdClass::__set_state()` which doesn't exist
 - It cannot handle objects with public properties, without implementing `__set_state()` explicitly
-- `__set_state()` does not play well with private properties in parent classes, which make the implementation tedious
+- `__set_state()` does not play well with private properties in parent classes, which makes the implementation tedious
 - `var_export()` does not complain when exporting an object with overridden private properties, and outputs and array with duplicate keys
 
 This library aims to provide a prettier, safer, and powerful alternative to `var_export()`.
@@ -187,7 +187,7 @@ public static function __set_state(array $array) : self
 }
 ```
 
-If your class has a parent with private properties, you may have to do some gymnastics to write the value, and if your class overrides a private property of its parent, you're out of luck as `var_export()` puts all properties in the same bag, outputting an array with a duplicate key.
+If your class has a parent with private properties, you may have to do some gymnastics to write the value, and if your class overrides a private property of one of its parents, you're out of luck as `var_export()` puts all properties in the same bag, outputting an array with a duplicate key.
 
 ### What does `VarExporter` do instead?
 
@@ -206,7 +206,7 @@ It determines the most appropriate method to export your object, in this order:
 
     Unlike `var_export()`, this method will only be used if actually implemented on the class.
 
-    You can disable exporting objects this way, even if they implement `__set_state()`, using the `NO_SET_STATE` option.
+    You can disable exporting objects this way, even if they implement `__set_state()`, using the [`NO_SET_STATE`](#varexporterno_set_state) option.
 
 - If your class has `__serialize()` and `__unserialize()` methods ([introduced in PHP 7.4](https://wiki.php.net/rfc/custom_object_serialization), but this library accepts them in previous versions of PHP!), `VarExporter` uses the output of `__serialize()` to export the object, and gives it as input to `__unserialize()` to reconstruct the object:
 
@@ -226,7 +226,7 @@ It determines the most appropriate method to export your object, in this order:
 
     This method is recommended for exporting complex custom objects: it is forward compatible with the new serialization mechanism introduced in PHP 7.4, flexible, safe, and composes very well under inheritance.
 
-    You can disable exporting objects this way, using the `NO_SERIALIZE` option.
+    If for any reason you do not want to export objects that implement `__serialize()` and `__unserialize()` using this method, you can opt out by using the [`NO_SERIALIZE`](#varexporterno_serialize) option.
 
 - If the class does not meet any of the conditions above, it is exported through direct property access, which in its simplest form looks like:
 
@@ -274,7 +274,7 @@ It determines the most appropriate method to export your object, in this order:
     })()
     ```
 
-    You can disable exporting objects this way, using the `NOT_ANY_OBJECT` option.
+    You can disable exporting objects this way, using the [`NOT_ANY_OBJECT`](#varexporternot_any_object) option.
 
 ## Options
 
@@ -347,9 +347,9 @@ try {
 
 - Exporting internal classes, including closures, is currently not supported. `VarExporter` will throw an `ExportException` if it finds one.
 
-  To handle these, you can implement `__serialize()` and `__unserialize()` in classes that contain references to internal objects.
+  To avoid hitting this brick wall, you can implement `__serialize()` and `__unserialize()` in classes that contain references to internal objects.
 
-- Just like `var_export()`, `VarExporter` cannot currently maintain object identity (two instances of the same object, once exported, will create 2 equal (`==`) yet distinct (`!==`) objects).
+- Just like `var_export()`, `VarExporter` cannot currently maintain object identity (two instances of the same object, once exported, will create two equal (`==`) yet distinct (`!==`) objects).
 
 - And just like `var_export()`, it cannot currently handle circular references, such as object `A` pointing to `B`, and `B` pointing back to `A`.
 

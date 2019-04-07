@@ -53,8 +53,6 @@ class AnyObjectExporter extends ObjectExporter
                     continue;
                 }
 
-                $property->setAccessible(true);
-
                 $name = $property->getName();
 
                 // getting the property value through the object to array cast, and not through reflection, as this is

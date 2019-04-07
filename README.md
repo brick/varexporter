@@ -264,6 +264,7 @@ It determines the most appropriate method to export your object, in this order:
 
         (function() {
             $this->protectedProp = 'contents';
+            $this->privateProp = 'contents';
         })->bindTo($object, \My\CustomClass::class)();
 
         (function() {

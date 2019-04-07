@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Internal\ObjectExporter;
 
-use Brick\Reflection\ReflectionTools;
 use Brick\VarExporter\ExportException;
-use Brick\VarExporter\Internal\Lexer\Lexer;
 use Brick\VarExporter\Internal\ObjectExporter;
+
+use PhpParser\Error;
+use PhpParser\Node;
+use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\NodeVisitorAbstract;
+use PhpParser\ParserFactory;
+use PhpParser\PrettyPrinter;
 
 /**
  * Handles closures.
- *
- * @todo replace class names with FQCN
- * @todo what about namespaced functions?
- * @todo reformat and indent code?
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
@@ -42,7 +44,6 @@ class ClosureExporter extends ObjectExporter
         }
 
         $closureStartLine = $reflectionFunction->getStartLine();
-        $closureEndLine   = $reflectionFunction->getEndLine();
 
         $source = @ file_get_contents($closureFileName);
 
@@ -50,51 +51,68 @@ class ClosureExporter extends ObjectExporter
             throw new ExportException('Cannot open source file "' . $closureFileName . '" for reading closure code.');
         }
 
-        $lexer = new Lexer($source);
-        $token = $lexer->getTokenOnLine(T_FUNCTION, $closureStartLine);
-        $lexer->moveToToken($token);
-        $token = $lexer->moveToNext(T_USE, '{');
+        $parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
 
-        if ($token->type === T_USE) {
-            throw new ExportException('Cannot export a closure with variables bound through the use statement.');
+        try {
+            $ast = $parser->parse($source);
+        } catch (Error $e) {
+            throw new ExportException('Cannot parse file "' . $closureFileName . '" for reading closure code.', 0, $e);
         }
 
-        $startIndex = $token->index + 1;
+        // Resolve names
 
-        $level = 1;
+        $nameResolver = new NameResolver();
+        $nodeTraverser = new NodeTraverser();
+        $nodeTraverser->addVisitor($nameResolver);
 
-        while ($level !== 0) {
-            $token = $lexer->moveToNext('{', '}');
-            if ($token->type === '{') {
-                $level++;
-            } else {
-                $level--;
+        $ast = $nodeTraverser->traverse($ast);
+
+        // Locate the closure node
+
+        $closuresOnLine = [];
+
+        $enterNode = function(Node $node) use ($closureStartLine, & $closuresOnLine) {
+            if ($node instanceof Node\Expr\Closure && $node->getStartLine() === $closureStartLine) {
+                $closuresOnLine[] = $node;
             }
+        };
+
+        $visitor = new class($enterNode) extends NodeVisitorAbstract {
+            /** @var \Closure */
+            private $enterNode;
+
+            public function __construct(\Closure $enterNode) {
+                $this->enterNode = $enterNode;
+            }
+
+            public function enterNode(Node $node) {
+                ($this->enterNode)($node);
+            }
+        };
+
+        $traverser = new NodeTraverser();
+        $traverser->addVisitor($visitor);
+        $traverser->traverse($ast);
+
+        $count = count($closuresOnLine);
+
+        if ($count !== 1) {
+            throw new ExportException(
+                sprintf('Expected exactly 1 closure in %s on line %d, found %d.', $closureFileName, $closureStartLine, $count)
+            );
         }
 
-        $reflectionTools = new ReflectionTools();
-        $parameters = $reflectionTools->exportFunctionParameters($reflectionFunction);
+        /** @var Node\Expr\Closure $closure */
+        $closure = $closuresOnLine[0];
 
-        if ($token->line !== $closureEndLine) {
-            throw new ExportException(sprintf('Expected closure ending on line %d, closing bracket found on line %d.', $closureEndLine, $token->line));
-        }
+        // Get the code
 
-        $endIndex = $token->index - 1;
+        $prettyPrinter = new PrettyPrinter\Standard();
+        $code = $prettyPrinter->prettyPrintExpr($closure);
 
-        $tokens = $lexer->getTokenRange($startIndex, $endIndex);
+        // Consider the pretty-printer output as a single line, to avoid breaking multiline quoted strings and
+        // heredocs / nowdocs. We must leave the indenting responsibility to the pretty-printer.
 
-        $code = '';
-
-        foreach ($tokens as $token) {
-            $code .= $token->code;
-        }
-
-        $lines = [];
-
-        $lines[] = 'function(' . $parameters . ') {';
-        $lines[] = $code;
-        $lines[] = '}';
-
-        return $lines;
+        return [$code];
     }
 }

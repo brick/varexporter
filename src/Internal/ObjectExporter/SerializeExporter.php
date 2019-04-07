@@ -27,35 +27,20 @@ class SerializeExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        $result = [];
+        $lines = $this->getCreateObjectCode($reflectionObject);
 
-        $className = '\\' . $reflectionObject->getName();
-
-        if ($reflectionObject->getConstructor() !== null) {
-            $result[] = '$class = new \ReflectionClass(' . $className . '::class);';
-
-            if ($this->exporter->addTypeHints) {
-                $result[] = '';
-                $result[] = '/** @var ' . $className . ' $object */';
-            }
-
-            $result[] = '$object = $class->newInstanceWithoutConstructor();';
-        } else {
-            $result[] = '$object = new ' . $className . ';';
-        }
-
-        $result[] = '';
+        $lines[] = '';
 
         $values = $object->__serialize();
 
         $exportedValues = $this->exporter->export($values);
         $exportedValues = $this->exporter->wrap($exportedValues, '$object->__unserialize(', ');');
 
-        $result = array_merge($result, $exportedValues);
+        $lines = array_merge($lines, $exportedValues);
 
-        $result[] = '';
-        $result[] = 'return $object;';
+        $lines[] = '';
+        $lines[] = 'return $object;';
 
-        return $this->wrapInClosure($result);
+        return $this->wrapInClosure($lines);
     }
 }

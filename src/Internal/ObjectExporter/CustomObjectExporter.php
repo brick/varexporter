@@ -29,26 +29,7 @@ class CustomObjectExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject) : array
     {
-        $result = [];
-
-        $className = '\\' . $reflectionObject->getName();
-
-        $returnNewObject = true;
-
-        if ($reflectionObject->getConstructor() !== null) {
-            $result[] = '$class = new \ReflectionClass(' . $className . '::class);';
-
-            if ($this->exporter->addTypeHints) {
-                $result[] = '';
-                $result[] = '/** @var ' . $className . ' $object */';
-            }
-
-            $result[] = '$object = $class->newInstanceWithoutConstructor();';
-
-            $returnNewObject = false;
-        } else {
-            $result[] = '$object = new ' . $className . ';';
-        }
+        $lines = $this->getCreateObjectCode($reflectionObject);
 
         $objectAsArray = (array) $object;
 
@@ -57,6 +38,8 @@ class CustomObjectExporter extends ObjectExporter
             : $reflectionObject;            // properties from class definition + dynamic properties
 
         $isParentClass = false;
+
+        $returnNewObject = ($reflectionObject->getConstructor() === null);
 
         while ($current) {
             $publicProperties = [];
@@ -100,40 +83,40 @@ class CustomObjectExporter extends ObjectExporter
             }
 
             if ($publicProperties || $unsetPublicProperties) {
-                $result[] = '';
+                $lines[] = '';
 
                 foreach ($publicProperties as $name => $value) {
                     $exportedValue = $this->exporter->export($value);
                     $exportedValue = $this->exporter->wrap($exportedValue, '$object->' . $this->escapePropName($name) . ' = ', ';');
-                    $result = array_merge($result, $exportedValue);
+                    $lines = array_merge($lines, $exportedValue);
                 }
 
                 foreach ($unsetPublicProperties as $name) {
-                    $result[] = 'unset($object->' . $this->escapePropName($name) . ');';
+                    $lines[] = 'unset($object->' . $this->escapePropName($name) . ');';
                 }
             }
 
             if ($nonPublicProperties || $unsetNonPublicProperties) {
-                $code = [];
+                $closureLines = [];
 
                 if ($this->exporter->addTypeHints) {
-                    $code[] = '/** @var \\' . $current->getName() . ' $this */';
+                    $closureLines[] = '/** @var \\' . $current->getName() . ' $this */';
                 }
 
                 foreach ($nonPublicProperties as $name => $value) {
                     $exportedValue = $this->exporter->export($value);
                     $exportedValue = $this->exporter->wrap($exportedValue, '$this->' . $this->escapePropName($name) . ' = ', ';');
-                    $code = array_merge($code, $exportedValue);
+                    $closureLines = array_merge($closureLines, $exportedValue);
                 }
 
                 foreach ($unsetNonPublicProperties as $name) {
-                    $code[] = 'unset($this->' . $this->escapePropName($name) . ');';
+                    $closureLines[] = 'unset($this->' . $this->escapePropName($name) . ');';
                 }
 
-                $result[] = '';
-                $result[] = '(function() {';
-                $result = array_merge($result, $this->exporter->indent($code));
-                $result[] = '})->bindTo($object, \\' . $current->getName() . '::class)();';
+                $lines[] = '';
+                $lines[] = '(function() {';
+                $lines = array_merge($lines, $this->exporter->indent($closureLines));
+                $lines[] = '})->bindTo($object, \\' . $current->getName() . '::class)();';
             }
 
             $current = $current->getParentClass();
@@ -142,13 +125,13 @@ class CustomObjectExporter extends ObjectExporter
 
         if ($returnNewObject) {
             // no constructor, no properties
-            return ['new ' . $className];
+            return ['new \\' . $reflectionObject->getName()];
         }
 
-        $result[] = '';
-        $result[] = 'return $object;';
+        $lines[] = '';
+        $lines[] = 'return $object;';
 
-        return $this->wrapInClosure($result);
+        return $this->wrapInClosure($lines);
     }
 
     /**

@@ -49,6 +49,35 @@ abstract class ObjectExporter
     abstract public function export($object, \ReflectionObject $reflectionObject) : array;
 
     /**
+     * Returns the code to create a new object of the given class.
+     *
+     * If the class has a constructor, reflection will be used to bypass it.
+     *
+     * @param \ReflectionClass $class
+     *
+     * @return string[] The lines of code.
+     */
+    final protected function getCreateObjectCode(\ReflectionClass $class) : array
+    {
+        $className = '\\' . $class->getName();
+
+        if ($class->getConstructor() === null) {
+            return ['$object = new ' . $className . ';'];
+        }
+
+        $lines = ['$class = new \ReflectionClass(' . $className . '::class);'];
+
+        if ($this->exporter->addTypeHints) {
+            $lines[] = '';
+            $lines[] = '/** @var ' . $className . ' $object */';
+        }
+
+        $lines[] = '$object = $class->newInstanceWithoutConstructor();';
+
+        return $lines;
+    }
+
+    /**
      * Wraps the given PHP code in a static closure.
      *
      * @param string[] $code The lines of code.

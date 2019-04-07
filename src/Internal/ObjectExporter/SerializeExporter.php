@@ -25,7 +25,7 @@ class SerializeExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path) : array
     {
         $lines = $this->getCreateObjectCode($reflectionObject);
 
@@ -33,7 +33,7 @@ class SerializeExporter extends ObjectExporter
 
         $values = $object->__serialize();
 
-        $exportedValues = $this->exporter->export($values);
+        $exportedValues = $this->exporter->export($values, $path);
         $exportedValues = $this->exporter->wrap($exportedValues, '$object->__unserialize(', ');');
 
         $lines = array_merge($lines, $exportedValues);

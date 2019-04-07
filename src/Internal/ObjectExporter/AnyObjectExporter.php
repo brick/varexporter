@@ -27,7 +27,7 @@ class AnyObjectExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path) : array
     {
         $lines = $this->getCreateObjectCode($reflectionObject);
 
@@ -84,7 +84,10 @@ class AnyObjectExporter extends ObjectExporter
                 $lines[] = '';
 
                 foreach ($publicProperties as $name => $value) {
-                    $exportedValue = $this->exporter->export($value);
+                    $newPath = $path;
+                    $newPath[] = $name;
+
+                    $exportedValue = $this->exporter->export($value, $newPath);
                     $exportedValue = $this->exporter->wrap($exportedValue, '$object->' . $this->escapePropName($name) . ' = ', ';');
                     $lines = array_merge($lines, $exportedValue);
                 }
@@ -102,7 +105,10 @@ class AnyObjectExporter extends ObjectExporter
                 }
 
                 foreach ($nonPublicProperties as $name => $value) {
-                    $exportedValue = $this->exporter->export($value);
+                    $newPath = $path;
+                    $newPath[] = $name;
+
+                    $exportedValue = $this->exporter->export($value, $newPath);
                     $exportedValue = $this->exporter->wrap($exportedValue, '$this->' . $this->escapePropName($name) . ' = ', ';');
                     $closureLines = array_merge($closureLines, $exportedValue);
                 }

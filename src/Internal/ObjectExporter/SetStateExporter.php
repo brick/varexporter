@@ -31,13 +31,13 @@ class SetStateExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path) : array
     {
         $className = $reflectionObject->getName();
 
-        $vars = $this->getObjectVars($object);
+        $vars = $this->getObjectVars($object, $path);
 
-        $exportedVars = $this->exporter->exportArray($vars);
+        $exportedVars = $this->exporter->exportArray($vars, $path);
         $exportedVars = $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
 
         return $exportedVars;
@@ -56,12 +56,13 @@ class SetStateExporter extends ObjectExporter
      * This way we offer a better safety guarantee, while staying compatible with var_export() in the output.
      *
      * @param object $object The object to dump.
+     * @param array  $path   The path to the object, in the array/object graph.
      *
      * @return array An associative array of property name to value.
      *
      * @throws ExportException
      */
-    private function getObjectVars($object) : array
+    private function getObjectVars($object, array $path) : array
     {
         $result = [];
 
@@ -77,7 +78,8 @@ class SetStateExporter extends ObjectExporter
 
                 throw new ExportException(
                     'Class "' . $className . '" has overridden private property "' . $name . '". ' .
-                    'This is not supported for exporting objects with __set_state().'
+                    'This is not supported for exporting objects with __set_state().',
+                    $path
                 );
             }
 

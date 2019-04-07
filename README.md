@@ -276,6 +276,8 @@ It determines the most appropriate method to export your object, in this order:
 
     You can disable exporting objects this way, using the [`NOT_ANY_OBJECT`](#varexporternot_any_object) option.
 
+If you attempt to export a custom object and all compatible exporters have been disabled, an `ExportException` will be thrown.
+
 ## Options
 
 `VarExporter::export()` accepts a bitmask of options as a second parameter:

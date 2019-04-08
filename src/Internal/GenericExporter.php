@@ -55,13 +55,14 @@ final class GenericExporter
     }
 
     /**
-     * @param mixed $var The variable to export.
+     * @param mixed    $var  The variable to export.
+     * @param string[] $path The path to the current variable in the array/object graph.
      *
      * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    public function export($var) : array
+    public function export($var, array $path = []) : array
     {
         switch ($type = gettype($var)) {
             case 'boolean':
@@ -75,25 +76,26 @@ final class GenericExporter
                 return ['null'];
 
             case 'array':
-                return $this->exportArray($var);
+                return $this->exportArray($var, $path);
 
             case 'object':
-                return $this->exportObject($var);
+                return $this->exportObject($var, $path);
 
             default:
                 // resources
-                throw new ExportException(sprintf('Type "%s" is not supported.', $type));
+                throw new ExportException(sprintf('Type "%s" is not supported.', $type), $path);
         }
     }
 
     /**
-     * @param array $array The array to export.
+     * @param array    $array The array to export.
+     * @param string[] $path  The path to the current array in the array/object graph.
      *
      * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    public function exportArray(array $array) : array
+    public function exportArray(array $array, array $path = []) : array
     {
         if (! $array) {
             return ['[]'];
@@ -111,7 +113,10 @@ final class GenericExporter
         foreach ($array as $key => $value) {
             $isLast = (++$current === $count);
 
-            $exported = $this->export($value);
+            $newPath = $path;
+            $newPath[] = (string) $key;
+
+            $exported = $this->export($value, $newPath);
 
             $prepend = '';
             $append = '';
@@ -136,19 +141,20 @@ final class GenericExporter
     }
 
     /**
-     * @param object $object The object to export.
+     * @param object   $object The object to export.
+     * @param string[] $path   The path to the current object in the array/object graph.
      *
      * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    public function exportObject($object) : array
+    public function exportObject($object, array $path = []) : array
     {
         $reflectionObject = new \ReflectionObject($object);
 
         foreach ($this->objectExporters as $objectExporter) {
             if ($objectExporter->supports($reflectionObject)) {
-                return $objectExporter->export($object, $reflectionObject);
+                return $objectExporter->export($object, $reflectionObject, $path);
             }
         }
 
@@ -156,7 +162,7 @@ final class GenericExporter
 
         $className = $reflectionObject->getName();
 
-        throw new ExportException('Class "' . $className . '" cannot be exported using the current options.');
+        throw new ExportException('Class "' . $className . '" cannot be exported using the current options.', $path);
     }
 
     /**

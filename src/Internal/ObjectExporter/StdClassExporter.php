@@ -24,9 +24,9 @@ class StdClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path) : array
     {
-        $exported = $this->exporter->exportArray((array) $object);
+        $exported = $this->exporter->exportArray((array) $object, $path);
 
         $exported[0] = '(object) ' . $exported[0];
 

@@ -154,7 +154,7 @@ PHP;
         $exporter = new VarExporter();
 
         $this->expectException(ExportException::class);
-        $this->expectExceptionMessage('Type "resource" is not supported.');
+        $this->expectExceptionMessage('[foo][bar] Type "resource" is not supported.');
 
         $exporter->export($object);
     }

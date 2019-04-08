@@ -25,10 +25,10 @@ class InternalClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path) : array
     {
         $className = $reflectionObject->getName();
 
-        throw new ExportException('Class "' . $className . '" is internal, and cannot be exported.');
+        throw new ExportException('Class "' . $className . '" is internal, and cannot be exported.', $path);
     }
 }

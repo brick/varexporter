@@ -129,6 +129,13 @@ PHP
         $this->assertExportThrows("Closure defined in eval()'d code cannot be exported.", $var);
     }
 
+    public function testExportTwoClosuresOnSameLine()
+    {
+        $var = function() { return function() {}; };
+
+        $this->assertExportThrows("Expected exactly 1 closure in */tests/ExportClosureTest.php on line 134, found 2.", $var);
+    }
+
     public function testExportClosureDisabled()
     {
         $var = function() {

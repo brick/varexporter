@@ -46,7 +46,7 @@ abstract class AbstractTestCase extends TestCase
     /**
      * Asserts that export() throws for the given variable.
      *
-     * @param string $expectedMessage The expected exception message.
+     * @param string $expectedMessage The expected exception message. Can use '*' as a placeholder.
      * @param mixed  $var             The variable to export.
      * @param int    $options         The options to pass to export().
      *
@@ -54,8 +54,12 @@ abstract class AbstractTestCase extends TestCase
      */
     public function assertExportThrows(string $expectedMessage, $var, int $options = 0) : void
     {
+        $expectedMessageRegExp = '/' . implode('.*', array_map(function(string $str) {
+            return preg_quote($str, '/');
+        }, explode('*', $expectedMessage))) . '/';
+
         $this->expectException(ExportException::class);
-        $this->expectExceptionMessage($expectedMessage);
+        $this->expectExceptionMessageRegExp($expectedMessageRegExp);
 
         VarExporter::export($var, $options);
     }

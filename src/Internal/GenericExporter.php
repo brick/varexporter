@@ -107,7 +107,7 @@ final class GenericExporter
      *
      * @throws ExportException
      */
-    public function exportArray(array $array, array $path = []) : array
+    public function exportArray(array $array, array $path) : array
     {
         if (! $array) {
             return ['[]'];
@@ -160,7 +160,7 @@ final class GenericExporter
      *
      * @throws ExportException
      */
-    public function exportObject($object, array $path = []) : array
+    public function exportObject($object, array $path) : array
     {
         $hash = spl_object_hash($object);
 

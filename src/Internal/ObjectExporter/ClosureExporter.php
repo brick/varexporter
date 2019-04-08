@@ -13,7 +13,6 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\FindingVisitor;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
-use PhpParser\PrettyPrinter;
 
 /**
  * Handles closures.
@@ -95,7 +94,9 @@ class ClosureExporter extends ObjectExporter
 
         // Get the code
 
-        $prettyPrinter = new PrettyPrinter\Standard();
+        $prettyPrinter = new ClosureExporter\PrettyPrinter();
+        $prettyPrinter->setVarExporterNestingLevel(count($path));
+
         $code = $prettyPrinter->prettyPrintExpr($closure);
 
         // Consider the pretty-printer output as a single line, to avoid breaking multiline quoted strings and

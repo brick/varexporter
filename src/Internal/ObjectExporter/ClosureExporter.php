@@ -10,8 +10,8 @@ use Brick\VarExporter\Internal\ObjectExporter;
 use PhpParser\Error;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor\FindingVisitor;
 use PhpParser\NodeVisitor\NameResolver;
-use PhpParser\NodeVisitorAbstract;
 use PhpParser\ParserFactory;
 use PhpParser\PrettyPrinter;
 
@@ -69,32 +69,17 @@ class ClosureExporter extends ObjectExporter
 
         // Locate the closure node
 
-        $closuresOnLine = [];
-
-        $enterNode = function(Node $node) use ($closureStartLine, & $closuresOnLine) {
-            if ($node instanceof Node\Expr\Closure && $node->getStartLine() === $closureStartLine) {
-                $closuresOnLine[] = $node;
-            }
-        };
-
-        $visitor = new class($enterNode) extends NodeVisitorAbstract {
-            /** @var \Closure */
-            private $enterNode;
-
-            public function __construct(\Closure $enterNode) {
-                $this->enterNode = $enterNode;
-            }
-
-            public function enterNode(Node $node) {
-                ($this->enterNode)($node);
-            }
-        };
+        $finder = new FindingVisitor(function(Node $node) use ($closureStartLine) : bool {
+            return $node instanceof Node\Expr\Closure
+                && $node->getStartLine() === $closureStartLine;
+        });
 
         $traverser = new NodeTraverser();
-        $traverser->addVisitor($visitor);
+        $traverser->addVisitor($finder);
         $traverser->traverse($ast);
 
-        $count = count($closuresOnLine);
+        $closures = $finder->getFoundNodes();
+        $count = count($closures);
 
         if ($count !== 1) {
             throw new ExportException(sprintf(
@@ -106,7 +91,7 @@ class ClosureExporter extends ObjectExporter
         }
 
         /** @var Node\Expr\Closure $closure */
-        $closure = $closuresOnLine[0];
+        $closure = $closures[0];
 
         // Get the code
 

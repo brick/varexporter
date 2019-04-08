@@ -94,6 +94,10 @@ class ClosureExporter extends ObjectExporter
 
         // Get the code
 
+        if ($closure->uses) {
+            throw new ExportException("The closure has bound variables through 'use', this is not supported.", $path);
+        }
+
         $prettyPrinter = new ClosureExporter\PrettyPrinter();
         $prettyPrinter->setVarExporterNestingLevel(count($path));
 

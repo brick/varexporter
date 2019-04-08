@@ -66,4 +66,15 @@ PHP;
 
         $this->assertExportEquals($expected, $var);
     }
+
+    public function testExportClosureWithUse()
+    {
+        $foo = 'bar';
+
+        $var = function() use ($foo) {
+            return $foo;
+        };
+
+        $this->assertExportThrows("The closure has bound variables through 'use', this is not supported.", $var);
+    }
 }

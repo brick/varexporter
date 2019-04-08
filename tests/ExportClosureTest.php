@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\Tests\Classes\NoProperties;
-use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
-
-/**
- * This function does not exist, but namespace should be taken into account by the closure exporter.
- */
-use function Brick\VarExporter\strlen;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\VarExporter;
+
+/**
+ * The function & the const below do not exist, but their namespace should be taken into account by the exporter.
+ */
+use function Brick\VarExporter\Dummy\Functions\imported_function;
+use const Brick\VarExporter\Dummy\Constants\IMPORTED_CONSTANT;
 
 /**
  * Tests exporting closures.
@@ -78,29 +78,26 @@ PHP;
 
     public function testExportNamespacedCode()
     {
-        $var = function(SetState $a) : NoProperties {
-            $a = new PublicPropertiesOnly;
-            $b = PrivateConstructor::class;
-            $c = function(\PDO $pdo) {
-                return \PDO::class;
-            };
+        $var = function(SetState $a) : array {
+            return [
+                'callback' => function(SetState $a) : NoProperties {
+                    strlen(PHP_VERSION);
+                    imported_function(IMPORTED_CONSTANT);
+                    \Brick\VarExporter\Dummy\Functions\explicitly_namespaced_function(\Brick\VarExporter\Dummy\Constants\EXPLICITLY_NAMESPACED_CONSTANT);
 
-            substr($b, 0, -7);
-            strlen($b);
-
-            return new NoProperties;
+                    return new NoProperties();
+                }
+            ];
         };
 
         $expected = <<<'PHP'
-function (\Brick\VarExporter\Tests\Classes\SetState $a) : \Brick\VarExporter\Tests\Classes\NoProperties {
-    $a = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly();
-    $b = \Brick\VarExporter\Tests\Classes\PrivateConstructor::class;
-    $c = function (\PDO $pdo) {
-        return \PDO::class;
-    };
-    substr($b, 0, -7);
-    \Brick\VarExporter\strlen($b);
-    return new \Brick\VarExporter\Tests\Classes\NoProperties();
+function (\Brick\VarExporter\Tests\Classes\SetState $a) : array {
+    return ['callback' => function (\Brick\VarExporter\Tests\Classes\SetState $a) : \Brick\VarExporter\Tests\Classes\NoProperties {
+        strlen(PHP_VERSION);
+        \Brick\VarExporter\Dummy\Functions\imported_function(\Brick\VarExporter\Dummy\Constants\IMPORTED_CONSTANT);
+        \Brick\VarExporter\Dummy\Functions\explicitly_namespaced_function(\Brick\VarExporter\Dummy\Constants\EXPLICITLY_NAMESPACED_CONSTANT);
+        return new \Brick\VarExporter\Tests\Classes\NoProperties();
+    }];
 }
 PHP;
 
@@ -133,7 +130,7 @@ PHP
     {
         $var = function() { return function() {}; };
 
-        $this->assertExportThrows("Expected exactly 1 closure in */tests/ExportClosureTest.php on line 134, found 2.", $var);
+        $this->assertExportThrows("Expected exactly 1 closure in */tests/ExportClosureTest.php on line *, found 2.", $var);
     }
 
     public function testExportClosureDisabled()

@@ -36,41 +36,89 @@ class ClosureExporter extends ObjectExporter
     {
         $reflectionFunction = new \ReflectionFunction($object);
 
-        $closureFileName = $reflectionFunction->getFileName();
+        $file = $reflectionFunction->getFileName();
+        $line = $reflectionFunction->getStartLine();
 
-        if (substr($closureFileName, -19) === ' : eval()\'d code') {
+        $ast = $this->parseFile($file, $path);
+        $ast = $this->resolveNames($ast);
+
+        $closure = $this->getClosure($ast, $file, $line, $path);
+
+        $prettyPrinter = new ClosureExporter\PrettyPrinter();
+        $prettyPrinter->setVarExporterNestingLevel(count($path));
+
+        $code = $prettyPrinter->prettyPrintExpr($closure);
+
+        // Consider the pretty-printer output as a single line, to avoid breaking multiline quoted strings and
+        // heredocs / nowdocs. We must leave the indenting responsibility to the pretty-printer.
+
+        return [$code];
+    }
+
+    /**
+     * Parses the given source file.
+     *
+     * @param string   $filename The source file name.
+     * @param string[] $path     The path to the closure in the array/object graph.
+     *
+     * @return Node\Stmt[] The AST.
+     *
+     * @throws ExportException
+     */
+    private function parseFile(string $filename, array $path) : array
+    {
+        if (substr($filename, -19) === ' : eval()\'d code') {
             throw new ExportException('Closure defined in eval()\'d code cannot be exported.', $path);
         }
 
-        $closureStartLine = $reflectionFunction->getStartLine();
-
-        $source = @ file_get_contents($closureFileName);
+        $source = @ file_get_contents($filename);
 
         if ($source === false) {
-            throw new ExportException('Cannot open source file "' . $closureFileName . '" for reading closure code.', $path);
+            throw new ExportException('Cannot open source file "' . $filename . '" for reading closure code.', $path);
         }
 
         $parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
 
         try {
-            $ast = $parser->parse($source);
+            return $parser->parse($source);
         } catch (Error $e) {
-            throw new ExportException('Cannot parse file "' . $closureFileName . '" for reading closure code.', $path, $e);
+            throw new ExportException('Cannot parse file "' . $filename . '" for reading closure code.', $path, $e);
         }
+    }
 
-        // Resolve names
-
+    /**
+     * Resolves namespaced names in the AST.
+     *
+     * @param Node[] $ast
+     *
+     * @return Node[]
+     */
+    private function resolveNames(array $ast) : array
+    {
         $nameResolver = new NameResolver();
         $nodeTraverser = new NodeTraverser();
         $nodeTraverser->addVisitor($nameResolver);
 
-        $ast = $nodeTraverser->traverse($ast);
+        return $nodeTraverser->traverse($ast);
+    }
 
-        // Locate the closure node
-
-        $finder = new FindingVisitor(function(Node $node) use ($closureStartLine) : bool {
+    /**
+     * Finds a closure in the source file and returns its node.
+     *
+     * @param array    $ast  The AST.
+     * @param string   $file The file name.
+     * @param int      $line The line number where the closure is located in the source file.
+     * @param string[] $path The path to the closure in the array/object graph.
+     *
+     * @return Node\Expr\Closure
+     *
+     * @throws ExportException
+     */
+    private function getClosure(array $ast, string $file, int $line, array $path) : Node\Expr\Closure
+    {
+        $finder = new FindingVisitor(function(Node $node) use ($line) : bool {
             return $node instanceof Node\Expr\Closure
-                && $node->getStartLine() === $closureStartLine;
+                && $node->getStartLine() === $line;
         });
 
         $traverser = new NodeTraverser();
@@ -83,8 +131,8 @@ class ClosureExporter extends ObjectExporter
         if ($count !== 1) {
             throw new ExportException(sprintf(
                 'Expected exactly 1 closure in %s on line %d, found %d.',
-                $closureFileName,
-                $closureStartLine,
+                $file,
+                $line,
                 $count
             ), $path);
         }
@@ -92,20 +140,10 @@ class ClosureExporter extends ObjectExporter
         /** @var Node\Expr\Closure $closure */
         $closure = $closures[0];
 
-        // Get the code
-
         if ($closure->uses) {
             throw new ExportException("The closure has bound variables through 'use', this is not supported.", $path);
         }
 
-        $prettyPrinter = new ClosureExporter\PrettyPrinter();
-        $prettyPrinter->setVarExporterNestingLevel(count($path));
-
-        $code = $prettyPrinter->prettyPrintExpr($closure);
-
-        // Consider the pretty-printer output as a single line, to avoid breaking multiline quoted strings and
-        // heredocs / nowdocs. We must leave the indenting responsibility to the pretty-printer.
-
-        return [$code];
+        return $closure;
     }
 }

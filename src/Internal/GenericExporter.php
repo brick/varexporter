@@ -74,7 +74,7 @@ final class GenericExporter
      *
      * @throws ExportException
      */
-    public function export($var, array $path = []) : array
+    public function export($var, array $path) : array
     {
         switch ($type = gettype($var)) {
             case 'boolean':

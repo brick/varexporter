@@ -43,6 +43,11 @@ final class VarExporter
     public const NOT_ANY_OBJECT = 1 << 5;
 
     /**
+     * Disallows exporting closures.
+     */
+    public const NO_CLOSURES = 1 << 6;
+
+    /**
      * @param mixed $var     The variable to export.
      * @param int   $options A bitmask of options. Possible values are `VarExporter::*` constants.
      *                       Combine multiple options with a bitwise OR `|` operator.

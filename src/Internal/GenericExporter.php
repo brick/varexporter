@@ -49,7 +49,11 @@ final class GenericExporter
     public function __construct(int $options)
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
-        $this->objectExporters[] = new ObjectExporter\ClosureExporter($this);
+
+        if (! ($options & VarExporter::NO_CLOSURES)) {
+            $this->objectExporters[] = new ObjectExporter\ClosureExporter($this);
+        }
+
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
 
         if (! ($options & VarExporter::NO_SET_STATE)) {

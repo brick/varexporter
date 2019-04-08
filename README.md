@@ -341,6 +341,8 @@ Note how all namespaced classes, and explicitly namespaced functions and constan
 - Closures can use `$this`, but **will not be bound to an object once exported**. You must explicitly bind them through [`bindTo()`](https://www.php.net/manual/en/closure.bindto.php) if required, after running the exported code.
 - **You cannot have 2 closures on the same line in your source file**, or an `ExportException` will be thrown. This is because `VarExporter` cannot know which one holds the definition for the `\Closure` object it encountered.
 
+You can disable exporting closures, using the [`NO_CLOSURES`](#varexporterno_closures) option. When this option is set, an `ExportException` will be thrown when attempting to export a closure.
+
 ## Options
 
 `VarExporter::export()` accepts a bitmask of options as a second parameter:
@@ -392,6 +394,10 @@ Disallows exporting objects through `__serialize()` and `__unserialize()`.
 ### `VarExporter::NOT_ANY_OBJECT`
 
 Disallows exporting any custom object using direct property access and bound closures.
+
+### `VarExporter::NO_CLOSURES`
+
+Disallows exporting closures.
 
 ## Error handling
 

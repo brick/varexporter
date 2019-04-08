@@ -13,6 +13,7 @@ use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
  */
 use function Brick\VarExporter\strlen;
 use Brick\VarExporter\Tests\Classes\SetState;
+use Brick\VarExporter\VarExporter;
 
 /**
  * Tests exporting closures.
@@ -126,5 +127,14 @@ return function() {
 PHP
 );
         $this->assertExportThrows("Closure defined in eval()'d code cannot be exported.", $var);
+    }
+
+    public function testExportClosureDisabled()
+    {
+        $var = function() {
+            echo 'Hello, world!';
+        };
+
+        $this->assertExportThrows('Class "Closure" is internal, and cannot be exported.', $var, VarExporter::NO_CLOSURES);
     }
 }

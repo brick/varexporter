@@ -74,15 +74,19 @@ class ClosureExporter extends ObjectExporter
         $source = @ file_get_contents($filename);
 
         if ($source === false) {
+            // @codeCoverageIgnoreStart
             throw new ExportException("Cannot open source file \"$filename\" for reading closure code.", $path);
+            // @codeCoverageIgnoreEnd
         }
 
         $parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
 
         try {
             return $parser->parse($source);
+            // @codeCoverageIgnoreStart
         } catch (Error $e) {
             throw new ExportException("Cannot parse file \"$filename\" for reading closure code.", $path, $e);
+            // @codeCoverageIgnoreEnd
         }
     }
 

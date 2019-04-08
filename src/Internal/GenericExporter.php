@@ -113,7 +113,7 @@ final class GenericExporter
             $isLast = (++$current === $count);
 
             $newPath = $path;
-            $newPath[] = $key;
+            $newPath[] = (string) $key;
 
             $exported = $this->export($value, $newPath);
 

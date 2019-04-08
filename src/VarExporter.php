@@ -55,7 +55,7 @@ final class VarExporter
     {
         $exporter = new GenericExporter($options);
 
-        $lines = $exporter->export($var, []);
+        $lines = $exporter->export($var, [], []);
         $export = implode(PHP_EOL, $lines);
 
         if ($options & self::ADD_RETURN) {

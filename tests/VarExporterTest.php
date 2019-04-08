@@ -157,7 +157,42 @@ PHP;
         VarExporter::export($object);
     }
 
-    public function testExportCircularReference()
+    public function testExportObjectTwiceWithoutCircularReference()
+    {
+        $a = new PublicPropertiesOnly;
+        $a->foo = 'Foo';
+        $a->bar = 'Bar';
+
+        $var = [
+            'x' => $a,
+            'y' => $a
+        ];
+
+        $expected = <<<'PHP'
+[
+    'x' => (static function() {
+        $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+
+        $object->foo = 'Foo';
+        $object->bar = 'Bar';
+
+        return $object;
+    })(),
+    'y' => (static function() {
+        $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+
+        $object->foo = 'Foo';
+        $object->bar = 'Bar';
+
+        return $object;
+    })()
+]
+PHP;
+
+        $this->assertExportEquals($expected, $var);
+    }
+
+    public function testExportObjectWithCircularReference()
     {
         $a = new PublicPropertiesOnly;
         $b = new PublicPropertiesOnly;
@@ -166,11 +201,11 @@ PHP;
         $b->foo = $a;
 
         $this->expectException(ExportException::class);
-        $this->expectExceptionMessage('At [x][y][0][foo][foo]: Circular reference detected: object of class "Brick\VarExporter\Tests\Classes\PublicPropertiesOnly" already appeared at [x][y][0].');
+        $this->expectExceptionMessage('At [x][y][foo][foo][foo]: Object of class "Brick\VarExporter\Tests\Classes\PublicPropertiesOnly" has a circular reference at [x][y][foo]');
 
         VarExporter::export([
             'x' => [
-                'y' => [$a]
+                'y' => $a
             ]
         ]);
     }

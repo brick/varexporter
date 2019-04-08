@@ -41,12 +41,13 @@ abstract class ObjectExporter
      * @param object            $object           The object to export.
      * @param \ReflectionObject $reflectionObject A reflection of the object.
      * @param string[]          $path             The path to the current object in the array/object graph.
+     * @param string[]          $parents          The hashes of all objects higher in the graph.
      *
      * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    abstract public function export($object, \ReflectionObject $reflectionObject, array $path) : array;
+    abstract public function export($object, \ReflectionObject $reflectionObject, array $path, array $parents) : array;
 
     /**
      * Returns the code to create a new object of the given class.

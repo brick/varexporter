@@ -12,7 +12,7 @@ use Brick\VarExporter\VarExporter;
  *
  * A GenericExporter is only intended to be used once per array/object graph (i.e. once per `VarExport::export()` call),
  * as it keeps an internal cache of visited objects; if it is ever going to be reused, just implement a reset method to
- * reset the visited objects array.
+ * reset the visited objects.
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
@@ -24,9 +24,10 @@ final class GenericExporter
     private $objectExporters = [];
 
     /**
-     * The visited objects.
+     * The visited objects, to detect circular references.
      *
-     * Keys are object hashes, values are object paths in the array/object graph, as an array of strings.
+     * This is a two-level map of parent object hash => child object hash => path where the object first appeared.
+     * [string => [string => string[]]]
      *
      * @var array
      */
@@ -68,14 +69,15 @@ final class GenericExporter
     }
 
     /**
-     * @param mixed    $var  The variable to export.
-     * @param string[] $path The path to the current variable in the array/object graph.
+     * @param mixed    $var     The variable to export.
+     * @param string[] $path    The path to the current variable in the array/object graph.
+     * @param string[] $parents The hashes of all objects higher in the graph.
      *
      * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    public function export($var, array $path = []) : array
+    public function export($var, array $path, array $parents) : array
     {
         switch ($type = gettype($var)) {
             case 'boolean':
@@ -89,10 +91,10 @@ final class GenericExporter
                 return ['null'];
 
             case 'array':
-                return $this->exportArray($var, $path);
+                return $this->exportArray($var, $path, $parents);
 
             case 'object':
-                return $this->exportObject($var, $path);
+                return $this->exportObject($var, $path, $parents);
 
             default:
                 // resources
@@ -101,14 +103,15 @@ final class GenericExporter
     }
 
     /**
-     * @param array    $array The array to export.
-     * @param string[] $path  The path to the current array in the array/object graph.
+     * @param array    $array   The array to export.
+     * @param string[] $path    The path to the current array in the array/object graph.
+     * @param string[] $parents The hashes of all objects higher in the graph.
      *
      * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    public function exportArray(array $array, array $path = []) : array
+    public function exportArray(array $array, array $path, array $parents) : array
     {
         if (! $array) {
             return ['[]'];
@@ -129,7 +132,7 @@ final class GenericExporter
             $newPath = $path;
             $newPath[] = (string) $key;
 
-            $exported = $this->export($value, $newPath);
+            $exported = $this->export($value, $newPath, $parents);
 
             $prepend = '';
             $append = '';
@@ -154,33 +157,36 @@ final class GenericExporter
     }
 
     /**
-     * @param object   $object The object to export.
-     * @param string[] $path   The path to the current object in the array/object graph.
+     * @param object   $object  The object to export.
+     * @param string[] $path    The path to the current object in the array/object graph.
+     * @param string[] $parents The hashes of all objects higher in the graph.
      *
      * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    public function exportObject($object, array $path = []) : array
+    public function exportObject($object, array $path, array $parents) : array
     {
         $hash = spl_object_hash($object);
 
-        if (isset($this->visitedObjects[$hash])) {
-            throw new ExportException(sprintf(
-                'Circular reference detected: object of class "%s" already appeared at %s. ' .
-                'Circular references are currently not supported.',
-                get_class($object),
-                ExportException::pathToString($this->visitedObjects[$hash])
-            ), $path);
-        }
+        foreach ($parents as $parentHash) {
+            if (isset($this->visitedObjects[$parentHash][$hash])) {
+                throw new ExportException(sprintf(
+                    'Object of class "%s" has a circular reference at %s. ' .
+                    'Circular references are currently not supported.',
+                    get_class($object),
+                    ExportException::pathToString($this->visitedObjects[$parentHash][$hash])
+                ), $path);
+            }
 
-        $this->visitedObjects[$hash] = $path;
+            $this->visitedObjects[$parentHash][$hash] = $path;
+        }
 
         $reflectionObject = new \ReflectionObject($object);
 
         foreach ($this->objectExporters as $objectExporter) {
             if ($objectExporter->supports($reflectionObject)) {
-                return $objectExporter->export($object, $reflectionObject, $path);
+                return $objectExporter->export($object, $reflectionObject, $path, $parents);
             }
         }
 

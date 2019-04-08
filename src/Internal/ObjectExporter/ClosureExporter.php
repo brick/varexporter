@@ -40,7 +40,7 @@ class ClosureExporter extends ObjectExporter
         $closureFileName = $reflectionFunction->getFileName();
 
         if (substr($closureFileName, -19) === ' : eval()\'d code') {
-            throw new ExportException('Closure defined in eval()\'d code cannot be exported.');
+            throw new ExportException('Closure defined in eval()\'d code cannot be exported.', $path);
         }
 
         $closureStartLine = $reflectionFunction->getStartLine();
@@ -48,7 +48,7 @@ class ClosureExporter extends ObjectExporter
         $source = @ file_get_contents($closureFileName);
 
         if ($source === false) {
-            throw new ExportException('Cannot open source file "' . $closureFileName . '" for reading closure code.');
+            throw new ExportException('Cannot open source file "' . $closureFileName . '" for reading closure code.', $path);
         }
 
         $parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
@@ -56,7 +56,7 @@ class ClosureExporter extends ObjectExporter
         try {
             $ast = $parser->parse($source);
         } catch (Error $e) {
-            throw new ExportException('Cannot parse file "' . $closureFileName . '" for reading closure code.', 0, $e);
+            throw new ExportException('Cannot parse file "' . $closureFileName . '" for reading closure code.', $path, $e);
         }
 
         // Resolve names
@@ -97,9 +97,12 @@ class ClosureExporter extends ObjectExporter
         $count = count($closuresOnLine);
 
         if ($count !== 1) {
-            throw new ExportException(
-                sprintf('Expected exactly 1 closure in %s on line %d, found %d.', $closureFileName, $closureStartLine, $count)
-            );
+            throw new ExportException(sprintf(
+                'Expected exactly 1 closure in %s on line %d, found %d.',
+                $closureFileName,
+                $closureStartLine,
+                $count
+            ), $path);
         }
 
         /** @var Node\Expr\Closure $closure */

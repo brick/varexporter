@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/brick/brick/master/logo.png" alt="" align="left" height="64">
 
-A PHP library that offers a pretty and powerful alternative to `var_export()`.
+A powerful and pretty replacement for PHP's `var_export()`.
 
 [![Build Status](https://secure.travis-ci.org/brick/varexporter.svg?branch=master)](http://travis-ci.org/brick/varexporter)
 [![Coverage Status](https://coveralls.io/repos/brick/varexporter/badge.svg?branch=master)](https://coveralls.io/r/brick/varexporter?branch=master)

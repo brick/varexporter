@@ -23,12 +23,12 @@ class ExportClosureTest extends AbstractTestCase
     public function testExportSimpleClosure()
     {
         $var = function() {
-            echo 'Hello, world!';
+            return 'Hello, world!';
         };
 
         $expected = <<<'PHP'
 function () {
-    echo 'Hello, world!';
+    return 'Hello, world!';
 }
 PHP;
 
@@ -158,7 +158,7 @@ PHP;
     {
         $var = eval(<<<PHP
 return function() {
-    echo 'Hello, world!';
+    return 'Hello, world!';
 };
 PHP
 );
@@ -175,7 +175,7 @@ PHP
     public function testExportClosureDisabled()
     {
         $var = function() {
-            echo 'Hello, world!';
+            return 'Hello, world!';
         };
 
         $this->assertExportThrows('Class "Closure" is internal, and cannot be exported.', $var, VarExporter::NO_CLOSURES);

@@ -24,14 +24,14 @@ final class GenericExporter
     private $objectExporters = [];
 
     /**
-     * The children of every object found, to detect circular references.
+     * The visited objects, to detect circular references.
      *
      * This is a two-level map of parent object hash => child object hash => path where the object first appeared.
      * [string => [string => string[]]]
      *
      * @var array
      */
-    private $objectChildren = [];
+    private $visitedObjects = [];
 
     /**
      * @var bool
@@ -169,16 +169,16 @@ final class GenericExporter
         $hash = spl_object_hash($object);
 
         foreach ($parents as $parentHash) {
-            if (isset($this->objectChildren[$parentHash][$hash])) {
+            if (isset($this->visitedObjects[$parentHash][$hash])) {
                 throw new ExportException(sprintf(
                     'Object of class "%s" has a circular reference at %s. ' .
                     'Circular references are currently not supported.',
                     get_class($object),
-                    ExportException::pathToString($this->objectChildren[$parentHash][$hash])
+                    ExportException::pathToString($this->visitedObjects[$parentHash][$hash])
                 ), $path);
             }
 
-            $this->objectChildren[$parentHash][$hash] = $path;
+            $this->visitedObjects[$parentHash][$hash] = $path;
         }
 
         $reflectionObject = new \ReflectionObject($object);

@@ -33,7 +33,7 @@ class ClosureExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path) : array
     {
         $reflectionFunction = new \ReflectionFunction($object);
 

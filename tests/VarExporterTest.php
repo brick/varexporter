@@ -151,11 +151,27 @@ PHP;
             ]
         ];
 
-        $exporter = new VarExporter();
+        $this->expectException(ExportException::class);
+        $this->expectExceptionMessage('At [foo][bar]: Type "resource" is not supported.');
+
+        VarExporter::export($object);
+    }
+
+    public function testExportCircularReference()
+    {
+        $a = new PublicPropertiesOnly;
+        $b = new PublicPropertiesOnly;
+
+        $a->foo = $b;
+        $b->foo = $a;
 
         $this->expectException(ExportException::class);
-        $this->expectExceptionMessage('[foo][bar] Type "resource" is not supported.');
+        $this->expectExceptionMessage('At [x][y][0][foo][foo]: Circular reference detected: object of class "Brick\VarExporter\Tests\Classes\PublicPropertiesOnly" already appeared at [x][y][0].');
 
-        $exporter->export($object);
+        VarExporter::export([
+            'x' => [
+                'y' => [$a]
+            ]
+        ]);
     }
 }

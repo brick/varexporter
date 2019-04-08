@@ -10,6 +10,10 @@ use Brick\VarExporter\VarExporter;
 /**
  * The main exporter implementation, that handles variables of any type.
  *
+ * A GenericExporter is only intended to be used once per array/object graph (i.e. once per `VarExport::export()` call),
+ * as it keeps an internal cache of visited objects; if it is ever going to be reused, just implement a reset method to
+ * reset the visited objects array.
+ *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
 final class GenericExporter
@@ -18,6 +22,15 @@ final class GenericExporter
      * @var ObjectExporter[]
      */
     private $objectExporters = [];
+
+    /**
+     * The visited objects.
+     *
+     * Keys are object hashes, values are object paths in the array/object graph, as an array of strings.
+     *
+     * @var array
+     */
+    private $visitedObjects = [];
 
     /**
      * @var bool
@@ -150,6 +163,19 @@ final class GenericExporter
      */
     public function exportObject($object, array $path = []) : array
     {
+        $hash = spl_object_hash($object);
+
+        if (isset($this->visitedObjects[$hash])) {
+            throw new ExportException(sprintf(
+                'Circular reference detected: object of class "%s" already appeared at %s. ' .
+                'Circular references are currently not supported.',
+                get_class($object),
+                ExportException::pathToString($this->visitedObjects[$hash])
+            ), $path);
+        }
+
+        $this->visitedObjects[$hash] = $path;
+
         $reflectionObject = new \ReflectionObject($object);
 
         foreach ($this->objectExporters as $objectExporter) {

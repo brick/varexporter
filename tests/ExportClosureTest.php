@@ -104,6 +104,45 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
+    public function testExportClosureWithStringsContainingLikeBreaks()
+    {
+        $var = function() {
+            $a = 'Hello,
+World!';
+
+            $b = <<<TXT
+Hello,
+world!
+TXT;
+
+            $c = <<<'TXT'
+Hello,
+world!
+TXT;
+
+            return $a . $b . $c;
+        };
+
+        $expected = <<<'PHP'
+return function () {
+    $a = 'Hello,
+World!';
+    $b = <<<TXT
+Hello,
+world!
+TXT;
+    $c = <<<'TXT'
+Hello,
+world!
+TXT;
+    return $a . $b . $c;
+};
+
+PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
+    }
+
     public function testExportClosureWithUse()
     {
         $foo = 'bar';

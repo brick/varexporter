@@ -41,6 +41,15 @@ abstract class AbstractTestCase extends TestCase
         if (0 === ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES)) {
             $this->assertEquals($var, $exportedVar, 'The eval()ed exported var is different from the original var.');
         }
+
+        // if the exported value is a closure with no parameters, test that the exported closure returns the same
+        // value as the original closure
+
+        if ($var instanceof \Closure) {
+            if ((new \ReflectionFunction($var))->getNumberOfRequiredParameters() === 0) {
+                $this->assertSame($var(), ($exportedVar()), 'The exported closure does not return the same value as the original closure.');
+            }
+        }
     }
 
     /**

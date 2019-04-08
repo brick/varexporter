@@ -13,9 +13,21 @@ final class ExportException extends \Exception
     public function __construct(string $message, array $path)
     {
         if ($path) {
-            $message = '[' . implode('][', $path) . '] ' . $message;
+            $message = 'At ' . self::pathToString($path) . ': ' . $message;
         }
 
         parent::__construct($message);
+    }
+
+    /**
+     * Returns a string representation of the given path.
+     *
+     * @param string[] $path
+     *
+     * @return string
+     */
+    public static function pathToString(array $path) : string
+    {
+        return '[' . implode('][', $path) . ']';
     }
 }

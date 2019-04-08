@@ -13,16 +13,18 @@ A PHP library that offers a pretty and powerful alternative to `var_export()`.
 
 PHP's [var_export()](https://www.php.net/manual/en/function.var-export.php) function is a handy way to export a variable as executable PHP code.
  
-It is particularly useful to store data that can be cached by OPCache, and later retrieved very fast, much faster than unserializing data using `unserialize()` or `json_decode()`.
+It is particularly useful to store data that can be cached by OPCache, just like your source code, and later retrieved very fast, much faster than unserializing data using `unserialize()` or `json_decode()`.
 
-It also suffers from several drawbacks:
+But it also suffers from several drawbacks:
+
+- It outputs invalid PHP code for `stdClass` objects, using `stdClass::__set_state()` which doesn't exist
+- It cannot export custom objects that do not implement `__set_state()`, and `__set_state()` does not play well with private properties in parent classes, which makes the implementation tedious
+- It does not support closures
+
+Additionally, the output is not very pretty:
 
 - It outputs arrays as `array()` notation, instead of the short `[]` notation
 - It outputs numeric arrays with explicit and unnecessary `0 => ...` key => value syntax
-- It outputs invalid PHP code for `stdClass` objects, using `stdClass::__set_state()` which doesn't exist
-- It cannot export custom objects that do not implement `__set_state()`
-- `__set_state()` does not play well with private properties in parent classes, which makes the implementation tedious
-- `var_export()` does not complain when exporting an object with overridden private properties, and outputs and array with duplicate keys
 
 This library aims to provide a prettier, safer, and powerful alternative to `var_export()`.
 
@@ -279,6 +281,66 @@ It determines the most appropriate method to export your object, in this order:
 
 If you attempt to export a custom object and all compatible exporters have been disabled, an `ExportException` will be thrown.
 
+## Exporting closures
+
+Since version `0.2.0`, `VarExporter` has experimental support for closures:
+
+```php
+echo VarExporter::export([
+    'callback' => function() {
+        return 'Hello, world!';
+    }
+]);
+```
+
+```php
+[
+    'callback' => function () {
+        return 'Hello, world!';
+    }
+]
+```
+
+To do this magic, `VarExporter` parses the PHP source file where your closure is defined, using the well-established [nikic/php-parser](https://github.com/nikic/PHP-Parser) library.
+
+To ensure that the closure will work in any context, it rewrites its source code, replacing any namespaced class/function/constant name with its fully qualified counterpart:
+
+```php
+namespace My\App;
+
+use My\App\Model\Entity;
+use function My\App\Functions\imported_function;
+use const My\App\Constants\IMPORTED_CONSTANT;
+
+use Brick\VarExporter\VarExporter;
+
+echo VarExporter::export(function(Service $service) : Entity {
+    strlen(NON_NAMESPACED_CONSTANT);
+    imported_function(IMPORTED_CONSTANT);
+    \My\App\Functions\explicitly_namespaced_function(\My\App\Constants\EXPLICITLY_NAMESPACED_CONSTANT);
+
+    return new Entity();
+});
+```
+
+```php
+function (\My\App\Service $service) : \My\App\Model\Entity {
+    strlen(NON_NAMESPACED_CONSTANT);
+    \My\App\Functions\imported_function(\My\App\Constants\IMPORTED_CONSTANT);
+    \My\App\Functions\explicitly_namespaced_function(\My\App\Constants\EXPLICITLY_NAMESPACED_CONSTANT);
+    return new \My\App\Model\Entity();
+}
+```
+
+Note how all namespaced classes, and explicitly namespaced functions and constants, have been rewritten, while the non-namespaced function `strlen()` and the non-namespaced constant have been left as is. This brings us to the first caveat:
+
+### Caveats
+
+- **Functions and constants that are not not explicitly namespaced**, either directly or through a `use function` or `use const` statement, **are always exported as is**. This is because the parser does not have the runtime context to check if a definition for this function exists in the current namespace. Be really careful here if you're relying on PHP's [fallback to global function/constant](https://www.php.net/manual/en/language.namespaces.fallback.php), and always explicitly import your functions in this case.
+- **Closures that have variables bound through `use()` cannot be exported**, and will throw an `ExportException`. This is intentional, because exported closures can be executed in another context, and as such must not rely on the context they've been originally defined in.
+- Closures can use `$this`, but **will not be bound to an object once exported**. You must explicitly bind them through [`bindTo()`](https://www.php.net/manual/en/closure.bindto.php) if required, after running the exported code.
+- **You cannot have 2 closures on the same line in your source file**, or an `ExportException` will be thrown. This is because `VarExporter` cannot know which one holds the definition for the `\Closure` object it encountered.
+
 ## Options
 
 `VarExporter::export()` accepts a bitmask of options as a second parameter:
@@ -348,9 +410,11 @@ try {
 
 ## Limitations
 
-- Exporting internal classes, including closures, is currently not supported. `VarExporter` will throw an `ExportException` if it finds one.
+- Exporting internal classes other than `stdClass` and `Closure` is currently not supported. `VarExporter` will throw an `ExportException` if it finds one.
 
   To avoid hitting this brick wall, you can implement `__serialize()` and `__unserialize()` in classes that contain references to internal objects.
+
+  Feel free to open an issue or a pull request if you think that an internal class could/should be exportable.
 
 - Just like `var_export()`, `VarExporter` cannot currently maintain object identity (two instances of the same object, once exported, will create two equal (`==`) yet distinct (`!==`) objects).
 

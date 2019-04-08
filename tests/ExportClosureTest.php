@@ -116,4 +116,15 @@ PHP;
 
         $this->assertExportThrows("The closure has bound variables through 'use', this is not supported.", $var);
     }
+
+    public function testExportClosureDefinedInEval()
+    {
+        $var = eval(<<<PHP
+return function() {
+    echo 'Hello, world!';
+};
+PHP
+);
+        $this->assertExportThrows("Closure defined in eval()'d code cannot be exported.", $var);
+    }
 }

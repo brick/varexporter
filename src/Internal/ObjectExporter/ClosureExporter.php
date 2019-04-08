@@ -67,14 +67,14 @@ class ClosureExporter extends ObjectExporter
      */
     private function parseFile(string $filename, array $path) : array
     {
-        if (substr($filename, -19) === ' : eval()\'d code') {
-            throw new ExportException('Closure defined in eval()\'d code cannot be exported.', $path);
+        if (substr($filename, -16) === " : eval()'d code") {
+            throw new ExportException("Closure defined in eval()'d code cannot be exported.", $path);
         }
 
         $source = @ file_get_contents($filename);
 
         if ($source === false) {
-            throw new ExportException('Cannot open source file "' . $filename . '" for reading closure code.', $path);
+            throw new ExportException("Cannot open source file \"$filename\" for reading closure code.", $path);
         }
 
         $parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
@@ -82,7 +82,7 @@ class ClosureExporter extends ObjectExporter
         try {
             return $parser->parse($source);
         } catch (Error $e) {
-            throw new ExportException('Cannot parse file "' . $filename . '" for reading closure code.', $path, $e);
+            throw new ExportException("Cannot parse file \"$filename\" for reading closure code.", $path, $e);
         }
     }
 

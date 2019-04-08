@@ -4,7 +4,15 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Tests;
 
+use Brick\VarExporter\Tests\Classes\NoProperties;
+use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+
+/**
+ * This function does not exist, but namespace should be taken into account by the closure exporter.
+ */
+use function Brick\VarExporter\strlen;
+use Brick\VarExporter\Tests\Classes\SetState;
 
 /**
  * Tests exporting closures.
@@ -62,6 +70,37 @@ PHP;
         }
     ]
 ]
+PHP;
+
+        $this->assertExportEquals($expected, $var);
+    }
+
+    public function testExportNamespacedCode()
+    {
+        $var = function(SetState $a) : NoProperties {
+            $a = new PublicPropertiesOnly;
+            $b = PrivateConstructor::class;
+            $c = function(\PDO $pdo) {
+                return \PDO::class;
+            };
+
+            substr($b, 0, -7);
+            strlen($b);
+
+            return new NoProperties;
+        };
+
+        $expected = <<<'PHP'
+function (\Brick\VarExporter\Tests\Classes\SetState $a) : \Brick\VarExporter\Tests\Classes\NoProperties {
+    $a = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly();
+    $b = \Brick\VarExporter\Tests\Classes\PrivateConstructor::class;
+    $c = function (\PDO $pdo) {
+        return \PDO::class;
+    };
+    substr($b, 0, -7);
+    \Brick\VarExporter\strlen($b);
+    return new \Brick\VarExporter\Tests\Classes\NoProperties();
+}
 PHP;
 
         $this->assertExportEquals($expected, $var);

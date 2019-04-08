@@ -57,7 +57,6 @@ abstract class AbstractTestCase extends TestCase
         $this->expectException(ExportException::class);
         $this->expectExceptionMessage($expectedMessage);
 
-        $exporter = new VarExporter();
-        $exporter->export($var, $options);
+        VarExporter::export($var, $options);
     }
 }

@@ -9,4 +9,6 @@ namespace Brick\VarExporter\Tests\Classes;
  */
 class NoProperties
 {
+    // Static property should not be returned in the output
+    public static $staticProp = [];
 }

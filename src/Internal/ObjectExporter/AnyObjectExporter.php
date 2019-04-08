@@ -48,6 +48,10 @@ class AnyObjectExporter extends ObjectExporter
             $unsetNonPublicProperties = [];
 
             foreach ($current->getProperties() as $property) {
+                if ($property->isStatic()) {
+                    continue;
+                }
+
                 if ($isParentClass && ! $property->isPrivate()) {
                     // property already handled in the child class.
                     continue;

@@ -301,7 +301,7 @@ echo VarExporter::export([
 ]
 ```
 
-To do this magic, `VarExporter` parses the PHP source file where your closure is defined, using the well-established [nikic/php-parser](https://github.com/nikic/PHP-Parser) library.
+To do this magic, `VarExporter` parses the PHP source file where your closure is defined, using the well-established [nikic/php-parser](https://github.com/nikic/PHP-Parser) library, inspired by [SuperClosure](https://github.com/jeremeamia/super_closure).
 
 To ensure that the closure will work in any context, it rewrites its source code, replacing any namespaced class/function/constant name with its fully qualified counterpart:
 
@@ -340,6 +340,7 @@ Note how all namespaced classes, and explicitly namespaced functions and constan
 - **Closures that have variables bound through `use()` cannot be exported**, and will throw an `ExportException`. This is intentional, because exported closures can be executed in another context, and as such must not rely on the context they've been originally defined in.
 - Closures can use `$this`, but **will not be bound to an object once exported**. You must explicitly bind them through [`bindTo()`](https://www.php.net/manual/en/closure.bindto.php) if required, after running the exported code.
 - **You cannot have 2 closures on the same line in your source file**, or an `ExportException` will be thrown. This is because `VarExporter` cannot know which one holds the definition for the `\Closure` object it encountered.
+- **Closures defined in eval()'d code cannot be exported** and throw an `ExportException`, because there is no source file to parse.
 
 You can disable exporting closures, using the [`NO_CLOSURES`](#varexporterno_closures) option. When this option is set, an `ExportException` will be thrown when attempting to export a closure.
 

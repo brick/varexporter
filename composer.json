@@ -1,6 +1,6 @@
 {
   "name": "brick/varexporter",
-  "description": "A pretty alternative to var_export(), which can export objects without __set_state()",
+  "description": "A powerful alternative to var_export(), which can export closures and objects without __set_state()",
   "type": "library",
   "keywords": [
     "var_export"

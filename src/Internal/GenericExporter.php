@@ -44,6 +44,11 @@ final class GenericExporter
     public $skipDynamicProperties;
 
     /**
+     * @var bool
+     */
+    public $inlineNumericScalarArray;
+
+    /**
      * @param int $options
      */
     public function __construct(int $options)
@@ -68,8 +73,9 @@ final class GenericExporter
             $this->objectExporters[] = new ObjectExporter\AnyObjectExporter($this);
         }
 
-        $this->addTypeHints          = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
-        $this->skipDynamicProperties = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
+        $this->addTypeHints             = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
+        $this->skipDynamicProperties    = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
+        $this->inlineNumericScalarArray = (bool) ($options & VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
     }
 
     /**
@@ -123,12 +129,12 @@ final class GenericExporter
 
         $result = [];
 
-        $result[] = '[';
-
         $count = count($array);
         $isNumeric = array_keys($array) === range(0, $count - 1);
 
         $current = 0;
+
+        $inline = ($this->inlineNumericScalarArray && $isNumeric && $this->isScalarArray($array));
 
         foreach ($array as $key => $value) {
             $isLast = (++$current === $count);
@@ -138,26 +144,56 @@ final class GenericExporter
 
             $exported = $this->export($value, $newPath, $parents);
 
-            $prepend = '';
-            $append = '';
+            if ($inline) {
+                $result[] = $exported[0];
+            } else {
+                $prepend = '';
+                $append = '';
 
-            if (! $isNumeric) {
-                $prepend = var_export($key, true) . ' => ';
+                if (! $isNumeric) {
+                    $prepend = var_export($key, true) . ' => ';
+                }
+
+                if (! $isLast) {
+                    $append = ',';
+                }
+
+                $exported = $this->wrap($exported, $prepend, $append);
+                $exported = $this->indent($exported);
+
+                $result = array_merge($result, $exported);
             }
-
-            if (! $isLast) {
-                $append = ',';
-            }
-
-            $exported = $this->wrap($exported, $prepend, $append);
-            $exported = $this->indent($exported);
-
-            $result = array_merge($result, $exported);
         }
 
+        if ($inline) {
+            return ['[' . implode(', ', $result) . ']'];
+        }
+
+        array_unshift($result, '[');
         $result[] = ']';
 
         return $result;
+    }
+
+    /**
+     * Returns whether the given array only contains scalar values.
+     *
+     * Types considered scalar here are int, bool, float, string and null.
+     * If the array is empty, this method returns true.
+     *
+     * @param array $array
+     *
+     * @return bool
+     */
+    private function isScalarArray(array $array) : bool
+    {
+        foreach ($array as $value) {
+            if ($value !== null && ! is_scalar($value)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

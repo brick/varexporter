@@ -400,6 +400,30 @@ Disallows exporting any custom object using direct property access and bound clo
 
 Disallows exporting closures.
 
+### `VarExporter::INLINE_NUMERIC_SCALAR_ARRAY`
+
+Formats numeric arrays containing only scalar values on a single line:
+
+```php
+VarExporter::export([
+    'one' => ['hello', 'world', 123, true, false, null, 7.5],
+    'two' => ['hello', 'world', ['one', 'two', 'three']]
+], VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
+```
+
+```php
+[
+    'one' => ['hello', 'world', 123, true, false, null, 7.5],
+    'two' => [
+        'hello',
+        'world',
+        ['one', 'two', 'three']
+    ]
+]
+```
+
+Types considered scalar here are `int`, `bool`, `float`, `string` and `null`.
+
 ## Error handling
 
 Any error occurring on `export()` will throw an `ExportException`:

@@ -130,6 +130,27 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
 
+    public function testInlineNumericScalarArray()
+    {
+        $var = [
+            'one' => ['hello', 'world', 123, true, false, null, 7.5],
+            'two' => ['hello', 'world', ['one', 'two', 'three']]
+        ];
+
+        $expected = <<<'PHP'
+[
+    'one' => ['hello', 'world', 123, true, false, null, 7.5],
+    'two' => [
+        'hello',
+        'world',
+        ['one', 'two', 'three']
+    ]
+]
+PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
+    }
+
     public function testExportInternalClass()
     {
         $object = new \stdClass;

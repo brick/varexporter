@@ -207,7 +207,7 @@ final class GenericExporter
      */
     public function exportObject($object, array $path, array $parents) : array
     {
-        $hash = spl_object_hash($object);
+        $hash = spl_object_id($object);
 
         foreach ($parents as $parentHash) {
             if (isset($this->visitedObjects[$parentHash][$hash])) {

@@ -148,6 +148,8 @@ echo VarExporter::export(json_decode('
 ]
 ```
 
+**Note: since PHP 7.3, `var_export()` now exports an array to object cast like `VarExporter::export()` does.**
+
 ## Exporting custom objects
 
 As we've seen above, `var_export()` assumes that every object has a static [__set_state()](https://www.php.net/manual/en/language.oop5.magic.php#object.set-state) method that takes an associative array of property names to values, and returns a object.

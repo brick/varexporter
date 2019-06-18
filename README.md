@@ -449,6 +449,8 @@ try {
 
   Feel free to open an issue or a pull request if you think that an internal class could/should be exportable.
 
+- Exporting anonymous classes is not supported yet. Ideas or pull requests welcome.
+
 - Just like `var_export()`, `VarExporter` cannot currently maintain object identity (two instances of the same object, once exported, will create two equal (`==`) yet distinct (`!==`) objects).
 
 - And just like `var_export()`, it cannot currently handle circular references, such as object `A` pointing to `B`, and `B` pointing back to `A`.

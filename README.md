@@ -15,11 +15,13 @@ PHP's [var_export()](https://www.php.net/manual/en/function.var-export.php) func
  
 It is particularly useful to store data that can be cached by OPCache, just like your source code, and later retrieved very fast, much faster than unserializing data using `unserialize()` or `json_decode()`.
 
-But it also suffers from several drawbacks:
+But it also suffers from many drawbacks:
 
 - It outputs invalid PHP code for `stdClass` objects, using `stdClass::__set_state()` which doesn't exist
 - It cannot export custom objects that do not implement `__set_state()`, and `__set_state()` does not play well with private properties in parent classes, which makes the implementation tedious
 - It does not support closures
+- It does not preserve object identity when an object is referenced several times
+- It does not handle circular references, which issue a warning and are replaced with NULL values
 
 Additionally, the output is not very pretty:
 
@@ -48,7 +50,7 @@ The current releases are numbered `0.x.y`. When a non-breaking change is introdu
 
 **When a breaking change is introduced, a new `0.x` version cycle is always started.**
 
-It is therefore safe to lock your project to a given release cycle, such as `0.2.*`.
+It is therefore safe to lock your project to a given release cycle, such as `0.3.*`.
 
 If you need to upgrade to a newer release cycle, check the [release history](https://github.com/brick/varexporter/releases) for a list of changes introduced by each further `0.x.0` version.
 
@@ -195,24 +197,7 @@ If your class has a parent with private properties, you may have to do some gymn
 
 ### What does `VarExporter` do instead?
 
-It determines the most appropriate method to export your object, in this order:
-
-- If your custom class has a `__set_state()` method, `VarExporter` uses it by default, just like `var_export()` would do:
-
-    ```php
-    \My\CustomClass::__set_state([
-        'foo' => 'Hello',
-        'bar' => 'World'
-    ])
-    ```
-
-    The array passed to `__set_state()` will be built with the same semantics used by `var_export()`; this library aims to be 100% compatible in this regard. The only difference is when your class has overridden private properties: `var_export()` will output an array that contains the same key twice (resulting in data loss), while `VarExporter` will throw an `ExportException` to keep you on the safe side.
-
-    Unlike `var_export()`, this method will only be used if actually implemented on the class.
-
-    You can disable exporting objects this way, even if they implement `__set_state()`, using the [`NO_SET_STATE`](#varexporterno_set_state) option.
-
-- If your class has `__serialize()` and `__unserialize()` methods ([introduced in PHP 7.4](https://wiki.php.net/rfc/custom_object_serialization), but this library accepts them in previous versions of PHP!), `VarExporter` uses the output of `__serialize()` to export the object, and gives it as input to `__unserialize()` to reconstruct the object:
+- If the class has `__serialize()` and `__unserialize()` methods ([introduced in PHP 7.4](https://wiki.php.net/rfc/custom_object_serialization), but this library accepts them in previous versions of PHP), `VarExporter` uses the output of `__serialize()` to export the object, and gives it as input to `__unserialize()` to reconstruct the object:
 
     ```php
     (static function() {
@@ -232,7 +217,7 @@ It determines the most appropriate method to export your object, in this order:
 
     If for any reason you do not want to export objects that implement `__serialize()` and `__unserialize()` using this method, you can opt out by using the [`NO_SERIALIZE`](#varexporterno_serialize) option.
 
-- If the class does not meet any of the conditions above, it is exported through direct property access, which in its simplest form looks like:
+- If the class does not implement `__serialize()`/`__unserialize()`, it is exported through direct property access, which in its simplest form looks like:
 
     ```php
     (static function() {
@@ -282,6 +267,12 @@ It determines the most appropriate method to export your object, in this order:
     You can disable exporting objects this way, using the [`NOT_ANY_OBJECT`](#varexporternot_any_object) option.
 
 If you attempt to export a custom object and all compatible exporters have been disabled, an `ExportException` will be thrown.
+
+#### What about `__set_state()`?
+
+Unlike `var_export()`, `VarExporter` *never* exports objects through the `__set_state()` static method, as this approach is not compatible with maintaining circular references. If your object implements `__set_state()`, it will be treated as if the method didn't exist, and exported using direct property access, unless `__serialize()`/`unserialize()` methods are implemented.
+
+Direct property access is perfectly safe and will maintain your object's integrity, **as long as the class definition hasn't changed when the object is reconstructed** (the same caveat applies to serialization). If you are currently using `__set_state()` because you need more control over how your object is exported and reconstructed, you should consider migrating to `__serialize()` and `__unserialize()` if you're planning to use `VarExporter`. These methods are more powerful (they play well with inheritance) and safer (they allow circular references to be kept) than `__set_state()`, and make your class compatible with both `VarExporter` and PHP's built-in serialization mechanism.
 
 ## Exporting closures
 
@@ -385,10 +376,6 @@ $object = $class->newInstanceWithoutConstructor();
 
 Skips dynamic properties on custom classes in the output. Dynamic properties are properties that are not part of the class definition, and added to an object at runtime. By default, any dynamic property set on a custom class is
 exported; if this option is used, dynamic properties are only allowed on `stdClass` objects, and ignored on other objects.
-
-### `VarExporter::NO_SET_STATE`
-
-Disallows exporting objects through `__set_state()`.
 
 ### `VarExporter::NO_SERIALIZE`
 

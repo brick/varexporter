@@ -6,7 +6,7 @@ namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
-use Brick\VarExporter\Tests\Classes\SetState;
+use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\VarExporter;
 
 class VarExporterTest extends AbstractTestCase
@@ -15,9 +15,9 @@ class VarExporterTest extends AbstractTestCase
     {
         $myObject = new PublicPropertiesOnly();
         $myObject->foo = 'hello';
-        $myObject->bar = new SetState();
-        $myObject->bar->foo = 'SetState.foo';
-        $myObject->bar->bar = 'SetState.bar';
+        $myObject->bar = new SerializeMagicMethods();
+        $myObject->bar->foo = 'SerializeMagicMethods.foo';
+        $myObject->bar->bar = 'SerializeMagicMethods.bar';
 
         $var = [
             'aString' => 'Hello',
@@ -88,11 +88,16 @@ class VarExporterTest extends AbstractTestCase
         $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 
         $object->foo = 'hello';
-        $object->bar = \Brick\VarExporter\Tests\Classes\SetState::__set_state([
-            'baz' => 'defaultValue',
-            'foo' => 'SetState.foo',
-            'bar' => 'SetState.bar'
-        ]);
+        $object->bar = (static function() {
+            $object = new \Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
+
+            $object->__unserialize([
+                'foo' => 'SerializeMagicMethods.foo',
+                'bar' => 'SerializeMagicMethods.bar'
+            ]);
+
+            return $object;
+        })();
 
         return $object;
     })()

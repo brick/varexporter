@@ -28,30 +28,25 @@ final class VarExporter
     public const SKIP_DYNAMIC_PROPERTIES = 1 << 2;
 
     /**
-     * Disallows exporting objects through `__set_state()`.
-     */
-    public const NO_SET_STATE = 1 << 3;
-
-    /**
      * Disallows exporting objects through `__serialize()` and `__unserialize()`.
      */
-    public const NO_SERIALIZE = 1 << 4;
+    public const NO_SERIALIZE = 1 << 3;
 
     /**
      * Disallows exporting plain objects using direct property access.
      */
-    public const NOT_ANY_OBJECT = 1 << 5;
+    public const NOT_ANY_OBJECT = 1 << 4;
 
     /**
      * Disallows exporting closures.
      */
-    public const NO_CLOSURES = 1 << 6;
+    public const NO_CLOSURES = 1 << 5;
 
     /**
      * Formats numeric arrays containing only scalar values on a single line.
      * Types considered scalar here are int, bool, float, string and null.
      */
-    public const INLINE_NUMERIC_SCALAR_ARRAY = 1 << 7;
+    public const INLINE_NUMERIC_SCALAR_ARRAY = 1 << 6;
 
     /**
      * @param mixed $var     The variable to export.

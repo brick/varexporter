@@ -62,7 +62,7 @@ class SetStateExporter extends ObjectExporter
      *
      * @throws ExportException
      */
-    private function getObjectVars($object, array $path) : array
+    private function getObjectVars(object $object, array $path) : array
     {
         $result = [];
 
@@ -99,7 +99,7 @@ class SetStateExporter extends ObjectExporter
      *
      * @return bool
      */
-    private function isDynamicProperty($object, string $name) : bool
+    private function isDynamicProperty(object $object, string $name) : bool
     {
         $reflectionClass = new \ReflectionClass($object);
         $reflectionObject = new \ReflectionObject($object);

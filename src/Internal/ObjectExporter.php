@@ -47,7 +47,7 @@ abstract class ObjectExporter
      *
      * @throws ExportException
      */
-    abstract public function export($object, \ReflectionObject $reflectionObject, array $path, array $parents) : array;
+    abstract public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parents) : array;
 
     /**
      * Returns the code to create a new object of the given class.

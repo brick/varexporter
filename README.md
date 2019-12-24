@@ -38,7 +38,7 @@ composer require brick/varexporter
 
 ### Requirements
 
-This library requires PHP 7.1 or later.
+This library requires PHP 7.2 or later.
 
 ### Project status & release process
 

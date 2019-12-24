@@ -205,7 +205,7 @@ final class GenericExporter
      *
      * @throws ExportException
      */
-    public function exportObject($object, array $path, array $parents) : array
+    public function exportObject(object $object, array $path, array $parents) : array
     {
         $hash = spl_object_hash($object);
 

@@ -7,7 +7,7 @@
   ],
   "license": "MIT",
   "require": {
-    "php": ">=7.1",
+    "php": ">=7.2",
     "nikic/php-parser": "^4.0"
   },
   "require-dev": {

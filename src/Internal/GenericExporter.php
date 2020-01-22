@@ -49,6 +49,11 @@ final class GenericExporter
     public $inlineNumericScalarArray;
 
     /**
+     * @var bool
+     */
+    public $closureSnapshotUses;
+
+    /**
      * @param int $options
      */
     public function __construct(int $options)
@@ -76,6 +81,7 @@ final class GenericExporter
         $this->addTypeHints             = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
         $this->skipDynamicProperties    = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
         $this->inlineNumericScalarArray = (bool) ($options & VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
+        $this->closureSnapshotUses         = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
     }
 
     /**

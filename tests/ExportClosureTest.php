@@ -151,7 +151,56 @@ PHP;
             return $foo;
         };
 
-        $this->assertExportThrows("The closure has bound variables through 'use', this is not supported.", $var);
+        $this->assertExportThrows(
+            "The closure has bound variables through 'use', this is not supported by default. " .
+                "Use the `CLOSURE_SNAPSHOT_USE` option to export them.",
+            $var
+        );
+    }
+
+    public function testExportClosureWithUseAsVars()
+    {
+        $foo = 'b' . 'a' . 'r';
+
+        $var = function() use ($foo) {
+            return $foo;
+        };
+
+        $expected = <<<'PHP'
+return function () {
+    $foo = 'bar';
+    return $foo;
+};
+
+PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
+    }
+
+    public function testExportClosureWithUseClosure()
+    {
+        $foo = 'b' . 'a' . 'r';
+
+        $sub = function () use ($foo) {
+            return $foo;
+        };
+
+        $var = function() use ($sub) {
+            return $sub();
+        };
+
+        $expected = <<<'PHP'
+return function () {
+    $sub = function () {
+        $foo = 'bar';
+        return $foo;
+    };
+    return $sub();
+};
+
+PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
     }
 
     public function testExportClosureDefinedInEval()

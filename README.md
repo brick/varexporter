@@ -336,10 +336,34 @@ function (\My\App\Service $service) : \My\App\Model\Entity {
 
 Note how all namespaced classes, and explicitly namespaced functions and constants, have been rewritten, while the non-namespaced function `strlen()` and the non-namespaced constant have been left as is. This brings us to the first caveat:
 
+## Use statements
+
+By default, exporting closures that have variables bound through `use()` will throw an `ExportException`. This is intentional, because exported closures can be executed in another context, and as such must not rely on the context they've been originally defined in.
+
+When using the `CLOSURE_SNAPSHOT_USE` option, `VarExporter` will export the current value of each `use()` variable instead of throwing an exception. The exported variables are added as expression inside the exported closure.
+
+```php
+$planet = 'world';
+
+echo VarExporter::export([
+    'callback' => function() use ($planet) {
+        return 'Hello, ' . $planet . '!';
+    }
+], VarExporter::CLOSURE_SNAPSHOT_USE);
+```
+
+```php
+[
+    'callback' => function () {
+        $planet = 'world';
+        return 'Hello, ' . $planet . '!';
+    }
+]
+```
+
 ### Caveats
 
 - **Functions and constants that are not not explicitly namespaced**, either directly or through a `use function` or `use const` statement, **are always exported as is**. This is because the parser does not have the runtime context to check if a definition for this function or constant exists in the current namespace, and as such cannot reliably predict the behaviour of PHP's [fallback to global function/constant](https://www.php.net/manual/en/language.namespaces.fallback.php). Be really careful here if you're using namespaced functions or constants: **always explicitly import your namespaced functions and constants**, if any.
-- **Closures that have variables bound through `use()` cannot be exported**, and will throw an `ExportException`. This is intentional, because exported closures can be executed in another context, and as such must not rely on the context they've been originally defined in.
 - Closures can use `$this`, but **will not be bound to an object once exported**. You must explicitly bind them through [`bindTo()`](https://www.php.net/manual/en/closure.bindto.php) if required, after running the exported code.
 - **You cannot have 2 closures on the same line in your source file**, or an `ExportException` will be thrown. This is because `VarExporter` cannot know which one holds the definition for the `\Closure` object it encountered.
 - **Closures defined in eval()'d code cannot be exported** and throw an `ExportException`, because there is no source file to parse.

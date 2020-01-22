@@ -346,17 +346,40 @@ When using the `CLOSURE_SNAPSHOT_USE` option, `VarExporter` will export the curr
 $planet = 'world';
 
 echo VarExporter::export([
-    'callback' => function() use ($planet) {
-        return 'Hello, ' . $planet . '!';
+    'callback' => function(string $greeting) use ($planet) {
+        return $greeting . ', ' . $planet . '!';
     }
 ], VarExporter::CLOSURE_SNAPSHOT_USE);
 ```
 
 ```php
 [
-    'callback' => function () {
+    'callback' => function (string $greeting) {
         $planet = 'world';
-        return 'Hello, ' . $planet . '!';
+        return $greeting . ', ' . $planet . '!';
+    }
+]
+```
+
+### Arrow functions
+
+PHP support a short hand syntax for closures (since PHP 7.4), also known as arrow functions. `VarExporter` will export these as normal closures.
+
+Arrow functions can implicitly use variables from the context they've been defined in. If any context variable is used in the arrow function, `VarExporter` will throw an `ExportException` unless the `CLOSURE_SNAPSHOT_USES` option is used.
+
+```php
+$planet = 'world';
+
+echo VarExporter::export([
+    'callback' => fn(string $greeting) => $greeting . ', ' . $planet . '!';
+], VarExported::CLOSURE_SNAPSHOT_USES);
+```
+
+```php
+[
+    'callback' => function (string $greeting) {
+        $planet = 'world';
+        return $greeting . ', ' . $planet . '!';
     }
 ]
 ```

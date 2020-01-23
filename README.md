@@ -336,7 +336,7 @@ function (\My\App\Service $service) : \My\App\Model\Entity {
 
 Note how all namespaced classes, and explicitly namespaced functions and constants, have been rewritten, while the non-namespaced function `strlen()` and the non-namespaced constant have been left as is. This brings us to the first caveat:
 
-## Use statements
+### Use statements
 
 By default, exporting closures that have variables bound through `use()` will throw an `ExportException`. This is intentional, because exported closures can be executed in another context, and as such must not rely on the context they've been originally defined in.
 

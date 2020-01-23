@@ -363,7 +363,7 @@ echo VarExporter::export([
 
 ### Arrow functions
 
-PHP support a short hand syntax for closures (since PHP 7.4), also known as arrow functions. `VarExporter` will export these as normal closures.
+PHP supports shorthand syntax for closures (since PHP 7.4), also known as arrow functions. `VarExporter` will export these as normal closures.
 
 Arrow functions can implicitly use variables from the context they've been defined in. If any context variable is used in the arrow function, `VarExporter` will throw an `ExportException` unless the `CLOSURE_SNAPSHOT_USES` option is used.
 

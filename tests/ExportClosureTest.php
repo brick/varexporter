@@ -235,8 +235,8 @@ PHP;
         $var = [fn ($planet) => $greet . ' ' . $planet];
 
         $this->assertExportThrows(
-            "The closure has bound variables, this is not supported by default. " .
-            "Use the `CLOSURE_SNAPSHOT_USE` option to export them.",
+            "The arrow function uses variables in the parent scope, this is not supported by default. " .
+            "Use the CLOSURE_SNAPSHOT_USE option to export them.",
             $var
         );
     }

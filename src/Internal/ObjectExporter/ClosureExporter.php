@@ -225,13 +225,11 @@ class ClosureExporter extends ObjectExporter
         array $path
     ) : void {
         if (! $this->exporter->closureSnapshotUses) {
-            throw new ExportException(
-                "The closure has bound variables" .
-                    ($closure->hasAttribute('arrow_function') ? "" : " through 'use'") .
-                    ", this is not supported by default. " .
-                    "Use the CLOSURE_SNAPSHOT_USE option to export them.",
-                $path
-            );
+            $message = $closure->hasAttribute('arrow_function')
+                ? "The arrow function uses variables in the parent scope, this is not supported by default"
+                : "The closure has bound variables through 'use', this is not supported by default";
+
+            throw new ExportException("$message. Use the CLOSURE_SNAPSHOT_USE option to export them.", $path);
         }
 
         $static = $reflectionFunction->getStaticVariables();

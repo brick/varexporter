@@ -204,7 +204,7 @@ class ClosureExporter extends ObjectExporter
         foreach ($closure->uses as $use) {
             $var = $use->var->name;
 
-            $export = array_merge(['<?php '], $this->exporter->export($static[$var], $path, []), [';']);
+            $export = array_merge(['<?php'], $this->exporter->export($static[$var], $path, []), [';']);
             $nodes = $parser->parse(implode(PHP_EOL, $export));
 
             /** @var Node\Stmt\Expression $expr */

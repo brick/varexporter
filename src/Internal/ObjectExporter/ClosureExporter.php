@@ -144,7 +144,7 @@ class ClosureExporter extends ObjectExporter
         array $path
     ) : Node\Expr\Closure {
         $finder = new FindingVisitor(function(Node $node) use ($line) : bool {
-            return $node instanceof Node\Expr\Closure
+            return ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction)
                 && $node->getStartLine() === $line;
         });
 
@@ -164,11 +164,47 @@ class ClosureExporter extends ObjectExporter
             ), $path);
         }
 
-        /** @var Node\Expr\Closure $closure */
+        /** @var Node\Expr\Closure|Node\Expr\ArrowFunction $closure */
         $closure = $closures[0];
+
+        if ($closure instanceof Node\Expr\ArrowFunction) {
+            $closure = $this->convertArrowFunction($reflectionFunction, $closure);
+        }
 
         if ($closure->uses) {
             $this->closureHandleUses($reflectionFunction, $closure, $path);
+        }
+
+        return $closure;
+    }
+
+    /**
+     * Convert a parsed arrow function to a closure.
+     *
+     * @param ReflectionFunction       $reflectionFunction  Reflection of the closure.
+     * @param Node\Expr\ArrowFunction  $arrowFunction       Parsed arrow function.
+     * @param string[]                 $path                The path to the closure in the array/object graph.
+     *
+     * @return Node\Expr\Closure
+     */
+    private function convertArrowFunction(
+        ReflectionFunction $reflectionFunction,
+        Node\Expr\ArrowFunction $arrowFunction
+    ) : Node\Expr\Closure {
+        $closure = new Node\Expr\Closure([], ['arrow_function' => true]);
+
+        $closure->static = false;
+        $closure->params = $arrowFunction->params;
+        $closure->returnType = $arrowFunction->returnType;
+
+        $closure->stmts[] = new Node\Stmt\Return_($arrowFunction->expr);
+
+        $static = $reflectionFunction->getStaticVariables();
+
+        foreach (array_keys($static) as $var) {
+            $closure->uses[] = new Node\Expr\ClosureUse(
+                new Node\Expr\Variable($var)
+            );
         }
 
         return $closure;
@@ -189,11 +225,11 @@ class ClosureExporter extends ObjectExporter
         array $path
     ) : void {
         if (! $this->exporter->closureSnapshotUses) {
-            throw new ExportException(
-                "The closure has bound variables through 'use', this is not supported by default. " .
-                    "Use the CLOSURE_SNAPSHOT_USE option to export them.",
-                $path
-            );
+            $message = $closure->hasAttribute('arrow_function')
+                ? "The arrow function uses variables in the parent scope, this is not supported by default"
+                : "The closure has bound variables through 'use', this is not supported by default";
+
+            throw new ExportException("$message. Use the CLOSURE_SNAPSHOT_USE option to export them.", $path);
         }
 
         $static = $reflectionFunction->getStaticVariables();

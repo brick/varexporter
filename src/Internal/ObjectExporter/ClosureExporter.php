@@ -126,11 +126,11 @@ class ClosureExporter extends ObjectExporter
     /**
      * Finds a closure in the source file and returns its node.
      *
-     * @param ReflectionFunction $reflectionFunction  Reflection of the closure.
-     * @param array              $ast                 The AST.
-     * @param string             $file                The file name.
-     * @param int                $line                The line number where the closure is located in the source file.
-     * @param string[]           $path                The path to the closure in the array/object graph.
+     * @param ReflectionFunction $reflectionFunction Reflection of the closure.
+     * @param array              $ast                The AST.
+     * @param string             $file               The file name.
+     * @param int                $line               The line number where the closure is located in the source file.
+     * @param string[]           $path               The path to the closure in the array/object graph.
      *
      * @return Node\Expr\Closure
      *
@@ -177,9 +177,9 @@ class ClosureExporter extends ObjectExporter
     /**
      * Handle `use` part of closure.
      *
-     * @param ReflectionFunction $reflectionFunction  Reflection of the closure.
-     * @param Node\Expr\Closure  $closure             Parsed closure.
-     * @param string[]           $path                The path to the closure in the array/object graph.
+     * @param ReflectionFunction $reflectionFunction Reflection of the closure.
+     * @param Node\Expr\Closure  $closure            Parsed closure.
+     * @param string[]           $path               The path to the closure in the array/object graph.
      *
      * @throws ExportException
      */
@@ -191,7 +191,7 @@ class ClosureExporter extends ObjectExporter
         if (! $this->exporter->closureSnapshotUses) {
             throw new ExportException(
                 "The closure has bound variables through 'use', this is not supported by default. " .
-                    "Use the `CLOSURE_SNAPSHOT_USE` option to export them.",
+                    "Use the CLOSURE_SNAPSHOT_USE option to export them.",
                 $path
             );
         }

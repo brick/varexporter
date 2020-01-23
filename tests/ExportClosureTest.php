@@ -153,7 +153,7 @@ PHP;
 
         $this->assertExportThrows(
             "The closure has bound variables through 'use', this is not supported by default. " .
-                "Use the `CLOSURE_SNAPSHOT_USE` option to export them.",
+                "Use the CLOSURE_SNAPSHOT_USE option to export them.",
             $var
         );
     }

@@ -203,6 +203,67 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
     }
 
+
+    public function testExportArrowFunction()
+    {
+        if (version_compare(PHP_VERSION, '7.4.0') < 0) {
+            $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
+        }
+
+        $var = [fn ($planet) => 'hello ' . $planet]; // Wrapping in array for valid syntax PHP <7.4
+
+        $expected = <<<'PHP'
+return [
+    function ($planet) {
+        return 'hello ' . $planet;
+    }
+];
+
+PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
+    }
+
+    public function testExportArrowFunctionWithContext()
+    {
+        if (version_compare(PHP_VERSION, '7.4.0') < 0) {
+            $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
+        }
+
+        $greet = 'hello';
+
+        $var = [fn ($planet) => $greet . ' ' . $planet];
+
+        $this->assertExportThrows(
+            "The arrow function uses variables in the parent scope, this is not supported by default. " .
+            "Use the CLOSURE_SNAPSHOT_USE option to export them.",
+            $var
+        );
+    }
+
+    public function testExportArrowFunctionWithContextVarAsVar()
+    {
+        if (version_compare(PHP_VERSION, '7.4.0') < 0) {
+            $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
+        }
+
+        $greet = 'hello';
+
+        $var = [fn ($planet) => $greet . ' ' . $planet];
+
+        $expected = <<<'PHP'
+return [
+    function ($planet) {
+        $greet = 'hello';
+        return $greet . ' ' . $planet;
+    }
+];
+
+PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
+    }
+
     public function testExportClosureDefinedInEval()
     {
         $var = eval(<<<PHP

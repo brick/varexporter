@@ -54,6 +54,11 @@ final class VarExporter
     public const INLINE_NUMERIC_SCALAR_ARRAY = 1 << 7;
 
     /**
+     * Export static vars defined via `use` as variables.
+     */
+    public const CLOSURE_SNAPSHOT_USES = 1 << 8;
+
+    /**
      * @param mixed $var     The variable to export.
      * @param int   $options A bitmask of options. Possible values are `VarExporter::*` constants.
      *                       Combine multiple options with a bitwise OR `|` operator.

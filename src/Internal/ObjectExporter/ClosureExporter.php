@@ -12,7 +12,9 @@ use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\FindingVisitor;
 use PhpParser\NodeVisitor\NameResolver;
+use PhpParser\Parser;
 use PhpParser\ParserFactory;
+use ReflectionFunction;
 
 /**
  * Handles closures.
@@ -21,6 +23,11 @@ use PhpParser\ParserFactory;
  */
 class ClosureExporter extends ObjectExporter
 {
+    /**
+     * @var Parser|null
+     */
+    private $parser;
+
     /**
      * {@inheritDoc}
      */
@@ -42,7 +49,7 @@ class ClosureExporter extends ObjectExporter
         $ast = $this->parseFile($file, $path);
         $ast = $this->resolveNames($ast);
 
-        $closure = $this->getClosure($ast, $file, $line, $path);
+        $closure = $this->getClosure($reflectionFunction, $ast, $file, $line, $path);
 
         $prettyPrinter = new ClosureExporter\PrettyPrinter();
         $prettyPrinter->setVarExporterNestingLevel(count($path));
@@ -53,6 +60,18 @@ class ClosureExporter extends ObjectExporter
         // heredocs / nowdocs. We must leave the indenting responsibility to the pretty-printer.
 
         return [$code];
+    }
+
+    /**
+     * @return Parser
+     */
+    private function getParser()
+    {
+        if ($this->parser === null) {
+            $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
+        }
+
+        return $this->parser;
     }
 
     /**
@@ -79,10 +98,8 @@ class ClosureExporter extends ObjectExporter
             // @codeCoverageIgnoreEnd
         }
 
-        $parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
-
         try {
-            return $parser->parse($source);
+            return $this->getParser()->parse($source);
             // @codeCoverageIgnoreStart
         } catch (Error $e) {
             throw new ExportException("Cannot parse file \"$filename\" for reading closure code.", $path, $e);
@@ -109,17 +126,23 @@ class ClosureExporter extends ObjectExporter
     /**
      * Finds a closure in the source file and returns its node.
      *
-     * @param array    $ast  The AST.
-     * @param string   $file The file name.
-     * @param int      $line The line number where the closure is located in the source file.
-     * @param string[] $path The path to the closure in the array/object graph.
+     * @param ReflectionFunction $reflectionFunction  Reflection of the closure.
+     * @param array              $ast                 The AST.
+     * @param string             $file                The file name.
+     * @param int                $line                The line number where the closure is located in the source file.
+     * @param string[]           $path                The path to the closure in the array/object graph.
      *
      * @return Node\Expr\Closure
      *
      * @throws ExportException
      */
-    private function getClosure(array $ast, string $file, int $line, array $path) : Node\Expr\Closure
-    {
+    private function getClosure(
+        ReflectionFunction $reflectionFunction,
+        array $ast,
+        string $file,
+        int $line,
+        array $path
+    ) : Node\Expr\Closure {
         $finder = new FindingVisitor(function(Node $node) use ($line) : bool {
             return $node instanceof Node\Expr\Closure
                 && $node->getStartLine() === $line;
@@ -145,9 +168,56 @@ class ClosureExporter extends ObjectExporter
         $closure = $closures[0];
 
         if ($closure->uses) {
-            throw new ExportException("The closure has bound variables through 'use', this is not supported.", $path);
+            $this->closureHandleUses($reflectionFunction, $closure, $path);
         }
 
         return $closure;
+    }
+
+    /**
+     * Handle `use` part of closure.
+     *
+     * @param ReflectionFunction $reflectionFunction  Reflection of the closure.
+     * @param Node\Expr\Closure  $closure             Parsed closure.
+     * @param string[]           $path                The path to the closure in the array/object graph.
+     *
+     * @throws ExportException
+     */
+    private function closureHandleUses(
+        ReflectionFunction $reflectionFunction,
+        Node\Expr\Closure $closure,
+        array $path
+    ) : void {
+        if (! $this->exporter->closureSnapshotUses) {
+            throw new ExportException(
+                "The closure has bound variables through 'use', this is not supported by default. " .
+                    "Use the `CLOSURE_SNAPSHOT_USE` option to export them.",
+                $path
+            );
+        }
+
+        $static = $reflectionFunction->getStaticVariables();
+        $stmts = [];
+
+        $parser = $this->getParser();
+
+        foreach ($closure->uses as $use) {
+            $var = $use->var->name;
+
+            $export = array_merge(['<?php '], $this->exporter->export($static[$var], $path, []), [';']);
+            $nodes = $parser->parse(implode(PHP_EOL, $export));
+
+            /** @var Node\Stmt\Expression $expr */
+            $expr = $nodes[0];
+
+            $assign = new Node\Expr\Assign(
+                new Node\Expr\Variable($var),
+                $expr->expr
+            );
+            $stmts[] = new Node\Stmt\Expression($assign);
+        }
+
+        $closure->uses = [];
+        $closure->stmts = array_merge($stmts, $closure->stmts);
     }
 }

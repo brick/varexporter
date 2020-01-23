@@ -25,7 +25,7 @@ class InternalClassExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, array $path, array $parents) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
         $className = $reflectionObject->getName();
 

@@ -27,7 +27,7 @@ class AnyObjectExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, array $path, array $parents) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
         $lines = $this->getCreateObjectCode($reflectionObject);
 
@@ -91,10 +91,10 @@ class AnyObjectExporter extends ObjectExporter
                     $newPath = $path;
                     $newPath[] = $name;
 
-                    $newParents = $parents;
-                    $newParents[] = spl_object_hash($object);
+                    $newParentIds = $parentIds;
+                    $newParentIds[] = spl_object_id($object);
 
-                    $exportedValue = $this->exporter->export($value, $newPath, $newParents);
+                    $exportedValue = $this->exporter->export($value, $newPath, $newParentIds);
                     $exportedValue = $this->exporter->wrap($exportedValue, '$object->' . $this->escapePropName($name) . ' = ', ';');
                     $lines = array_merge($lines, $exportedValue);
                 }
@@ -115,10 +115,10 @@ class AnyObjectExporter extends ObjectExporter
                     $newPath = $path;
                     $newPath[] = $name;
 
-                    $newParents = $parents;
-                    $newParents[] = spl_object_hash($object);
+                    $newParentIds = $parentIds;
+                    $newParentIds[] = spl_object_id($object);
 
-                    $exportedValue = $this->exporter->export($value, $newPath, $newParents);
+                    $exportedValue = $this->exporter->export($value, $newPath, $newParentIds);
                     $exportedValue = $this->exporter->wrap($exportedValue, '$this->' . $this->escapePropName($name) . ' = ', ';');
                     $closureLines = array_merge($closureLines, $exportedValue);
                 }

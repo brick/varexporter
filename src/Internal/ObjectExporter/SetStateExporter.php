@@ -31,13 +31,13 @@ class SetStateExporter extends ObjectExporter
     /**
      * {@inheritDoc}
      */
-    public function export($object, \ReflectionObject $reflectionObject, array $path, array $parents) : array
+    public function export($object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
         $className = $reflectionObject->getName();
 
         $vars = $this->getObjectVars($object, $path);
 
-        $exportedVars = $this->exporter->exportArray($vars, $path, $parents);
+        $exportedVars = $this->exporter->exportArray($vars, $path, $parentIds);
         $exportedVars = $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
 
         return $exportedVars;

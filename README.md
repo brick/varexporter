@@ -340,7 +340,7 @@ Note how all namespaced classes, and explicitly namespaced functions and constan
 
 By default, exporting closures that have variables bound through `use()` will throw an `ExportException`. This is intentional, because exported closures can be executed in another context, and as such must not rely on the context they've been originally defined in.
 
-When using the `CLOSURE_SNAPSHOT_USE` option, `VarExporter` will export the current value of each `use()` variable instead of throwing an exception. The exported variables are added as expression inside the exported closure.
+When using the [`CLOSURE_SNAPSHOT_USES`](#varexporterclosure_snapshot_uses) option, `VarExporter` will export the current value of each `use()` variable instead of throwing an exception. The exported variables are added as expression inside the exported closure.
 
 ```php
 $planet = 'world';
@@ -365,7 +365,7 @@ echo VarExporter::export([
 
 PHP supports shorthand syntax for closures (since PHP 7.4), also known as arrow functions. `VarExporter` will export these as normal closures.
 
-Arrow functions can implicitly use variables from the context they've been defined in. If any context variable is used in the arrow function, `VarExporter` will throw an `ExportException` unless the `CLOSURE_SNAPSHOT_USES` option is used.
+Arrow functions can implicitly use variables from the context they've been defined in. If any context variable is used in the arrow function, `VarExporter` will throw an `ExportException` unless the [`CLOSURE_SNAPSHOT_USES`](#varexporterclosure_snapshot_uses) option is used.
 
 ```php
 $planet = 'world';
@@ -472,6 +472,10 @@ VarExporter::export([
 ```
 
 Types considered scalar here are `int`, `bool`, `float`, `string` and `null`.
+
+### `VarExporter::CLOSURE_SNAPSHOT_USES`
+
+Export the current value of each `use()` variable as expression inside the exported closure.
 
 ## Error handling
 

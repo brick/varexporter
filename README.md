@@ -496,6 +496,8 @@ try {
 
 - Exporting internal classes other than `stdClass` and `Closure` is currently not supported. `VarExporter` will throw an `ExportException` if it finds one.
 
+  An exception to this are internal classes providing a `__set_state()` implementation, like the ones related to `DateTime`.
+
   To avoid hitting this brick wall, you can implement `__serialize()` and `__unserialize()` in classes that contain references to internal objects.
 
   Feel free to open an issue or a pull request if you think that an internal class could/should be exportable.

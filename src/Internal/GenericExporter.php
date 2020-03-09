@@ -63,11 +63,11 @@ final class GenericExporter
             $this->objectExporters[] = new ObjectExporter\ClosureExporter($this);
         }
 
-        $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
-
         if (! ($options & VarExporter::NO_SET_STATE)) {
             $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
         }
+
+        $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
 
         if (! ($options & VarExporter::NO_SERIALIZE)) {
             $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);

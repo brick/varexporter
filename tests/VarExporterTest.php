@@ -169,6 +169,24 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
+    public function testDateTimeZoneSetState()
+    {
+        $timezone = new \DateTimeZone('Europe/Berlin');
+        $format = 'Y-m-d H:i:s.u';
+
+        $var = \DateTimeImmutable::createFromFormat($format, '2020-03-10 17:06:19.000000', $timezone);
+
+        $expected = <<<'PHP'
+\DateTimeImmutable::__set_state([
+    'date' => '2020-03-10 17:06:19.000000',
+    'timezone_type' => 3,
+    'timezone' => 'Europe/Berlin'
+])
+PHP;
+
+        $this->assertExportEquals($expected, $var);
+    }
+
     public function testExportInternalClass()
     {
         $object = new \stdClass;

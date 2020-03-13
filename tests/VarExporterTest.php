@@ -151,6 +151,42 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
     }
 
+    public function testExportDateTime()
+    {
+        $timezone = new \DateTimeZone('Europe/Berlin');
+        $format = 'Y-m-d H:i:s.u';
+
+        $var = \DateTime::createFromFormat($format, '2020-03-09 18:51:23.000000', $timezone);
+
+        $expected = <<<'PHP'
+\DateTime::__set_state([
+    'date' => '2020-03-09 18:51:23.000000',
+    'timezone_type' => 3,
+    'timezone' => 'Europe/Berlin'
+])
+PHP;
+
+        $this->assertExportEquals($expected, $var);
+    }
+
+    public function testExportDateTimeImmutable()
+    {
+        $timezone = new \DateTimeZone('Europe/Berlin');
+        $format = 'Y-m-d H:i:s.u';
+
+        $var = \DateTimeImmutable::createFromFormat($format, '2020-03-10 17:06:19.000000', $timezone);
+
+        $expected = <<<'PHP'
+\DateTimeImmutable::__set_state([
+    'date' => '2020-03-10 17:06:19.000000',
+    'timezone_type' => 3,
+    'timezone' => 'Europe/Berlin'
+])
+PHP;
+
+        $this->assertExportEquals($expected, $var);
+    }
+
     public function testExportInternalClass()
     {
         $object = new \stdClass;

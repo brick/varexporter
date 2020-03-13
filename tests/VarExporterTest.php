@@ -169,7 +169,7 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
-    public function testDateTimeZoneSetState()
+    public function testExportDateTimeImmutable()
     {
         $timezone = new \DateTimeZone('Europe/Berlin');
         $format = 'Y-m-d H:i:s.u';

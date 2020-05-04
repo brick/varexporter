@@ -26,7 +26,8 @@ Additionally, the output is not very pretty:
 - It outputs arrays as `array()` notation, instead of the short `[]` notation
 - It outputs numeric arrays with explicit and unnecessary `0 => ...` key => value syntax
 
-This library aims to provide a prettier, safer, and powerful alternative to `var_export()`.
+This library aims to provide a prettier, safer, and powerful alternative to `var_export()`.  
+The output is **valid and standalone PHP code, that does not depend on the `brick/varexporter` library**.
 
 ### Installation
 

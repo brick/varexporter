@@ -11,8 +11,6 @@ jobs:
   include:
     - php: 7.2.0
       env: dependencies=lowest
-  allow_failures:
-      - php: nightly
 
 before_script:
   - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest --prefer-stable; else composer update --ignore-platform-reqs; fi;

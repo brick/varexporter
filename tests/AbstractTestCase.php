@@ -68,7 +68,7 @@ abstract class AbstractTestCase extends TestCase
         }, explode('*', $expectedMessage))) . '/';
 
         $this->expectException(ExportException::class);
-        $this->expectExceptionMessageRegExp($expectedMessageRegExp);
+        $this->expectExceptionMessageMatches($expectedMessageRegExp);
 
         VarExporter::export($var, $options);
     }

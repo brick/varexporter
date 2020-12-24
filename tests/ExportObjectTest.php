@@ -57,6 +57,7 @@ PHP;
         $object->x = 1.0;
         $object->dynamicProp = 'Hello';
         $object->{'$weird%Prop'} = 'World';
+        $object->{'123'} = 'Numeric dynamic prop';
 
         $expected = <<<'PHP'
 (static function() {
@@ -65,6 +66,7 @@ PHP;
     $object->x = 1.0;
     $object->dynamicProp = 'Hello';
     $object->{'$weird%Prop'} = 'World';
+    $object->{'123'} = 'Numeric dynamic prop';
 
     return $object;
 })()
@@ -203,13 +205,15 @@ PHP;
         $object->foo = 'Hello';
         $object->bar = 'World';
         $object->dynamic = 'Dynamic property';
+        $object->{'123'} = 'Numeric dynamic property';
 
         $expected = <<<'PHP'
 \Brick\VarExporter\Tests\Classes\SetState::__set_state([
     'baz' => 'defaultValue',
     'foo' => 'Hello',
     'bar' => 'World',
-    'dynamic' => 'Dynamic property'
+    'dynamic' => 'Dynamic property',
+    123 => 'Numeric dynamic property'
 ])
 PHP;
 

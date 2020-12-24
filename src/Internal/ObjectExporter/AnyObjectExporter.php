@@ -88,6 +88,8 @@ class AnyObjectExporter extends ObjectExporter
                 $lines[] = '';
 
                 foreach ($publicProperties as $name => $value) {
+                    $name = (string) $name;
+
                     $newPath = $path;
                     $newPath[] = $name;
 

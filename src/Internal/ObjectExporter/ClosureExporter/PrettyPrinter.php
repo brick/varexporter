@@ -8,6 +8,8 @@ use PhpParser\PrettyPrinter\Standard;
 
 /**
  * Extends the standard pretty-printer to allow for a base indent level.
+ *
+ * @psalm-suppress PropertyNotSetInConstructor
  */
 final class PrettyPrinter extends Standard
 {
@@ -29,7 +31,7 @@ final class PrettyPrinter extends Standard
     /**
      * {@inheritDoc}
      */
-    protected function resetState()
+    protected function resetState() : void
     {
         parent::resetState();
 

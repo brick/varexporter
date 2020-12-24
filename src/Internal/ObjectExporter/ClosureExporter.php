@@ -6,7 +6,7 @@ namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Internal\ObjectExporter;
-
+use Closure;
 use PhpParser\Error;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
@@ -41,6 +41,8 @@ class ClosureExporter extends ObjectExporter
      */
     public function export($object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
+        assert($object instanceof Closure);
+
         $reflectionFunction = new \ReflectionFunction($object);
 
         $file = $reflectionFunction->getFileName();
@@ -99,7 +101,12 @@ class ClosureExporter extends ObjectExporter
         }
 
         try {
-            return $this->getParser()->parse($source);
+            $nodes = $this->getParser()->parse($source);
+
+            // throwing error handler
+            assert($nodes !== null);
+
+            return $nodes;
             // @codeCoverageIgnoreStart
         } catch (Error $e) {
             throw new ExportException("Cannot parse file \"$filename\" for reading closure code.", $path, $e);
@@ -127,7 +134,7 @@ class ClosureExporter extends ObjectExporter
      * Finds a closure in the source file and returns its node.
      *
      * @param ReflectionFunction $reflectionFunction Reflection of the closure.
-     * @param array              $ast                The AST.
+     * @param Node[]             $ast                The AST.
      * @param string             $file               The file name.
      * @param int                $line               The line number where the closure is located in the source file.
      * @param string[]           $path               The path to the closure in the array/object graph.
@@ -202,6 +209,8 @@ class ClosureExporter extends ObjectExporter
         $static = $reflectionFunction->getStaticVariables();
 
         foreach (array_keys($static) as $var) {
+            assert(is_string($var));
+
             $closure->uses[] = new Node\Expr\ClosureUse(
                 new Node\Expr\Variable($var)
             );
@@ -240,8 +249,13 @@ class ClosureExporter extends ObjectExporter
         foreach ($closure->uses as $use) {
             $var = $use->var->name;
 
+            assert(is_string($var));
+
             $export = array_merge(['<?php'], $this->exporter->export($static[$var], $path, []), [';']);
             $nodes = $parser->parse(implode(PHP_EOL, $export));
+
+            // throwing error handler
+            assert($nodes !== null);
 
             /** @var Node\Stmt\Expression $expr */
             $expr = $nodes[0];

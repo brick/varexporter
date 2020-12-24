@@ -26,6 +26,8 @@ class AnyObjectExporter extends ObjectExporter
 
     /**
      * {@inheritDoc}
+     *
+     * @psalm-suppress MixedAssignment
      */
     public function export($object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {

@@ -67,6 +67,7 @@ class SetStateExporter extends ObjectExporter
         $result = [];
 
         foreach ((array) $object as $name => $value) {
+            $name = (string) $name;
             $pos = strrpos($name, "\0");
 
             if ($pos !== false) {

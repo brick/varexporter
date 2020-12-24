@@ -55,10 +55,12 @@ class SetStateExporter extends ObjectExporter
      *
      * This way we offer a better safety guarantee, while staying compatible with var_export() in the output.
      *
-     * @param object $object The object to dump.
-     * @param array  $path   The path to the object, in the array/object graph.
+     * @psalm-suppress MixedAssignment
      *
-     * @return array An associative array of property name to value.
+     * @param object   $object The object to dump.
+     * @param string[] $path   The path to the object, in the array/object graph.
+     *
+     * @return array<string, mixed> An associative array of property name to value.
      *
      * @throws ExportException
      */
@@ -73,6 +75,8 @@ class SetStateExporter extends ObjectExporter
             if ($pos !== false) {
                 $name = substr($name, $pos + 1);
             }
+
+            assert($name !== false);
 
             if (array_key_exists($name, $result)) {
                 $className = get_class($object);

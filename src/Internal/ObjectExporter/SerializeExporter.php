@@ -31,6 +31,10 @@ class SerializeExporter extends ObjectExporter
 
         $lines[] = '';
 
+        /**
+         * @psalm-suppress MixedAssignment
+         * @psalm-suppress MixedMethodCall
+         */
         $values = $object->__serialize();
 
         $exportedValues = $this->exporter->export($values, $path, $parentIds);

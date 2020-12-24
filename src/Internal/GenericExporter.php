@@ -106,9 +106,11 @@ final class GenericExporter
                 return ['null'];
 
             case 'array':
+                /** @var array $var */
                 return $this->exportArray($var, $path, $parentIds);
 
             case 'object':
+                /** @var object $var */
                 return $this->exportObject($var, $path, $parentIds);
 
             default:
@@ -118,6 +120,8 @@ final class GenericExporter
     }
 
     /**
+     * @psalm-suppress MixedAssignment
+     *
      * @param array    $array     The array to export.
      * @param string[] $path      The path to the current array in the array/object graph.
      * @param int[]    $parentIds The ids of all objects higher in the graph.

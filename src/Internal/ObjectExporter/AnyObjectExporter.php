@@ -90,6 +90,7 @@ class AnyObjectExporter extends ObjectExporter
                 $lines[] = '';
 
                 foreach ($publicProperties as $name => $value) {
+                    /** @psalm-suppress RedundantCast See: https://github.com/vimeo/psalm/issues/4891 */
                     $name = (string) $name;
 
                     $newPath = $path;

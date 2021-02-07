@@ -190,7 +190,6 @@ class ClosureExporter extends ObjectExporter
      *
      * @param ReflectionFunction       $reflectionFunction  Reflection of the closure.
      * @param Node\Expr\ArrowFunction  $arrowFunction       Parsed arrow function.
-     * @param string[]                 $path                The path to the closure in the array/object graph.
      *
      * @return Node\Expr\Closure
      */

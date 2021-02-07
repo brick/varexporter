@@ -60,6 +60,7 @@ final class VarExporter
 
     /**
      * Add trailing comma for last item of an array.
+     * Trailing comma won't be added to inlined arrays even if this flag is used.
      */
     public const TRAILING_COMMA_IN_ARRAY = 1 << 9;
 

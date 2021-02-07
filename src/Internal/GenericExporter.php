@@ -53,6 +53,11 @@ final class GenericExporter
     public $closureSnapshotUses;
 
     /**
+     * @var bool
+     */
+    public $trailingCommaInArray;
+
+    /**
      * @param int $options
      */
     public function __construct(int $options)
@@ -81,6 +86,7 @@ final class GenericExporter
         $this->skipDynamicProperties    = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
         $this->inlineNumericScalarArray = (bool) ($options & VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
         $this->closureSnapshotUses      = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
+        $this->trailingCommaInArray     = (bool) ($options & VarExporter::TRAILING_COMMA_IN_ARRAY);
     }
 
     /**
@@ -163,7 +169,7 @@ final class GenericExporter
                     $prepend = var_export($key, true) . ' => ';
                 }
 
-                if (! $isLast) {
+                if (! $isLast || $this->trailingCommaInArray) {
                     $append = ',';
                 }
 

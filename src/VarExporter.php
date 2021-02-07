@@ -59,8 +59,7 @@ final class VarExporter
     public const CLOSURE_SNAPSHOT_USES = 1 << 8;
 
     /**
-     * Add trailing comma for last item of an array.
-     * Trailing comma won't be added to inlined arrays even if this flag is used.
+     * Add a trailing comma after the last item of non-inline arrays.
      */
     public const TRAILING_COMMA_IN_ARRAY = 1 << 9;
 

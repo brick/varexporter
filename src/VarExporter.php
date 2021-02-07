@@ -59,6 +59,12 @@ final class VarExporter
     public const CLOSURE_SNAPSHOT_USES = 1 << 8;
 
     /**
+     * Add trailing comma for last item of an array.
+     * Trailing comma won't be added to inlined arrays even if this flag is used.
+     */
+    public const TRAILING_COMMA_IN_ARRAY = 1 << 9;
+
+    /**
      * @param mixed $var     The variable to export.
      * @param int   $options A bitmask of options. Possible values are `VarExporter::*` constants.
      *                       Combine multiple options with a bitwise OR `|` operator.

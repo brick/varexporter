@@ -474,6 +474,31 @@ VarExporter::export([
 
 Types considered scalar here are `int`, `bool`, `float`, `string` and `null`.
 
+### `VarExporter::TRAILING_COMMA_IN_ARRAY`
+
+Add trailing comma for last item of an array:
+
+```php
+VarExporter::export([
+    'one' => ['hello', 'world', 123, true, false, null, 7.5],
+    'two' => ['hello', 'world', ['one', 'two', 'three']]
+], VarExporter::TRAILING_COMMA_IN_ARRAY | VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
+```
+
+```php
+[
+    'one' => ['hello', 'world', 123, true, false, null, 7.5],
+    'two' => [
+        'hello',
+        'world',
+        ['one', 'two', 'three'],
+    ],
+]
+```
+
+Trailing comma won't be added to inlined arrays if this flag is used along with
+`VarExporter::INLINE_NUMERIC_SCALAR_ARRAY`.
+
 ### `VarExporter::CLOSURE_SNAPSHOT_USES`
 
 Export the current value of each `use()` variable as expression inside the exported closure.

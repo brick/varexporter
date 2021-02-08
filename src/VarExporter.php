@@ -64,23 +64,33 @@ final class VarExporter
     public const TRAILING_COMMA_IN_ARRAY = 1 << 9;
 
     /**
-     * @param mixed $var     The variable to export.
-     * @param int   $options A bitmask of options. Possible values are `VarExporter::*` constants.
-     *                       Combine multiple options with a bitwise OR `|` operator.
+     * @param mixed $var       The variable to export.
+     * @param int   $options   A bitmask of options. Possible values are `VarExporter::*` constants.
+     *                         Combine multiple options with a bitwise OR `|` operator.
+     * @param int $indentLevel Indentation level.
      *
      * @return string
      *
      * @throws ExportException
      */
-    public static function export($var, int $options = 0) : string
+    public static function export($var, int $options = 0, int $indentLevel = 0) : string
     {
         $exporter = new GenericExporter($options);
-
         $lines = $exporter->export($var, [], []);
-        $export = implode(PHP_EOL, $lines);
+
+        if ($indentLevel < 1 || count($lines) < 2) {
+            $export = implode(PHP_EOL, $lines);
+        } else {
+            $firstLine = array_shift($lines);
+            $lines = array_map(function ($line) use ($indentLevel) {
+                return str_repeat('    ', $indentLevel) . $line;
+            }, $lines);
+
+            $export = $firstLine . PHP_EOL . implode(PHP_EOL, $lines);
+        }
 
         if ($options & self::ADD_RETURN) {
-            return 'return ' . $export . ';' .  PHP_EOL;
+            return 'return ' . $export . ';' . PHP_EOL;
         }
 
         return $export;

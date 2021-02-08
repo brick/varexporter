@@ -287,4 +287,52 @@ PHP;
             ]
         ]);
     }
+
+    public function testExportIndented()
+    {
+        $exported = VarExporter::export(
+            ['one' => ['hello', true], 'two' => 2],
+            0,
+            1
+        );
+
+        $template = <<<TPL
+public foo ()
+{
+    \$data = $exported;
+}
+TPL;
+        $expected = <<<'PHP'
+public foo ()
+{
+    $data = [
+        'one' => [
+            'hello',
+            true
+        ],
+        'two' => 2
+    ];
+}
+PHP;
+
+        $this->assertEquals($expected, $template);
+    }
+
+    public function testExportIndented2()
+    {
+        $exported = VarExporter::export(null, 0, 1);
+        $template = <<<TPL
+public foo ()
+{
+    \$data = $exported;
+}
+TPL;
+        $expected = <<<'PHP'
+public foo ()
+{
+    $data = null;
+}
+PHP;
+        $this->assertEquals($expected, $template);
+    }
 }

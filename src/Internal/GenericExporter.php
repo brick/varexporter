@@ -68,9 +68,17 @@ final class GenericExporter
     public $trailingCommaInArray;
 
     /**
-     * @param int $options
+     * @psalm-readonly
+     *
+     * @var int
      */
-    public function __construct(int $options)
+    public $indentLevel;
+
+    /**
+     * @param int $options
+     * @param int Indentation level
+     */
+    public function __construct(int $options, int $indentLevel = 0)
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
 
@@ -97,6 +105,8 @@ final class GenericExporter
         $this->inlineNumericScalarArray = (bool) ($options & VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
         $this->closureSnapshotUses      = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
         $this->trailingCommaInArray     = (bool) ($options & VarExporter::TRAILING_COMMA_IN_ARRAY);
+
+        $this->indentLevel = $indentLevel;
     }
 
     /**

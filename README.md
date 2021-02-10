@@ -497,6 +497,31 @@ VarExporter::export(
 
 Export the current value of each `use()` variable as expression inside the exported closure.
 
+## Indentation
+
+You can use the 3rd argument of `VarExporter::export()` to control the indentation level. 
+This is useful when you want to use the generated code string to replace a placeholder in a template used to generate code files.
+
+So using output of `VarExporter::export(['foo' => 'bar'], 0, 1)` in the template below to replace `{{exported}}`
+
+```
+public foo() 
+{
+    $data = {{exported}};
+}
+```
+
+would result in
+
+```php
+public foo() 
+{
+    $data = [
+        'foo' => 'bar'
+    ];
+}
+```
+
 ## Error handling
 
 Any error occurring on `export()` will throw an `ExportException`:

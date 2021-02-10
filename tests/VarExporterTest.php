@@ -288,20 +288,28 @@ PHP;
         ]);
     }
 
-    public function testExportIndented()
+    /**
+     * @dataProvider providerExportIndented
+     */
+    public function testExportIndented($var, $expected, $options)
     {
-        $exported = VarExporter::export(
-            ['one' => ['hello', true], 'two' => 2],
-            0,
-            1
-        );
-
-        $template = <<<TPL
+        $template = <<<'TPL'
 public foo ()
 {
-    \$data = $exported;
+    $data = {{exported}};
 }
 TPL;
+
+        $exported = VarExporter::export($var, $options, 1);
+        $result = str_replace('{{exported}}', $exported, $template);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function providerExportIndented()
+    {
+        // Array
+        $var = ['one' => ['hello', true], 'two' => 2];
         $expected = <<<'PHP'
 public foo ()
 {
@@ -314,25 +322,90 @@ public foo ()
     ];
 }
 PHP;
+        yield [$var, $expected, 0];
 
-        $this->assertEquals($expected, $template);
-    }
-
-    public function testExportIndented2()
-    {
-        $exported = VarExporter::export(null, 0, 1);
-        $template = <<<TPL
-public foo ()
-{
-    \$data = $exported;
-}
-TPL;
+        // Null
+        $var = null;
         $expected = <<<'PHP'
 public foo ()
 {
     $data = null;
 }
 PHP;
-        $this->assertEquals($expected, $template);
+        yield [$var, $expected, 0];
+
+        // Closure
+        $var = function () {
+            return 'Hello, world!';
+        };
+        $expected = <<<'PHP'
+public foo ()
+{
+    $data = function () {
+        return 'Hello, world!';
+    };
+}
+PHP;
+        yield [$var, $expected, 0];
+
+        $foo = 'bar';
+        $sub = function () use ($foo) {
+            return $foo;
+        };
+        $var = function () use ($sub) {
+            return $sub();
+        };
+
+        $expected = <<<'PHP'
+public foo ()
+{
+    $data = function () {
+        $sub = function () {
+            $foo = 'bar';
+            return $foo;
+        };
+        return $sub();
+    };
+}
+PHP;
+        yield [$var, $expected, VarExporter::CLOSURE_SNAPSHOT_USES];
+
+        $var = function () {
+            $a = 'Hello,
+World!';
+
+            $b = <<<TXT
+Hello,
+world!
+TXT;
+
+            $c = <<<'TXT'
+Hello,
+world!
+TXT;
+
+            return $a . $b . $c;
+        };
+
+        $expected = <<<'PHP'
+public foo ()
+{
+    $data = function () {
+        $a = 'Hello,
+World!';
+        $b = <<<TXT
+Hello,
+world!
+TXT;
+        $c = <<<'TXT'
+Hello,
+world!
+TXT;
+        return $a . $b . $c;
+    };
+}
+PHP;
+
+        yield [$var, $expected, 0];
     }
 }

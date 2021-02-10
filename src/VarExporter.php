@@ -75,7 +75,7 @@ final class VarExporter
      */
     public static function export($var, int $options = 0, int $indentLevel = 0) : string
     {
-        $exporter = new GenericExporter($options);
+        $exporter = new GenericExporter($options, $indentLevel);
         $lines = $exporter->export($var, [], []);
 
         if ($indentLevel < 1 || count($lines) < 2) {

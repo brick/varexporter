@@ -33,26 +33,36 @@ final class GenericExporter
     private $visitedObjects = [];
 
     /**
+     * @psalm-readonly
+     *
      * @var bool
      */
     public $addTypeHints;
 
     /**
+     * @psalm-readonly
+     *
      * @var bool
      */
     public $skipDynamicProperties;
 
     /**
+     * @psalm-readonly
+     *
      * @var bool
      */
     public $inlineNumericScalarArray;
 
     /**
+     * @psalm-readonly
+     *
      * @var bool
      */
     public $closureSnapshotUses;
 
     /**
+     * @psalm-readonly
+     *
      * @var bool
      */
     public $trailingCommaInArray;

@@ -21,7 +21,7 @@ use Brick\VarExporter\VarExporter;
  */
 class ExportObjectTest extends AbstractTestCase
 {
-    public function testExportStdClass()
+    public function testExportStdClass(): void
     {
         $object = new \stdClass;
         $object->foo = 'Hello';
@@ -42,7 +42,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithNoProperties()
+    public function testExportClassWithNoProperties(): void
     {
         $object = new NoProperties;
 
@@ -51,7 +51,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithDynamicPropertiesOnly()
+    public function testExportClassWithDynamicPropertiesOnly(): void
     {
         $object = new NoProperties;
         $object->x = 1.0;
@@ -75,7 +75,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithDynamicPropertiesOnly_SkipDynamicProperties()
+    public function testExportClassWithDynamicPropertiesOnly_SkipDynamicProperties(): void
     {
         $object = new NoProperties;
         $object->dynamicProp = 'Hello';
@@ -86,7 +86,7 @@ PHP;
         $this->assertExportEquals($expected, $object, VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
 
-    public function testExportClassWithConstructorAndNoProperties()
+    public function testExportClassWithConstructorAndNoProperties(): void
     {
         $object = new ConstructorAndNoProperties();
 
@@ -102,7 +102,7 @@ PHP;
         $this->assertExportEquals($expected, $object, VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
 
-    public function testExportClassWithPublicPropertiesOnly()
+    public function testExportClassWithPublicPropertiesOnly(): void
     {
         $object = new PublicPropertiesOnly;
         $object->foo = 'Hello';
@@ -122,7 +122,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportObjectWithPublicAndDynamicProperties()
+    public function testExportObjectWithPublicAndDynamicProperties(): void
     {
         $object = new PublicPropertiesOnly;
         $object->foo = 'Hello';
@@ -144,7 +144,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportObjectWithPublicAndDynamicProperties_SkipDynamicProperties()
+    public function testExportObjectWithPublicAndDynamicProperties_SkipDynamicProperties(): void
     {
         $object = new PublicPropertiesOnly;
         $object->foo = 'Hello';
@@ -165,7 +165,7 @@ PHP;
         $this->assertExportEquals($expected, $object, VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
 
-    public function testExportClassWithSetState()
+    public function testExportClassWithSetState(): void
     {
         $object = new SetState;
         $object->foo = 'Hello';
@@ -182,7 +182,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithSetStateAndUnsetProperties()
+    public function testExportClassWithSetStateAndUnsetProperties(): void
     {
         $object = new SetState;
         $object->foo = null;
@@ -199,7 +199,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithSetStateAndDynamicProperties()
+    public function testExportClassWithSetStateAndDynamicProperties(): void
     {
         $object = new SetState;
         $object->foo = 'Hello';
@@ -220,7 +220,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithSetStateAndDynamicProperties_SkipDynamicProperties()
+    public function testExportClassWithSetStateAndDynamicProperties_SkipDynamicProperties(): void
     {
         $object = new SetState;
         $object->foo = 'Hello';
@@ -238,7 +238,7 @@ PHP;
         $this->assertExportEquals($expected, $object, VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
 
-    public function testExportClassWithSetStateAndOverriddenPrivateProperties()
+    public function testExportClassWithSetStateAndOverriddenPrivateProperties(): void
     {
         $object = new SetStateWithOverriddenPrivateProperties;
 
@@ -247,7 +247,7 @@ PHP;
         $this->assertExportThrows($expectedMessage, $object);
     }
 
-    public function testExportClassWithPrivateConstructor()
+    public function testExportClassWithPrivateConstructor(): void
     {
         $object = PrivateConstructor::create();
         $object->foo = 'Foo';
@@ -268,7 +268,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithPublicPropertiesAndConstructor()
+    public function testExportClassWithPublicPropertiesAndConstructor(): void
     {
         $object = new PublicPropertiesWithConstructor();
 
@@ -287,7 +287,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithSerializeMagicMethods()
+    public function testExportClassWithSerializeMagicMethods(): void
     {
         $object = new SerializeMagicMethods;
 
@@ -313,7 +313,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithSerializeMagicMethodsAndConstructor()
+    public function testExportClassWithSerializeMagicMethodsAndConstructor(): void
     {
         $object = new SerializeMagicMethodsWithConstructor('Test', 1234);
 
@@ -334,7 +334,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassWithSerializeMagicMethodsAndConstructor_AddTypeHints()
+    public function testExportClassWithSerializeMagicMethodsAndConstructor_AddTypeHints(): void
     {
         $object = new SerializeMagicMethodsWithConstructor('Test', 1234);
 
@@ -357,7 +357,7 @@ PHP;
         $this->assertExportEquals($expected, $object, VarExporter::ADD_TYPE_HINTS);
     }
 
-    public function testExportClassHierarchy()
+    public function testExportClassHierarchy(): void
     {
         $object = Hierarchy\C::create();
         $object->dynamicProperty = 'A property declared dynamically';
@@ -397,7 +397,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportClassHierarchy_AddTypeHints_SkipDynamicProperties()
+    public function testExportClassHierarchy_AddTypeHints_SkipDynamicProperties(): void
     {
         $object = Hierarchy\C::create();
         $object->dynamicProperty = 'A property declared dynamically';
@@ -441,7 +441,7 @@ PHP;
         $this->assertExportEquals($expected, $object, VarExporter::ADD_TYPE_HINTS | VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
 
-    public function testExportClassHierarchyWithUnsetProperties()
+    public function testExportClassHierarchyWithUnsetProperties(): void
     {
         $object = Hierarchy\C::create();
 
@@ -493,7 +493,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testExportObjectWithRestrictiveOptions()
+    public function testExportObjectWithRestrictiveOptions(): void
     {
         $object = new PublicPropertiesOnly();
 

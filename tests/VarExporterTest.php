@@ -11,7 +11,7 @@ use Brick\VarExporter\VarExporter;
 
 class VarExporterTest extends AbstractTestCase
 {
-    public function testMixedVar()
+    public function testMixedVar(): void
     {
         $myObject = new PublicPropertiesOnly();
         $myObject->foo = 'hello';
@@ -102,7 +102,7 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
-    public function testExportObjectPropWithSpecialChars()
+    public function testExportObjectPropWithSpecialChars(): void
     {
         $object = new PublicPropertiesOnly;
         $object->{'$ref'} = '#/components/schemas/User';
@@ -122,7 +122,7 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
-    public function testAddReturn()
+    public function testAddReturn(): void
     {
         $var = [];
         $expected = 'return [];' . PHP_EOL;
@@ -130,7 +130,7 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
 
-    public function testInlineNumericScalarArray()
+    public function testInlineNumericScalarArray(): void
     {
         $var = [
             'one' => ['hello', 'world', 123, true, false, null, 7.5],
@@ -151,7 +151,7 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
     }
 
-    public function testTrailingCommaInArray()
+    public function testTrailingCommaInArray(): void
     {
         $var = [
             'one' => ['hello', 'world', 123, true, false, null, 7.5],
@@ -172,7 +172,7 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::INLINE_NUMERIC_SCALAR_ARRAY | VarExporter::TRAILING_COMMA_IN_ARRAY);
     }
 
-    public function testExportDateTime()
+    public function testExportDateTime(): void
     {
         $timezone = new \DateTimeZone('Europe/Berlin');
         $format = 'Y-m-d H:i:s.u';
@@ -190,7 +190,7 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
-    public function testExportDateTimeImmutable()
+    public function testExportDateTimeImmutable(): void
     {
         $timezone = new \DateTimeZone('Europe/Berlin');
         $format = 'Y-m-d H:i:s.u';
@@ -208,7 +208,7 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
-    public function testExportInternalClass()
+    public function testExportInternalClass(): void
     {
         $object = new \stdClass;
         $object->iterator = new \ArrayIterator();
@@ -218,7 +218,7 @@ PHP;
         $this->assertExportThrows($expectedMessage, $object);
     }
 
-    public function testExportResource()
+    public function testExportResource(): void
     {
         $handle = fopen('php://memory', 'rb+');
 
@@ -235,7 +235,7 @@ PHP;
         VarExporter::export($object);
     }
 
-    public function testExportObjectTwiceWithoutCircularReference()
+    public function testExportObjectTwiceWithoutCircularReference(): void
     {
         $a = new PublicPropertiesOnly;
         $a->foo = 'Foo';
@@ -270,7 +270,7 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
-    public function testExportObjectWithCircularReference()
+    public function testExportObjectWithCircularReference(): void
     {
         $a = new PublicPropertiesOnly;
         $b = new PublicPropertiesOnly;
@@ -290,8 +290,10 @@ PHP;
 
     /**
      * @dataProvider providerExportIndented
+     *
+     * @param mixed $var
      */
-    public function testExportIndented($var, $expected, $options)
+    public function testExportIndented($var, string $expected, int $options): void
     {
         $template = <<<'TPL'
 public function foo()
@@ -306,7 +308,7 @@ TPL;
         $this->assertEquals($expected, $result);
     }
 
-    public function providerExportIndented()
+    public function providerExportIndented(): iterable
     {
         // Array
         $var = ['one' => ['hello', true], 'two' => 2];

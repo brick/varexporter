@@ -294,7 +294,7 @@ PHP;
     public function testExportIndented($var, $expected, $options)
     {
         $template = <<<'TPL'
-public foo ()
+public function foo()
 {
     $data = {{exported}};
 }
@@ -311,7 +311,7 @@ TPL;
         // Array
         $var = ['one' => ['hello', true], 'two' => 2];
         $expected = <<<'PHP'
-public foo ()
+public function foo()
 {
     $data = [
         'one' => [
@@ -327,7 +327,7 @@ PHP;
         // Null
         $var = null;
         $expected = <<<'PHP'
-public foo ()
+public function foo()
 {
     $data = null;
 }
@@ -339,7 +339,7 @@ PHP;
             return 'Hello, world!';
         };
         $expected = <<<'PHP'
-public foo ()
+public function foo()
 {
     $data = function () {
         return 'Hello, world!';
@@ -357,7 +357,7 @@ PHP;
         };
 
         $expected = <<<'PHP'
-public foo ()
+public function foo()
 {
     $data = function () {
         $sub = function () {
@@ -388,7 +388,7 @@ TXT;
         };
 
         $expected = <<<'PHP'
-public foo ()
+public function foo()
 {
     $data = function () {
         $a = 'Hello,

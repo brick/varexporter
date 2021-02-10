@@ -20,7 +20,7 @@ use const Brick\VarExporter\Dummy\Constants\IMPORTED_CONSTANT;
  */
 class ExportClosureTest extends AbstractTestCase
 {
-    public function testExportSimpleClosure()
+    public function testExportSimpleClosure(): void
     {
         $var = function() {
             return 'Hello, world!';
@@ -35,7 +35,7 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
-    public function testExportNestedComplexClosure()
+    public function testExportNestedComplexClosure(): void
     {
         $var = [
             (object) [
@@ -76,7 +76,7 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
-    public function testExportNamespacedCode()
+    public function testExportNamespacedCode(): void
     {
         $var = function(SetState $a) : array {
             return [
@@ -104,7 +104,7 @@ PHP;
         $this->assertExportEquals($expected, $var);
     }
 
-    public function testExportClosureWithStringsContainingLikeBreaks()
+    public function testExportClosureWithStringsContainingLikeBreaks(): void
     {
         $var = function() {
             $a = 'Hello,
@@ -143,7 +143,7 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
 
-    public function testExportClosureWithUse()
+    public function testExportClosureWithUse(): void
     {
         $foo = 'bar';
 
@@ -158,7 +158,7 @@ PHP;
         );
     }
 
-    public function testExportClosureWithUseAsVars()
+    public function testExportClosureWithUseAsVars(): void
     {
         $foo = 'b' . 'a' . 'r';
 
@@ -177,7 +177,7 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
     }
 
-    public function testExportClosureWithUseClosure()
+    public function testExportClosureWithUseClosure(): void
     {
         $foo = 'b' . 'a' . 'r';
 
@@ -204,7 +204,7 @@ PHP;
     }
 
 
-    public function testExportArrowFunction()
+    public function testExportArrowFunction(): void
     {
         if (version_compare(PHP_VERSION, '7.4.0') < 0) {
             $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
@@ -224,7 +224,7 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
 
-    public function testExportArrowFunctionWithContext()
+    public function testExportArrowFunctionWithContext(): void
     {
         if (version_compare(PHP_VERSION, '7.4.0') < 0) {
             $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
@@ -241,7 +241,7 @@ PHP;
         );
     }
 
-    public function testExportArrowFunctionWithContextVarAsVar()
+    public function testExportArrowFunctionWithContextVarAsVar(): void
     {
         if (version_compare(PHP_VERSION, '7.4.0') < 0) {
             $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
@@ -264,7 +264,7 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
     }
 
-    public function testExportClosureDefinedInEval()
+    public function testExportClosureDefinedInEval(): void
     {
         $var = eval(<<<PHP
 return function() {
@@ -275,14 +275,14 @@ PHP
         $this->assertExportThrows("Closure defined in eval()'d code cannot be exported.", $var);
     }
 
-    public function testExportTwoClosuresOnSameLine()
+    public function testExportTwoClosuresOnSameLine(): void
     {
         $var = function() { return function() {}; };
 
         $this->assertExportThrows("Expected exactly 1 closure in */tests/ExportClosureTest.php on line *, found 2.", $var);
     }
 
-    public function testExportClosureDisabled()
+    public function testExportClosureDisabled(): void
     {
         $var = function() {
             return 'Hello, world!';

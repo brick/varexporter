@@ -51,6 +51,13 @@ final class GenericExporter
      *
      * @var bool
      */
+    public $inlineArray;
+
+    /**
+     * @psalm-readonly
+     *
+     * @var bool
+     */
     public $inlineNumericScalarArray;
 
     /**
@@ -102,6 +109,7 @@ final class GenericExporter
 
         $this->addTypeHints             = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
         $this->skipDynamicProperties    = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
+        $this->inlineArray              = (bool) ($options & VarExporter::INLINE_ARRAY);
         $this->inlineNumericScalarArray = (bool) ($options & VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
         $this->closureSnapshotUses      = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
         $this->trailingCommaInArray     = (bool) ($options & VarExporter::TRAILING_COMMA_IN_ARRAY);
@@ -169,7 +177,8 @@ final class GenericExporter
 
         $current = 0;
 
-        $inline = ($this->inlineNumericScalarArray && $isNumeric && $this->isScalarArray($array));
+        $inlineArray = $this->inlineArray;
+        $inlineNumericScalarArray = ($inlineArray || $this->inlineNumericScalarArray) && $isNumeric && $this->isScalarArray($array);
 
         foreach ($array as $key => $value) {
             $isLast = (++$current === $count);
@@ -179,7 +188,7 @@ final class GenericExporter
 
             $exported = $this->export($value, $newPath, $parentIds);
 
-            if ($inline) {
+            if ($inlineNumericScalarArray) {
                 $result[] = $exported[0];
             } else {
                 $prepend = '';
@@ -189,18 +198,23 @@ final class GenericExporter
                     $prepend = var_export($key, true) . ' => ';
                 }
 
-                if (! $isLast || $this->trailingCommaInArray) {
+                if (! $inlineArray && (! $isLast || $this->trailingCommaInArray)) {
                     $append = ',';
                 }
 
                 $exported = $this->wrap($exported, $prepend, $append);
-                $exported = $this->indent($exported);
+                if ($inlineArray && count($exported) > 1) {
+                    $exported = array_map('ltrim', $exported);
+                    $exported = [implode(' ', $exported)];
+                } elseif (! $inlineArray) {
+                    $exported = $this->indent($exported);
+                }
 
                 $result = array_merge($result, $exported);
             }
         }
 
-        if ($inline) {
+        if ($inlineArray || $inlineNumericScalarArray) {
             return ['[' . implode(', ', $result) . ']'];
         }
 

@@ -172,6 +172,28 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::INLINE_NUMERIC_SCALAR_ARRAY | VarExporter::TRAILING_COMMA_IN_ARRAY);
     }
 
+    public function testInlineArray()
+    {
+        $var = ['one' => [1], 'two' => ['a2' => 'v2', 'a1']];
+        $scalarValues = "'one' => [1], 'two' => ['a2' => 'v2', 0 => 'a1']";
+        $expected = '[' . $scalarValues . ']';
+
+        $this->assertExportEquals($expected, $var, VarExporter::INLINE_ARRAY | VarExporter::TRAILING_COMMA_IN_ARRAY);
+
+        $myObject = new PublicPropertiesOnly();
+        $myObject->foo = 'hello';
+        $myObject->bar = new SetState();
+        $myObject->bar->foo = 'SetState.foo';
+        $myObject->bar->bar = 'SetState.bar';
+
+        $var['myObject'] = $myObject;
+
+        $objectValue = "'myObject' => (static function() { \$object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;  \$object->foo = 'hello'; \$object->bar = \Brick\VarExporter\Tests\Classes\SetState::__set_state(['baz' => 'defaultValue', 'foo' => 'SetState.foo', 'bar' => 'SetState.bar']);  return \$object; })()";
+        $expected = '[' . $scalarValues . ', ' . $objectValue . ']';
+
+        $this->assertExportEquals($expected, $var, VarExporter::INLINE_ARRAY | VarExporter::TRAILING_COMMA_IN_ARRAY);
+    }
+
     public function testExportDateTime(): void
     {
         $timezone = new \DateTimeZone('Europe/Berlin');

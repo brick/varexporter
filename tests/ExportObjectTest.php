@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\Tests\Classes\ConstructorAndNoProperties;
+use Brick\VarExporter\Tests\Classes\Enum;
 use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\Hierarchy;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
@@ -543,5 +544,19 @@ PHP;
             'using the current options.';
 
         $this->assertExportThrows($expectedMessage, $object, VarExporter::NOT_ANY_OBJECT);
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testExportEnum(): void
+    {
+        $object = Enum::TEST;
+
+        $expected = <<<'PHP'
+Brick\VarExporter\Tests\Classes\Enum::TEST
+PHP;
+
+        $this->assertExportEquals($expected, $object);
     }
 }

@@ -96,6 +96,10 @@ final class GenericExporter
             $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
         }
 
+        if (! ($options & VarExporter::NO_ENUMS)) {
+            $this->objectExporters[] = new ObjectExporter\EnumExporter($this);
+        }
+
         if (! ($options & VarExporter::NOT_ANY_OBJECT)) {
             $this->objectExporters[] = new ObjectExporter\AnyObjectExporter($this);
         }

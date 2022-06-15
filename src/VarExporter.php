@@ -64,6 +64,11 @@ final class VarExporter
     public const TRAILING_COMMA_IN_ARRAY = 1 << 9;
 
     /**
+     * Disallows exporting enums.
+     */
+    public const NO_ENUMS = 1 << 10;
+
+    /**
      * @param mixed $var       The variable to export.
      * @param int   $options   A bitmask of options. Possible values are `VarExporter::*` constants.
      *                         Combine multiple options with a bitwise OR `|` operator.

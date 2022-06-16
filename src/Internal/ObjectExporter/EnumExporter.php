@@ -23,11 +23,9 @@ class EnumExporter extends ObjectExporter
      */
     public function supports(\ReflectionObject $reflectionObject) : bool
     {
-        if (! method_exists($reflectionObject, 'isEnum')) {
-            return false;
-        }
-
-        return $reflectionObject->isEnum();
+        return method_exists($reflectionObject, 'isEnum')
+            ? $reflectionObject->isEnum()
+            : false;
     }
 
     /**

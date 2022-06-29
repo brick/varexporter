@@ -1,5 +1,11 @@
 # Changelog
 
+## UNRELEASED (0.3.7)
+
+🗑️ **Deprecated**
+
+- The `VarExporter::INLINE_NUMERIC_SCALAR_ARRAY` is deprecated, please use `INLINE_SCALAR_LIST` instead
+
 ## [0.3.6](https://github.com/brick/varexporter/releases/tag/0.3.6) - 2022-06-15
 
 ✨ **New feature**

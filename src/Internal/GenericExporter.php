@@ -74,10 +74,6 @@ final class GenericExporter
      */
     public $indentLevel;
 
-    /**
-     * @param int $options
-     * @param int Indentation level
-     */
     public function __construct(int $options, int $indentLevel = 0)
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);

@@ -48,10 +48,15 @@ final class VarExporter
     public const NO_CLOSURES = 1 << 6;
 
     /**
-     * Formats numeric arrays containing only scalar values on a single line.
+     * Formats lists (0-based numeric arrays) containing only scalar values on a single line.
      * Types considered scalar here are int, bool, float, string and null.
      */
-    public const INLINE_NUMERIC_SCALAR_ARRAY = 1 << 7;
+    public const INLINE_SCALAR_LIST = 1 << 7;
+
+    /**
+     * @deprecated Please use INLINE_SCALAR_LIST instead.
+     */
+    public const INLINE_NUMERIC_SCALAR_ARRAY = self::INLINE_SCALAR_LIST;
 
     /**
      * Export static vars defined via `use` as variables.

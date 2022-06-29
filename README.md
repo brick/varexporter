@@ -451,7 +451,7 @@ Disallows exporting any custom object using direct property access and bound clo
 
 Disallows exporting closures.
 
-### `VarExporter::INLINE_NUMERIC_SCALAR_ARRAY`
+### `VarExporter::INLINE_SCALAR_LIST`
 
 Formats numeric arrays containing only scalar values on a single line:
 
@@ -459,7 +459,7 @@ Formats numeric arrays containing only scalar values on a single line:
 VarExporter::export([
     'one' => ['hello', 'world', 123, true, false, null, 7.5],
     'two' => ['hello', 'world', ['one', 'two', 'three']]
-], VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
+], VarExporter::INLINE_SCALAR_LIST);
 ```
 
 ```php
@@ -482,7 +482,7 @@ Adds a trailing comma after the last item of *non-inline* arrays:
 ```php
 VarExporter::export(
     ['hello', 'world', ['one', 'two', 'three']],
-    VarExporter::TRAILING_COMMA_IN_ARRAY | VarExporter::INLINE_NUMERIC_SCALAR_ARRAY
+    VarExporter::TRAILING_COMMA_IN_ARRAY | VarExporter::INLINE_SCALAR_LIST
 );
 ```
 

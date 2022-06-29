@@ -182,7 +182,7 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
 
-    public function testInlineNumericScalarArray(): void
+    public function testInlineScalarList(): void
     {
         $var = [
             'one' => ['hello', 'world', 123, true, false, null, 7.5],
@@ -200,7 +200,7 @@ PHP;
 ]
 PHP;
 
-        $this->assertExportEquals($expected, $var, VarExporter::INLINE_NUMERIC_SCALAR_ARRAY);
+        $this->assertExportEquals($expected, $var, VarExporter::INLINE_SCALAR_LIST);
     }
 
     public function testTrailingCommaInArray(): void
@@ -221,7 +221,7 @@ PHP;
 ]
 PHP;
 
-        $this->assertExportEquals($expected, $var, VarExporter::INLINE_NUMERIC_SCALAR_ARRAY | VarExporter::TRAILING_COMMA_IN_ARRAY);
+        $this->assertExportEquals($expected, $var, VarExporter::INLINE_SCALAR_LIST | VarExporter::TRAILING_COMMA_IN_ARRAY);
     }
 
     public function testExportDateTime(): void

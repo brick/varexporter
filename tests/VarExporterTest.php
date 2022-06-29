@@ -182,6 +182,20 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
 
+    public function testInlineArray(): void
+    {
+        $var = [
+            'one' => ['hello', 'world', 123, true, false, null, 7.5],
+            'two' => ['hello', 'world', [1 => 'one', 'two', 'three']]
+        ];
+
+        $expected = <<<'PHP'
+['one' => ['hello', 'world', 123, true, false, null, 7.5], 'two' => ['hello', 'world', [1 => 'one', 2 => 'two', 3 => 'three']]]
+PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::INLINE_ARRAY);
+    }
+
     public function testInlineScalarList(): void
     {
         $var = [

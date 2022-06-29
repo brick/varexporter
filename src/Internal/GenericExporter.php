@@ -51,6 +51,13 @@ final class GenericExporter
      *
      * @var bool
      */
+    public $inlineArray;
+
+    /**
+     * @psalm-readonly
+     *
+     * @var bool
+     */
     public $inlineScalarList;
 
     /**
@@ -102,6 +109,7 @@ final class GenericExporter
 
         $this->addTypeHints             = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
         $this->skipDynamicProperties    = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
+        $this->inlineArray              = (bool) ($options & VarExporter::INLINE_ARRAY);
         $this->inlineScalarList         = (bool) ($options & VarExporter::INLINE_SCALAR_LIST);
         $this->closureSnapshotUses      = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
         $this->trailingCommaInArray     = (bool) ($options & VarExporter::TRAILING_COMMA_IN_ARRAY);
@@ -169,7 +177,7 @@ final class GenericExporter
 
         $current = 0;
 
-        $inline = ($this->inlineScalarList && $isList && $this->isScalarList($array));
+        $inline = $this->inlineArray || ($this->inlineScalarList && $isList && $this->isScalarList($array));
 
         foreach ($array as $key => $value) {
             $isLast = (++$current === $count);
@@ -180,7 +188,11 @@ final class GenericExporter
             $exported = $this->export($value, $newPath, $parentIds);
 
             if ($inline) {
-                $result[] = $exported[0];
+                if ($isList) {
+                    $result[] = $exported[0];
+                } else {
+                    $result[] = var_export($key, true) . ' => ' . $exported[0];
+                }
             } else {
                 $prepend = '';
                 $append = '';

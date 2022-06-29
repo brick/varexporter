@@ -2,6 +2,10 @@
 
 ## UNRELEASED (0.3.7)
 
+✨ **New feature**
+
+- New option: `VarExporter::INLINE_ARRAY`
+
 🗑️ **Deprecated**
 
 - The `VarExporter::INLINE_NUMERIC_SCALAR_ARRAY` is deprecated, please use `INLINE_SCALAR_LIST` instead

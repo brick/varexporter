@@ -50,6 +50,7 @@ final class VarExporter
     /**
      * Formats lists (0-based numeric arrays) containing only scalar values on a single line.
      * Types considered scalar here are int, bool, float, string and null.
+     * This option is a subset of INLINE_ARRAY, and has no effect when INLINE_ARRAY is used.
      */
     public const INLINE_SCALAR_LIST = 1 << 7;
 
@@ -72,6 +73,11 @@ final class VarExporter
      * Disallows exporting enums.
      */
     public const NO_ENUMS = 1 << 10;
+
+    /**
+     * Formats all arrays on a single line.
+     */
+    public const INLINE_ARRAY = 1 << 11;
 
     /**
      * @param mixed $var       The variable to export.

@@ -46,7 +46,7 @@ class AnyObjectExporter extends ObjectExporter
         while ($current) {
             $publicOrReadonlyProperties = [];
             $nonPublicProperties = [];
-            $unsetPublicOrReadonlyProperties = [];
+            $unsetPublicProperties = [];
             $unsetNonPublicProperties = [];
 
             foreach ($current->getProperties() as $property) {
@@ -76,8 +76,8 @@ class AnyObjectExporter extends ObjectExporter
                         $nonPublicProperties[$name] = $value;
                     }
                 } else {
-                    if ($property->isPublic() && (!method_exists($property, 'isReadOnly') || !$property->isReadOnly())) {
-                        $unsetPublicOrReadonlyProperties[] = $name;
+                    if ($property->isPublic()) {
+                        $unsetPublicProperties[] = $name;
                     } else {
                         $unsetNonPublicProperties[] = $name;
                     }
@@ -86,7 +86,7 @@ class AnyObjectExporter extends ObjectExporter
                 $returnNewObject = false;
             }
 
-            if ($publicOrReadonlyProperties || $unsetPublicOrReadonlyProperties) {
+            if ($publicOrReadonlyProperties || $unsetPublicProperties) {
                 $lines[] = '';
 
                 foreach ($publicOrReadonlyProperties as $name => $value) {
@@ -104,7 +104,7 @@ class AnyObjectExporter extends ObjectExporter
                     $lines = array_merge($lines, $exportedValue);
                 }
 
-                foreach ($unsetPublicOrReadonlyProperties as $name) {
+                foreach ($unsetPublicProperties as $name) {
                     $lines[] = 'unset($object->' . $this->escapePropName($name) . ');';
                 }
             }

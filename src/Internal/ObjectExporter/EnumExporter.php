@@ -18,8 +18,7 @@ class EnumExporter extends ObjectExporter
      * {@inheritDoc}
      *
      * See: https://github.com/vimeo/psalm/pull/8117
-     * @psalm-suppress MixedInferredReturnType
-     * @psalm-suppress MixedReturnStatement
+     * @psalm-suppress RedundantCondition
      */
     public function supports(\ReflectionObject $reflectionObject) : bool
     {

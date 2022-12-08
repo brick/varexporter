@@ -331,11 +331,11 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
+    /**
+     * @requires PHP 8.1
+     */
     public function testExportClassWithReadonlyPublicPropertiesAndConstructor(): void
     {
-        if (PHP_VERSION_ID <= 80100) {
-            $this->markTestSkipped('readonly properties are not available below PHP 8.1');
-        }
         $object = new PublicReadonlyPropertiesWithConstructor('public readonly', 'private readonly', 'public');
 
         $expected = <<<'PHP'
@@ -357,11 +357,11 @@ PHP;
         $this->assertExportEquals($expected, $object);
     }
 
+    /**
+     * @requires PHP 8.1
+     */
     public function testExportClassWithStateAndReadonlyPublicPropertiesAndConstructor(): void
     {
-        if (PHP_VERSION_ID <= 80100) {
-            $this->markTestSkipped('readonly properties are not available below PHP 8.1');
-        }
         $object = new PublicReadonlyPropertiesWithoutConstructor();
 
         (function () {

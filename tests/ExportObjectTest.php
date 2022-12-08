@@ -360,7 +360,7 @@ PHP;
     /**
      * @requires PHP 8.1
      */
-    public function testExportClassWithStateAndReadonlyPublicPropertiesAndConstructor(): void
+    public function testExportClassWithStateAndReadonlyPublicProperties(): void
     {
         $object = new PublicReadonlyPropertiesWithoutConstructor();
 

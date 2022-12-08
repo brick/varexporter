@@ -6,12 +6,13 @@ namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\Tests\Classes\ConstructorAndNoProperties;
 use Brick\VarExporter\Tests\Classes\Enum;
-use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\Hierarchy;
-use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
+use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
 use Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithConstructor;
+use Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor;
 use Brick\VarExporter\Tests\Classes\SetState;
@@ -348,6 +349,35 @@ PHP;
         $this->foo = 'public readonly';
         $this->bar = 'private readonly';
     })->bindTo($object, \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithConstructor::class)();
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    public function testExportClassWithStateAndReadonlyPublicPropertiesAndConstructor(): void
+    {
+        if (PHP_VERSION_ID <= 80100) {
+            $this->markTestSkipped('readonly properties are not available below PHP 8.1');
+        }
+        $object = new PublicReadonlyPropertiesWithoutConstructor();
+
+        (function () {
+            $this->foo = 'foo';
+        })->bindTo($object, PublicReadonlyPropertiesWithoutConstructor::class)();
+
+        $expected = <<<'PHP'
+(static function() {
+    $object = new \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor;
+
+    unset($object->baz);
+
+    (function() {
+        $this->foo = 'foo';
+        unset($this->bar);
+    })->bindTo($object, \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor::class)();
 
     return $object;
 })()

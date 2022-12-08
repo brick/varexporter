@@ -44,9 +44,9 @@ class AnyObjectExporter extends ObjectExporter
         $returnNewObject = ($reflectionObject->getConstructor() === null);
 
         while ($current) {
-            $publicProperties = [];
+            $publicOrReadonlyProperties = [];
             $nonPublicProperties = [];
-            $unsetPublicProperties = [];
+            $unsetPublicOrReadonlyProperties = [];
             $unsetNonPublicProperties = [];
 
             foreach ($current->getProperties() as $property) {
@@ -70,14 +70,14 @@ class AnyObjectExporter extends ObjectExporter
                 if (array_key_exists($key, $objectAsArray)) {
                     $value = $objectAsArray[$key];
 
-                    if ($property->isPublic()) {
-                        $publicProperties[$name] = $value;
+                    if ($property->isPublic() && (!method_exists($property, 'isReadOnly') || !$property->isReadOnly())) {
+                        $publicOrReadonlyProperties[$name] = $value;
                     } else {
                         $nonPublicProperties[$name] = $value;
                     }
                 } else {
-                    if ($property->isPublic()) {
-                        $unsetPublicProperties[] = $name;
+                    if ($property->isPublic() && (!method_exists($property, 'isReadOnly') || !$property->isReadOnly())) {
+                        $unsetPublicOrReadonlyProperties[] = $name;
                     } else {
                         $unsetNonPublicProperties[] = $name;
                     }
@@ -86,10 +86,10 @@ class AnyObjectExporter extends ObjectExporter
                 $returnNewObject = false;
             }
 
-            if ($publicProperties || $unsetPublicProperties) {
+            if ($publicOrReadonlyProperties || $unsetPublicOrReadonlyProperties) {
                 $lines[] = '';
 
-                foreach ($publicProperties as $name => $value) {
+                foreach ($publicOrReadonlyProperties as $name => $value) {
                     /** @psalm-suppress RedundantCast See: https://github.com/vimeo/psalm/issues/4891 */
                     $name = (string) $name;
 
@@ -104,7 +104,7 @@ class AnyObjectExporter extends ObjectExporter
                     $lines = array_merge($lines, $exportedValue);
                 }
 
-                foreach ($unsetPublicProperties as $name) {
+                foreach ($unsetPublicOrReadonlyProperties as $name) {
                     $lines[] = 'unset($object->' . $this->escapePropName($name) . ');';
                 }
             }

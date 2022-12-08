@@ -11,6 +11,7 @@ use Brick\VarExporter\Tests\Classes\Hierarchy;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+use Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithConstructor;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor;
 use Brick\VarExporter\Tests\Classes\SetState;
@@ -321,6 +322,32 @@ PHP;
 
     $object->foo = 'DefaultFoo';
     $object->bar = 0;
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    public function testExportClassWithReadonlyPublicPropertiesAndConstructor(): void
+    {
+        if (PHP_VERSION_ID <= 80100) {
+            $this->markTestSkipped('readonly properties are not available below PHP 8.1');
+        }
+        $object = new PublicReadonlyPropertiesWithConstructor('public readonly', 'private readonly', 'public');
+
+        $expected = <<<'PHP'
+(static function() {
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithConstructor::class);
+    $object = $class->newInstanceWithoutConstructor();
+
+    $object->baz = 'public';
+
+    (function() {
+        $this->foo = 'public readonly';
+        $this->bar = 'private readonly';
+    })->bindTo($object, \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithConstructor::class)();
 
     return $object;
 })()

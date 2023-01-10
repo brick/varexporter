@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Tests\Classes;
 
-class PublicReadonlyPropertiesWithConstructor
+class ReadonlyPropertiesWithConstructor
 {
     public function __construct(
         public readonly string $foo,

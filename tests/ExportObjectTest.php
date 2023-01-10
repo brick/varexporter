@@ -11,7 +11,7 @@ use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
-use Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithConstructor;
+use Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor;
 use Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor;
@@ -336,11 +336,11 @@ PHP;
      */
     public function testExportClassWithReadonlyPublicPropertiesAndConstructor(): void
     {
-        $object = new PublicReadonlyPropertiesWithConstructor('public readonly', 'private readonly', 'public');
+        $object = new ReadonlyPropertiesWithConstructor('public readonly', 'private readonly', 'public');
 
         $expected = <<<'PHP'
 (static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithConstructor::class);
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor::class);
     $object = $class->newInstanceWithoutConstructor();
 
     $object->baz = 'public';
@@ -348,7 +348,7 @@ PHP;
     (function() {
         $this->foo = 'public readonly';
         $this->bar = 'private readonly';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithConstructor::class)();
+    })->bindTo($object, \Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor::class)();
 
     return $object;
 })()

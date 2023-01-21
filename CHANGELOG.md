@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.8](https://github.com/brick/varexporter/releases/tag/0.3.8) - 2023-01-22
+
+✨ **New feature**
+
+- Support for PHP 8.1 `readonly` properties (#27, #28)
+
+Thanks @AnnaDamm!
+
 ## [0.3.7](https://github.com/brick/varexporter/releases/tag/0.3.7) - 2022-06-30
 
 ✨ **New feature**

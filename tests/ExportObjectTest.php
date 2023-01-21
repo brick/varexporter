@@ -6,11 +6,13 @@ namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\Tests\Classes\ConstructorAndNoProperties;
 use Brick\VarExporter\Tests\Classes\Enum;
-use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\Hierarchy;
-use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
+use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
+use Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor;
+use Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor;
 use Brick\VarExporter\Tests\Classes\SetState;
@@ -321,6 +323,61 @@ PHP;
 
     $object->foo = 'DefaultFoo';
     $object->bar = 0;
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testExportClassWithReadonlyPublicPropertiesAndConstructor(): void
+    {
+        $object = new ReadonlyPropertiesWithConstructor('public readonly', 'private readonly', 'public');
+
+        $expected = <<<'PHP'
+(static function() {
+    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor::class);
+    $object = $class->newInstanceWithoutConstructor();
+
+    $object->baz = 'public';
+
+    (function() {
+        $this->foo = 'public readonly';
+        $this->bar = 'private readonly';
+    })->bindTo($object, \Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor::class)();
+
+    return $object;
+})()
+PHP;
+
+        $this->assertExportEquals($expected, $object);
+    }
+
+    /**
+     * @requires PHP 8.1
+     */
+    public function testExportClassWithStateAndReadonlyPublicProperties(): void
+    {
+        $object = new PublicReadonlyPropertiesWithoutConstructor();
+
+        (function () {
+            $this->foo = 'foo';
+        })->bindTo($object, PublicReadonlyPropertiesWithoutConstructor::class)();
+
+        $expected = <<<'PHP'
+(static function() {
+    $object = new \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor;
+
+    unset($object->baz);
+
+    (function() {
+        $this->foo = 'foo';
+        unset($this->bar);
+    })->bindTo($object, \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor::class)();
 
     return $object;
 })()

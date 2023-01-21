@@ -18,16 +18,11 @@ class EnumExporter extends ObjectExporter
      * {@inheritDoc}
      *
      * See: https://github.com/vimeo/psalm/pull/8117
-     * @psalm-suppress MixedInferredReturnType
-     * @psalm-suppress MixedReturnStatement
+     * @psalm-suppress RedundantCondition
      */
     public function supports(\ReflectionObject $reflectionObject) : bool
     {
-        if (! method_exists($reflectionObject, 'isEnum')) {
-            return false;
-        }
-
-        return $reflectionObject->isEnum();
+        return method_exists($reflectionObject, 'isEnum') && $reflectionObject->isEnum();
     }
 
     /**

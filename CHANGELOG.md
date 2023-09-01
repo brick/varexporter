@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED (0.4.0)
+
+Minimum PHP version is now `7.4`. No breaking changes.
+
 ## [0.3.8](https://github.com/brick/varexporter/releases/tag/0.3.8) - 2023-01-22
 
 ✨ **New feature**

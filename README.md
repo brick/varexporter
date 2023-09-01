@@ -98,9 +98,9 @@ Note: unlike `var_export()`, `export()` always returns the exported variable, an
 
 ## Exporting custom objects
 
-As we've seen above, `var_export()` assumes that every object has a static [__set_state()](https://www.php.net/manual/en/language.oop5.magic.php#object.set-state) method that takes an associative array of property names to values, and returns a object.
+`var_export()` assumes that every object has a static [__set_state()](https://www.php.net/manual/en/language.oop5.magic.php#object.set-state) method that takes an associative array of property names to values, and returns a object.
 
-This means that if you want to export an instance of a class outside of your control, you're screwed up. This also means that you have to write boilerplate code for your classes, that looks like:
+This means that if you want to export an instance of a class outside your control, you're screwed up. This also means that you have to write boilerplate code for your classes, that looks like:
 
 ```php
 class Foo

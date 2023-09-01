@@ -97,63 +97,6 @@ array (
 
 Note: unlike `var_export()`, `export()` always returns the exported variable, and never outputs it.
 
-## Exporting stdClass objects
-
-You come across a `stdClass` object every time you cast an array to an object, or use `json_decode()` with the second argument set to `false` (which is the default).
-
-While the output of `var_export()` for `stdClass` is syntactically valid PHP code:
-
-```php
-var_export(json_decode('
-    {
-        "foo": "bar",
-        "baz": {
-            "hello": "world"
-        }
-    }
-'));
-```
-
-```php
-stdClass::__set_state(array(
-   'foo' => 'bar',
-   'baz' => 
-  stdClass::__set_state(array(
-     'hello' => 'world',
-  )),
-))
-```
-
-it is totally useless as it assumes that `stdClass` has a static `__set_state()` method, when it doesn't:
-
-> Error: Call to undefined method stdClass::__set_state()
-
-### What does `VarExporter` do instead?
-
-It outputs an array to object cast, which is syntactically valid, readable **and** executable:
-
-```php
-echo VarExporter::export(json_decode('
-    {
-        "foo": "bar",
-        "baz": {
-            "hello": "world"
-        }
-    }
-'));
-```
-
-```php
-(object) [
-    'foo' => 'bar',
-    'baz' => (object) [
-        'hello' => 'world'
-    ]
-]
-```
-
-**Note: since PHP 7.3, `var_export()` now exports an array to object cast like `VarExporter::export()` does.**
-
 ## Exporting custom objects
 
 As we've seen above, `var_export()` assumes that every object has a static [__set_state()](https://www.php.net/manual/en/language.oop5.magic.php#object.set-state) method that takes an associative array of property names to values, and returns a object.

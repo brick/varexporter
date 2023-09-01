@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED (0.4.0)
+## [0.4.0](https://github.com/brick/varexporter/releases/tag/0.4.0) - 2023-09-01
 
 Minimum PHP version is now `7.4`. No breaking changes.
 

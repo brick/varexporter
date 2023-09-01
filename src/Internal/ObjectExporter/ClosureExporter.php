@@ -147,10 +147,10 @@ class ClosureExporter extends ObjectExporter
         int $line,
         array $path
     ) : Node\Expr\Closure {
-        $finder = new FindingVisitor(function(Node $node) use ($line) : bool {
-            return ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction)
-                && $node->getStartLine() === $line;
-        });
+        $finder = new FindingVisitor(
+            fn(Node $node): bool => ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction)
+            && $node->getStartLine() === $line
+        );
 
         $traverser = new NodeTraverser();
         $traverser->addVisitor($finder);

@@ -63,9 +63,7 @@ abstract class AbstractTestCase extends TestCase
      */
     public function assertExportThrows(string $expectedMessage, $var, int $options = 0) : void
     {
-        $expectedMessageRegExp = '/' . implode('.*', array_map(function(string $str) {
-            return preg_quote($str, '/');
-        }, explode('*', $expectedMessage))) . '/';
+        $expectedMessageRegExp = '/' . implode('.*', array_map(fn(string $str) => preg_quote($str, '/'), explode('*', $expectedMessage))) . '/';
 
         $this->expectException(ExportException::class);
         $this->expectExceptionMessageMatches($expectedMessageRegExp);

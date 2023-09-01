@@ -98,9 +98,10 @@ final class VarExporter
             $export = implode(PHP_EOL, $lines);
         } else {
             $firstLine = array_shift($lines);
-            $lines = array_map(function ($line) use ($indentLevel) {
-                return str_repeat('    ', $indentLevel) . $line;
-            }, $lines);
+            $lines = array_map(
+                fn($line) => str_repeat('    ', $indentLevel) . $line,
+                $lines,
+            );
 
             $export = $firstLine . PHP_EOL . implode(PHP_EOL, $lines);
         }

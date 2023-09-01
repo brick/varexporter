@@ -18,7 +18,6 @@ It is particularly useful to store data that can be cached by OPCache, just like
 
 But it also suffers from several drawbacks:
 
-- It outputs invalid PHP code for `stdClass` objects, using `stdClass::__set_state()` which doesn't exist (PHP < 7.3)
 - It cannot export custom objects that do not implement `__set_state()`, and `__set_state()` does not play well with private properties in parent classes, which makes the implementation tedious
 - It does not support closures
 

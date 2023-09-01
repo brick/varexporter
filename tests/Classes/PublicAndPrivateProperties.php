@@ -6,7 +6,7 @@ namespace Brick\VarExporter\Tests\Classes;
 
 class PublicAndPrivateProperties extends PublicPropertiesOnly
 {
-    private $baz = 'defaultValue';
+    private string $baz = 'defaultValue';
 
     protected function setBaz($baz) : void
     {

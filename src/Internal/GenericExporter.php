@@ -30,7 +30,7 @@ final class GenericExporter
      *
      * @var array<int, array<int, string[]>>
      */
-    private $visitedObjects = [];
+    private array $visitedObjects = [];
 
     /**
      * @psalm-readonly

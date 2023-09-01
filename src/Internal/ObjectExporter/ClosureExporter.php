@@ -23,10 +23,7 @@ use ReflectionFunction;
  */
 class ClosureExporter extends ObjectExporter
 {
-    /**
-     * @var Parser|null
-     */
-    private $parser;
+    private ?Parser $parser = null;
 
     /**
      * {@inheritDoc}

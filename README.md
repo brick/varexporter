@@ -505,6 +505,28 @@ try {
 }
 ```
 
+## Literal code expressions
+
+```php
+use Brick\VarExporter\VarExporter;
+use Brick\Code;
+
+echo VarExporter::export([
+  'literal_expression' => Code::create("$app_root", ". '/../private'");
+], VarExporter::ALLOW_CODE);
+```
+
+This code will output:
+
+```php
+[
+    'literal_expression' => $app_root
+        . '/../private',
+]
+```
+
+Also, you can implement CodeInterface in your custom code.
+
 ## Limitations
 
 - Exporting internal classes other than `stdClass` and `Closure`, and classes implementing `__set_state()` (most notably DateTime classes) is currently not supported. `VarExporter` will throw an `ExportException` if it finds one.

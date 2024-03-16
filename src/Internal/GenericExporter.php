@@ -77,12 +77,20 @@ final class GenericExporter
     /**
      * @psalm-readonly
      *
+     * @var bool
+     */
+    public $allowCode;
+
+    /**
+     * @psalm-readonly
+     *
      * @var int
      */
     public $indentLevel;
 
     public function __construct(int $options, int $indentLevel = 0)
     {
+        $this->objectExporters[] = new ObjectExporter\CodeExporter($this);
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
 
         if (! ($options & VarExporter::NO_CLOSURES)) {
@@ -113,6 +121,7 @@ final class GenericExporter
         $this->inlineScalarList         = (bool) ($options & VarExporter::INLINE_SCALAR_LIST);
         $this->closureSnapshotUses      = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
         $this->trailingCommaInArray     = (bool) ($options & VarExporter::TRAILING_COMMA_IN_ARRAY);
+        $this->allowCode                = (bool) ($options & VarExporter::ALLOW_CODE);
 
         $this->indentLevel = $indentLevel;
     }

@@ -55,11 +55,6 @@ final class VarExporter
     public const INLINE_SCALAR_LIST = 1 << 7;
 
     /**
-     * Any value implementing CodeInterface will print a literal expression.
-     */
-    public const ALLOW_CODE = 1 << 8;
-
-    /**
      * @deprecated Please use INLINE_SCALAR_LIST instead.
      */
     public const INLINE_NUMERIC_SCALAR_ARRAY = self::INLINE_SCALAR_LIST;
@@ -83,6 +78,11 @@ final class VarExporter
      * Formats all arrays on a single line.
      */
     public const INLINE_ARRAY = 1 << 11;
+
+    /**
+     * Any value implementing CodeInterface will print a literal expression.
+     */
+    public const ALLOW_CODE = 1 << 12;
 
     /**
      * @param mixed $var       The variable to export.

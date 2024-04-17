@@ -67,7 +67,7 @@ class ClosureExporter extends ObjectExporter
     private function getParser()
     {
         if ($this->parser === null) {
-            $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
+            $this->parser = (new ParserFactory)->createForHostVersion();
         }
 
         return $this->parser;

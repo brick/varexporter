@@ -1,5 +1,5 @@
 {
-  "name": "brick/varexporter",
+  "name": "m-derakhshi/varexporter",
   "description": "A powerful alternative to var_export(), which can export closures and objects without __set_state()",
   "type": "library",
   "keywords": [

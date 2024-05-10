@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED (0.5.0)
+## [0.5.0](https://github.com/brick/varexporter/releases/tag/0.5.0) - 2024-05-10
 
 ✨ **Compatibility**
 

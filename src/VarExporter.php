@@ -55,11 +55,6 @@ final class VarExporter
     public const INLINE_SCALAR_LIST = 1 << 7;
 
     /**
-     * @deprecated Please use INLINE_SCALAR_LIST instead.
-     */
-    public const INLINE_NUMERIC_SCALAR_ARRAY = self::INLINE_SCALAR_LIST;
-
-    /**
      * Export static vars defined via `use` as variables.
      */
     public const CLOSURE_SNAPSHOT_USES = 1 << 8;

@@ -61,7 +61,7 @@ PHP;
 [
     (object) [
         'callback' => function () {
-            return function (\Brick\VarExporter\Tests\Classes\PublicPropertiesOnly $a, int $b, string &$c, string ...$d) : ?string {
+            return function (\Brick\VarExporter\Tests\Classes\PublicPropertiesOnly $a, int $b, string &$c, string ...$d): ?string {
                 $a->foo += $b;
                 $c = $a->bar;
                 $a->bar = implode('', $d);
@@ -91,8 +91,8 @@ PHP;
         };
 
         $expected = <<<'PHP'
-function (\Brick\VarExporter\Tests\Classes\SetState $a) : array {
-    return ['callback' => function (\Brick\VarExporter\Tests\Classes\SetState $a) : \Brick\VarExporter\Tests\Classes\NoProperties {
+function (\Brick\VarExporter\Tests\Classes\SetState $a): array {
+    return ['callback' => function (\Brick\VarExporter\Tests\Classes\SetState $a): \Brick\VarExporter\Tests\Classes\NoProperties {
         strlen(PHP_VERSION);
         \Brick\VarExporter\Dummy\Functions\imported_function(\Brick\VarExporter\Dummy\Constants\IMPORTED_CONSTANT);
         \Brick\VarExporter\Dummy\Functions\explicitly_namespaced_function(\Brick\VarExporter\Dummy\Constants\EXPLICITLY_NAMESPACED_CONSTANT);
@@ -128,13 +128,13 @@ return function () {
     $a = 'Hello,
 World!';
     $b = <<<TXT
-Hello,
-world!
-TXT;
+    Hello,
+    world!
+    TXT;
     $c = <<<'TXT'
-Hello,
-world!
-TXT;
+    Hello,
+    world!
+    TXT;
     return $a . $b . $c;
 };
 

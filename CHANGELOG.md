@@ -1,5 +1,12 @@
 # Changelog
 
+## UNRELEASED (0.5.0)
+
+✨ **Compatibility**
+
+- Added compatibility with `nikic/php-parser` `5.x`
+- Removed compatibility with `nikic/php-parser` `4.x`
+
 ## [0.4.0](https://github.com/brick/varexporter/releases/tag/0.4.0) - 2023-09-01
 
 Minimum PHP version is now `7.4`. No breaking changes.

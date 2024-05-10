@@ -462,13 +462,13 @@ public function foo()
         $a = 'Hello,
 World!';
         $b = <<<TXT
-Hello,
-world!
-TXT;
+        Hello,
+        world!
+        TXT;
         $c = <<<'TXT'
-Hello,
-world!
-TXT;
+        Hello,
+        world!
+        TXT;
         return $a . $b . $c;
     };
 }

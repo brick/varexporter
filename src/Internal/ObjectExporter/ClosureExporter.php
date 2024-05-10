@@ -14,6 +14,7 @@ use PhpParser\NodeVisitor\FindingVisitor;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
+use PhpParser\PhpVersion;
 use ReflectionFunction;
 
 /**
@@ -67,7 +68,7 @@ class ClosureExporter extends ObjectExporter
     private function getParser()
     {
         if ($this->parser === null) {
-            $this->parser = (new ParserFactory)->create(ParserFactory::ONLY_PHP7);
+            $this->parser = (new ParserFactory)->createForVersion(PhpVersion::fromComponents(7, 4));
         }
 
         return $this->parser;

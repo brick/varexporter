@@ -158,7 +158,7 @@ It determines the most appropriate method to export your object, in this order:
 
     You can disable exporting objects this way, even if they implement `__set_state()`, using the [`NO_SET_STATE`](#varexporterno_set_state) option.
 
-- If your class has `__serialize()` and `__unserialize()` methods ([introduced in PHP 7.4](https://wiki.php.net/rfc/custom_object_serialization), but this library accepts them in previous versions of PHP!), `VarExporter` uses the output of `__serialize()` to export the object, and gives it as input to `__unserialize()` to reconstruct the object:
+- If your class has `__serialize()` and `__unserialize()` methods, `VarExporter` uses the output of `__serialize()` to export the object, and gives it as input to `__unserialize()` to reconstruct the object:
 
     ```php
     (static function() {

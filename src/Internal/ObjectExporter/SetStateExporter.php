@@ -76,8 +76,6 @@ class SetStateExporter extends ObjectExporter
                 $name = substr($name, $pos + 1);
             }
 
-            assert($name !== false);
-
             if (array_key_exists($name, $result)) {
                 $className = get_class($object);
 

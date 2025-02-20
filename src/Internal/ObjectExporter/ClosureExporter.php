@@ -83,7 +83,7 @@ final class ClosureExporter extends ObjectExporter
      */
     private function parseFile(string $filename, array $path) : array
     {
-        if (substr($filename, -16) === " : eval()'d code") {
+        if (str_ends_with($filename, " : eval()'d code")) {
             throw new ExportException("Closure defined in eval()'d code cannot be exported.", $path);
         }
 

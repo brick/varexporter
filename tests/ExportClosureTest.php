@@ -206,10 +206,6 @@ PHP;
 
     public function testExportArrowFunction(): void
     {
-        if (version_compare(PHP_VERSION, '7.4.0') < 0) {
-            $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
-        }
-
         $var = [fn ($planet) => 'hello ' . $planet]; // Wrapping in array for valid syntax PHP <7.4
 
         $expected = <<<'PHP'
@@ -226,10 +222,6 @@ PHP;
 
     public function testExportArrowFunctionWithContext(): void
     {
-        if (version_compare(PHP_VERSION, '7.4.0') < 0) {
-            $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
-        }
-
         $greet = 'hello';
 
         $var = [fn ($planet) => $greet . ' ' . $planet];
@@ -243,10 +235,6 @@ PHP;
 
     public function testExportArrowFunctionWithContextVarAsVar(): void
     {
-        if (version_compare(PHP_VERSION, '7.4.0') < 0) {
-            $this->markTestSkipped("Arrow functions aren't supported in PHP " . PHP_VERSION);
-        }
-
         $greet = 'hello';
 
         $var = [fn ($planet) => $greet . ' ' . $planet];

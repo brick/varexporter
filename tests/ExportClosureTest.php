@@ -255,10 +255,6 @@ PHP;
 
     public function testExportEnumMatchFunction(): void
     {
-        if (version_compare(PHP_VERSION, '8.1.0') < 0) {
-            $this->markTestSkipped("Enums aren't supported in PHP " . PHP_VERSION);
-        }
-
         $var = [
             (object) [
                 'callback' => static fn (Enum $enum): string => match ($enum) {

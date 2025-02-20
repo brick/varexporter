@@ -8,6 +8,7 @@ use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\VarExporter;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class VarExporterTest extends AbstractTestCase
 {
@@ -302,9 +303,7 @@ class VarExporterTest extends AbstractTestCase
         ]);
     }
 
-    /**
-     * @dataProvider providerExportIndented
-     */
+    #[DataProvider('providerExportIndented')]
     public function testExportIndented(mixed $var, string $expected, int $options): void
     {
         $template = <<<'TPL'
@@ -320,7 +319,7 @@ class VarExporterTest extends AbstractTestCase
         $this->assertEquals($expected, $result);
     }
 
-    public function providerExportIndented(): iterable
+    public static function providerExportIndented(): iterable
     {
         // Array
         $var = ['one' => ['hello', true], 'two' => 2];

@@ -13,7 +13,7 @@ use UnitEnum;
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
-class EnumExporter extends ObjectExporter
+final class EnumExporter extends ObjectExporter
 {
     /**
      * See: https://github.com/vimeo/psalm/pull/8117

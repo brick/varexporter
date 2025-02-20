@@ -13,7 +13,7 @@ use Override;
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
-class SetStateExporter extends ObjectExporter
+final class SetStateExporter extends ObjectExporter
 {
     #[Override]
     public function supports(\ReflectionObject $reflectionObject) : bool

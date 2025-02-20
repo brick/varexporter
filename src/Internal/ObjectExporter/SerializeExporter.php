@@ -12,7 +12,7 @@ use Override;
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
-class SerializeExporter extends ObjectExporter
+final class SerializeExporter extends ObjectExporter
 {
     #[Override]
     public function supports(\ReflectionObject $reflectionObject) : bool

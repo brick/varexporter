@@ -23,7 +23,7 @@ use ReflectionFunction;
  *
  * @internal This class is for internal use, and not part of the public API. It may change at any time without warning.
  */
-class ClosureExporter extends ObjectExporter
+final class ClosureExporter extends ObjectExporter
 {
     private ?Parser $parser = null;
 

@@ -114,29 +114,25 @@ final class GenericExporter
      */
     public function export(mixed $var, array $path, array $parentIds) : array
     {
-        switch ($type = gettype($var)) {
-            case 'boolean':
-            case 'integer':
-            case 'double':
-            case 'string':
-                return [var_export($var, true)];
-
-            case 'NULL':
-                // lowercase null
-                return ['null'];
-
-            case 'array':
-                /** @var array $var */
-                return $this->exportArray($var, $path, $parentIds);
-
-            case 'object':
-                /** @var object $var */
-                return $this->exportObject($var, $path, $parentIds);
-
-            default:
-                // resources
-                throw new ExportException(sprintf('Type "%s" is not supported.', $type), $path);
+        if ($var === null) {
+            return ['null'];
         }
+
+        // bool, int, float, string
+        if (is_scalar($var)) {
+            return [var_export($var, true)];
+        }
+
+        if (is_array($var)) {
+            return $this->exportArray($var, $path, $parentIds);
+        }
+
+        if (is_object($var)) {
+            return $this->exportObject($var, $path, $parentIds);
+        }
+
+        // resources
+        throw new ExportException(sprintf('Type "%s" is not supported.', gettype($var)), $path);
     }
 
     /**

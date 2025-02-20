@@ -170,11 +170,7 @@ final class GenericExporter
             $exported = $this->export($value, $newPath, $parentIds);
 
             if ($inline) {
-                if ($isList) {
-                    $result[] = $exported[0];
-                } else {
-                    $result[] = var_export($key, true) . ' => ' . $exported[0];
-                }
+                $result[] = $isList ? $exported[0] : var_export($key, true) . ' => ' . $exported[0];
             } else {
                 $prepend = '';
                 $append = '';

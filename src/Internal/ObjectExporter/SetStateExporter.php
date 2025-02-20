@@ -35,9 +35,8 @@ final class SetStateExporter extends ObjectExporter
         $vars = $this->getObjectVars($object, $path);
 
         $exportedVars = $this->exporter->exportArray($vars, $path, $parentIds);
-        $exportedVars = $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
 
-        return $exportedVars;
+        return $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
     }
 
     /**

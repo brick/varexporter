@@ -43,10 +43,8 @@ abstract class AbstractTestCase extends TestCase
         // if the exported value is a closure with no parameters, test that the exported closure returns the same
         // value as the original closure
 
-        if ($var instanceof \Closure) {
-            if ((new \ReflectionFunction($var))->getNumberOfRequiredParameters() === 0) {
-                $this->assertSame($var(), ($exportedVar()), 'The exported closure does not return the same value as the original closure.');
-            }
+        if ($var instanceof \Closure && (new \ReflectionFunction($var))->getNumberOfRequiredParameters() === 0) {
+            $this->assertSame($var(), ($exportedVar()), 'The exported closure does not return the same value as the original closure.');
         }
     }
 

@@ -174,23 +174,13 @@ PHP;
         $object->foo = 'Hello';
         $object->bar = 'World';
 
-        if (PHP_VERSION_ID >=80100) {
-            $expected = <<<'PHP'
-\Brick\VarExporter\Tests\Classes\SetState::__set_state([
-    'foo' => 'Hello',
-    'bar' => 'World',
-    'baz' => 'defaultValue'
-])
-PHP;
-        } else {
-            $expected = <<<'PHP'
-\Brick\VarExporter\Tests\Classes\SetState::__set_state([
-    'baz' => 'defaultValue',
-    'foo' => 'Hello',
-    'bar' => 'World'
-])
-PHP;
-        }
+        $expected = <<<'PHP'
+            \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+                'foo' => 'Hello',
+                'bar' => 'World',
+                'baz' => 'defaultValue'
+            ])
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -202,21 +192,12 @@ PHP;
 
         unset($object->bar);
 
-        if (PHP_VERSION_ID >= 80100) {
-            $expected = <<<'PHP'
-\Brick\VarExporter\Tests\Classes\SetState::__set_state([
-    'foo' => null,
-    'baz' => 'defaultValue'
-])
-PHP;
-        } else {
-            $expected = <<<'PHP'
-\Brick\VarExporter\Tests\Classes\SetState::__set_state([
-    'baz' => 'defaultValue',
-    'foo' => null
-])
-PHP;
-        }
+        $expected = <<<'PHP'
+            \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+                'foo' => null,
+                'baz' => 'defaultValue'
+            ])
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -229,27 +210,15 @@ PHP;
         $object->dynamic = 'Dynamic property';
         $object->{'123'} = 'Numeric dynamic property';
 
-        if (PHP_VERSION_ID >= 80100) {
-            $expected = <<<'PHP'
-\Brick\VarExporter\Tests\Classes\SetState::__set_state([
-    'foo' => 'Hello',
-    'bar' => 'World',
-    'baz' => 'defaultValue',
-    'dynamic' => 'Dynamic property',
-    123 => 'Numeric dynamic property'
-])
-PHP;
-        } else {
-            $expected = <<<'PHP'
-\Brick\VarExporter\Tests\Classes\SetState::__set_state([
-    'baz' => 'defaultValue',
-    'foo' => 'Hello',
-    'bar' => 'World',
-    'dynamic' => 'Dynamic property',
-    123 => 'Numeric dynamic property'
-])
-PHP;
-        }
+        $expected = <<<'PHP'
+            \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+                'foo' => 'Hello',
+                'bar' => 'World',
+                'baz' => 'defaultValue',
+                'dynamic' => 'Dynamic property',
+                123 => 'Numeric dynamic property'
+            ])
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -261,23 +230,13 @@ PHP;
         $object->bar = 'World';
         $object->dynamic = 'Dynamic property';
 
-        if (PHP_VERSION_ID >= 80100) {
-            $expected = <<<'PHP'
-\Brick\VarExporter\Tests\Classes\SetState::__set_state([
-    'foo' => 'Hello',
-    'bar' => 'World',
-    'baz' => 'defaultValue'
-])
-PHP;
-        } else {
-            $expected = <<<'PHP'
-\Brick\VarExporter\Tests\Classes\SetState::__set_state([
-    'baz' => 'defaultValue',
-    'foo' => 'Hello',
-    'bar' => 'World'
-])
-PHP;
-        }
+        $expected = <<<'PHP'
+            \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+                'foo' => 'Hello',
+                'bar' => 'World',
+                'baz' => 'defaultValue'
+            ])
+            PHP;
 
         $this->assertExportEquals($expected, $object, VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }

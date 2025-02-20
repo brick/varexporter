@@ -49,107 +49,55 @@ class VarExporterTest extends AbstractTestCase
             'aCustomObject' => $myObject
         ];
 
-        if (PHP_VERSION_ID >= 80100) {
             $expected = <<<'PHP'
-[
-    'aString' => 'Hello',
-    'aTrue' => true,
-    'aFalse' => false,
-    'aNull' => null,
-    'aFloat' => 0.75,
-    'anInt' => 123,
-    'aNumericArray' => [
-        'a',
-        'b',
-        null,
-        [
-            'c' => 'd'
-        ]
-    ],
-    'anAssociativeArray' => [
-        'a' => 'b',
-        'c' => [
-            'd' => 'e',
-            'f' => [
-                'g' => [
-                    []
+                [
+                    'aString' => 'Hello',
+                    'aTrue' => true,
+                    'aFalse' => false,
+                    'aNull' => null,
+                    'aFloat' => 0.75,
+                    'anInt' => 123,
+                    'aNumericArray' => [
+                        'a',
+                        'b',
+                        null,
+                        [
+                            'c' => 'd'
+                        ]
+                    ],
+                    'anAssociativeArray' => [
+                        'a' => 'b',
+                        'c' => [
+                            'd' => 'e',
+                            'f' => [
+                                'g' => [
+                                    []
+                                ]
+                            ]
+                        ]
+                    ],
+                    'anObject' => (object) [
+                        'type' => 'string',
+                        '$ref' => '#/components/schema/User',
+                        'items' => (object) [
+                            'foo' => 'bar',
+                            'empty' => (object) []
+                        ]
+                    ],
+                    'aCustomObject' => (static function() {
+                        $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+
+                        $object->foo = 'hello';
+                        $object->bar = \Brick\VarExporter\Tests\Classes\SetState::__set_state([
+                            'foo' => 'SetState.foo',
+                            'bar' => 'SetState.bar',
+                            'baz' => 'defaultValue'
+                        ]);
+
+                        return $object;
+                    })()
                 ]
-            ]
-        ]
-    ],
-    'anObject' => (object) [
-        'type' => 'string',
-        '$ref' => '#/components/schema/User',
-        'items' => (object) [
-            'foo' => 'bar',
-            'empty' => (object) []
-        ]
-    ],
-    'aCustomObject' => (static function() {
-        $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
-
-        $object->foo = 'hello';
-        $object->bar = \Brick\VarExporter\Tests\Classes\SetState::__set_state([
-            'foo' => 'SetState.foo',
-            'bar' => 'SetState.bar',
-            'baz' => 'defaultValue'
-        ]);
-
-        return $object;
-    })()
-]
-PHP;
-        } else {
-            $expected = <<<'PHP'
-[
-    'aString' => 'Hello',
-    'aTrue' => true,
-    'aFalse' => false,
-    'aNull' => null,
-    'aFloat' => 0.75,
-    'anInt' => 123,
-    'aNumericArray' => [
-        'a',
-        'b',
-        null,
-        [
-            'c' => 'd'
-        ]
-    ],
-    'anAssociativeArray' => [
-        'a' => 'b',
-        'c' => [
-            'd' => 'e',
-            'f' => [
-                'g' => [
-                    []
-                ]
-            ]
-        ]
-    ],
-    'anObject' => (object) [
-        'type' => 'string',
-        '$ref' => '#/components/schema/User',
-        'items' => (object) [
-            'foo' => 'bar',
-            'empty' => (object) []
-        ]
-    ],
-    'aCustomObject' => (static function() {
-        $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
-
-        $object->foo = 'hello';
-        $object->bar = \Brick\VarExporter\Tests\Classes\SetState::__set_state([
-            'baz' => 'defaultValue',
-            'foo' => 'SetState.foo',
-            'bar' => 'SetState.bar'
-        ]);
-
-        return $object;
-    })()
-]
-PHP;
-        }
+                PHP;
 
         $this->assertExportEquals($expected, $var);
     }

@@ -21,7 +21,7 @@ final class GenericExporter
     /**
      * @var ObjectExporter[]
      */
-    private $objectExporters = [];
+    private array $objectExporters = [];
 
     /**
      * The visited objects, to detect circular references.
@@ -34,52 +34,38 @@ final class GenericExporter
 
     /**
      * @psalm-readonly
-     *
-     * @var bool
      */
-    public $addTypeHints;
+    public bool $addTypeHints;
 
     /**
      * @psalm-readonly
-     *
-     * @var bool
      */
-    public $skipDynamicProperties;
+    public bool $skipDynamicProperties;
 
     /**
      * @psalm-readonly
-     *
-     * @var bool
      */
-    public $inlineArray;
+    public bool $inlineArray;
 
     /**
      * @psalm-readonly
-     *
-     * @var bool
      */
-    public $inlineScalarList;
+    public bool $inlineScalarList;
 
     /**
      * @psalm-readonly
-     *
-     * @var bool
      */
-    public $closureSnapshotUses;
+    public bool $closureSnapshotUses;
 
     /**
      * @psalm-readonly
-     *
-     * @var bool
      */
-    public $trailingCommaInArray;
+    public bool $trailingCommaInArray;
 
     /**
      * @psalm-readonly
-     *
-     * @var int
      */
-    public $indentLevel;
+    public int $indentLevel;
 
     public function __construct(int $options, int $indentLevel = 0)
     {
@@ -126,7 +112,7 @@ final class GenericExporter
      *
      * @throws ExportException
      */
-    public function export($var, array $path, array $parentIds) : array
+    public function export(mixed $var, array $path, array $parentIds) : array
     {
         switch ($type = gettype($var)) {
             case 'boolean':

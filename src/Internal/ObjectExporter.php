@@ -13,10 +13,7 @@ use Brick\VarExporter\ExportException;
  */
 abstract class ObjectExporter
 {
-    /**
-     * @var GenericExporter
-     */
-    protected $exporter;
+    protected GenericExporter $exporter;
 
     /**
      * @param GenericExporter $exporter

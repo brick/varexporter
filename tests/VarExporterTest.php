@@ -356,10 +356,8 @@ PHP;
 
     /**
      * @dataProvider providerExportIndented
-     *
-     * @param mixed $var
      */
-    public function testExportIndented($var, string $expected, int $options): void
+    public function testExportIndented(mixed $var, string $expected, int $options): void
     {
         $template = <<<'TPL'
 public function foo()

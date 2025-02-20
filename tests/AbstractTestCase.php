@@ -19,7 +19,7 @@ abstract class AbstractTestCase extends TestCase
      *
      * @return void
      */
-    public function assertExportEquals(string $expected, $var, int $options = 0) : void
+    public function assertExportEquals(string $expected, mixed $var, int $options = 0) : void
     {
         // test the string output of export()
 
@@ -61,7 +61,7 @@ abstract class AbstractTestCase extends TestCase
      *
      * @return void
      */
-    public function assertExportThrows(string $expectedMessage, $var, int $options = 0) : void
+    public function assertExportThrows(string $expectedMessage, mixed $var, int $options = 0) : void
     {
         $expectedMessageRegExp = '/' . implode('.*', array_map(fn(string $str) => preg_quote($str, '/'), explode('*', $expectedMessage))) . '/';
 

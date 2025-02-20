@@ -59,10 +59,7 @@ final class ClosureExporter extends ObjectExporter
         return [$code];
     }
 
-    /**
-     * @return Parser
-     */
-    private function getParser()
+    private function getParser(): Parser
     {
         if ($this->parser === null) {
             $this->parser = (new ParserFactory)->createForHostVersion();

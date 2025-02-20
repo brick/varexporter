@@ -16,11 +16,6 @@ final class PrettyPrinter extends Standard
 {
     private int $varExporterNestingLevel = 0;
 
-    /**
-     * @param int $level
-     *
-     * @return void
-     */
     public function setVarExporterNestingLevel(int $level) : void
     {
         $this->varExporterNestingLevel = $level;

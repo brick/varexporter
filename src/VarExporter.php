@@ -80,8 +80,6 @@ final class VarExporter
      *                         Combine multiple options with a bitwise OR `|` operator.
      * @param int $indentLevel The base output indentation level.
      *
-     * @return string
-     *
      * @throws ExportException
      */
     public static function export(mixed $var, int $options = 0, int $indentLevel = 0) : string

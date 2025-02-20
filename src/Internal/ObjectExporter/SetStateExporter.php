@@ -93,12 +93,6 @@ final class SetStateExporter extends ObjectExporter
         return $result;
     }
 
-    /**
-     * @param object $object
-     * @param string $name
-     *
-     * @return bool
-     */
     private function isDynamicProperty(object $object, string $name) : bool
     {
         $reflectionClass = new \ReflectionClass($object);

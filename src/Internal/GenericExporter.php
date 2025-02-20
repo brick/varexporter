@@ -210,9 +210,6 @@ final class GenericExporter
      * Types considered scalar here are int, bool, float, string and null.
      * If the array is empty, this method returns true.
      *
-     * @param array $array
-     *
-     * @return bool
      */
     private function isScalarList(array $array) : bool
     {

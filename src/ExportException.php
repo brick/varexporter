@@ -9,9 +9,7 @@ use Throwable;
 final class ExportException extends \Exception
 {
     /**
-     * @param string         $message
-     * @param string[]       $path
-     * @param Throwable|null $previous
+     * @param string[] $path
      */
     public function __construct(string $message, array $path, ?Throwable $previous = null)
     {
@@ -26,8 +24,6 @@ final class ExportException extends \Exception
      * Returns a string representation of the given path.
      *
      * @param string[] $path
-     *
-     * @return string
      */
     public static function pathToString(array $path) : string
     {

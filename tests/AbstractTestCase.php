@@ -16,8 +16,6 @@ abstract class AbstractTestCase extends TestCase
      * @param string $expected The expected export() output.
      * @param mixed  $var      The variable to export.
      * @param int    $options  The options to pass to export().
-     *
-     * @return void
      */
     public function assertExportEquals(string $expected, mixed $var, int $options = 0) : void
     {
@@ -58,8 +56,6 @@ abstract class AbstractTestCase extends TestCase
      * @param string $expectedMessage The expected exception message. Can use '*' as a placeholder.
      * @param mixed  $var             The variable to export.
      * @param int    $options         The options to pass to export().
-     *
-     * @return void
      */
     public function assertExportThrows(string $expectedMessage, mixed $var, int $options = 0) : void
     {

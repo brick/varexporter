@@ -154,9 +154,6 @@ final class AnyObjectExporter extends ObjectExporter
     /**
      * Returns the key of the given property in the object-to-array cast.
      *
-     * @param \ReflectionProperty $property
-     *
-     * @return string
      */
     private function getPropertyKey(\ReflectionProperty $property) : string
     {
@@ -173,11 +170,6 @@ final class AnyObjectExporter extends ObjectExporter
         return $name;
     }
 
-    /**
-     * @param string $var
-     *
-     * @return string
-     */
     private function escapePropName(string $var) : string
     {
         if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $var) === 1) {

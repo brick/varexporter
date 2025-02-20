@@ -131,8 +131,6 @@ final class ClosureExporter extends ObjectExporter
      * @param int                $line               The line number where the closure is located in the source file.
      * @param string[]           $path               The path to the closure in the array/object graph.
      *
-     * @return Node\Expr\Closure
-     *
      * @throws ExportException
      */
     private function getClosure(
@@ -182,8 +180,6 @@ final class ClosureExporter extends ObjectExporter
      *
      * @param ReflectionFunction       $reflectionFunction  Reflection of the closure.
      * @param Node\Expr\ArrowFunction  $arrowFunction       Parsed arrow function.
-     *
-     * @return Node\Expr\Closure
      */
     private function convertArrowFunction(
         ReflectionFunction $reflectionFunction,

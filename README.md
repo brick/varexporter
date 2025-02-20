@@ -100,7 +100,7 @@ Note: unlike `var_export()`, `export()` always returns the exported variable, an
 
 `var_export()` assumes that every object has a static [__set_state()](https://www.php.net/manual/en/language.oop5.magic.php#object.set-state) method that takes an associative array of property names to values, and returns a object.
 
-This means that if you want to export an instance of a class outside your control, you're screwed up. This also means that you have to write boilerplate code for your classes, that looks like:
+This means that if you want to export an instance of a class outside your control, you're out of luck. This also means that you have to write boilerplate code for your classes, that looks like:
 
 ```php
 class Foo
@@ -174,7 +174,7 @@ It determines the most appropriate method to export your object, in this order:
     })()
     ```
 
-    This method is recommended for exporting complex custom objects: it is forward compatible with the new serialization mechanism introduced in PHP 7.4, flexible, safe, and composes very well under inheritance.
+    This method is recommended for exporting complex custom objects: it is compatible with the new serialization mechanism introduced in PHP 7.4, flexible, safe, and composes very well under inheritance.
 
     If for any reason you do not want to export objects that implement `__serialize()` and `__unserialize()` using this method, you can opt out by using the [`NO_SERIALIZE`](#varexporterno_serialize) option.
 
@@ -309,7 +309,7 @@ echo VarExporter::export([
 
 ### Arrow functions
 
-PHP supports shorthand syntax for closures (since PHP 7.4), also known as arrow functions. `VarExporter` will export these as normal closures.
+PHP supports shorthand syntax for closures, also known as arrow functions. `VarExporter` will export these as normal closures.
 
 Arrow functions can implicitly use variables from the context they've been defined in. If any context variable is used in the arrow function, `VarExporter` will throw an `ExportException` unless the [`CLOSURE_SNAPSHOT_USES`](#varexporterclosure_snapshot_uses) option is used.
 

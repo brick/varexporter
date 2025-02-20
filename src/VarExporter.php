@@ -75,6 +75,11 @@ final class VarExporter
     public const INLINE_ARRAY = 1 << 11;
 
     /**
+     * Any value implementing CodeInterface will print a literal expression.
+     */
+    public const ALLOW_CODE = 1 << 12;
+
+    /**
      * @param mixed $var       The variable to export.
      * @param int   $options   A bitmask of options. Possible values are `VarExporter::*` constants.
      *                         Combine multiple options with a bitwise OR `|` operator.

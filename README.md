@@ -41,7 +41,7 @@ composer require brick/varexporter
 
 This library requires PHP 8.1 or later.
 
-For PHP 7.4, you can use version `0.5`. For PHP 7.2 & 7.3 compatibility, you can use version `0.3`. Note that [these PHP versions are EOL](http://php.net/supported-versions.php) and not supported anymore. If you're still using one of these PHP versions, you should consider upgrading as soon as possible.
+For PHP 7.4 and PHP 8.0 compatibility, you can use version `0.5`. For PHP 7.2 & 7.3, you can use version `0.3`. Note that [these PHP versions are EOL](http://php.net/supported-versions.php) and not supported anymore. If you're still using one of these PHP versions, you should consider upgrading as soon as possible.
 
 ### Project status & release process
 
@@ -51,7 +51,7 @@ The current releases are numbered `0.x.y`. When a non-breaking change is introdu
 
 **When a breaking change is introduced, a new `0.x` version cycle is always started.**
 
-It is therefore safe to lock your project to a given release cycle, such as `0.5.*`.
+It is therefore safe to lock your project to a given release cycle, such as `0.6.*`.
 
 If you need to upgrade to a newer release cycle, check the [release history](https://github.com/brick/varexporter/releases) for a list of changes introduced by each further `0.x.0` version.
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://github.com/brick/varexporter/releases/tag/0.6.0) - 2025-02-20
+
+💥 **BC breaks**
+
+- Minimum PHP version is now `8.1` (#39)
+
+✨ **New features**
+
+- Support for exporting `match` constructs in closures (#38)
+
+Thanks to @reinfi!
+
 ## [0.5.0](https://github.com/brick/varexporter/releases/tag/0.5.0) - 2024-05-10
 
 ✨ **Compatibility**

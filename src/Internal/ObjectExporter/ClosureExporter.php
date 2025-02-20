@@ -7,6 +7,7 @@ namespace Brick\VarExporter\Internal\ObjectExporter;
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Internal\ObjectExporter;
 use Closure;
+use Override;
 use PhpParser\Error;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
@@ -26,17 +27,13 @@ class ClosureExporter extends ObjectExporter
 {
     private ?Parser $parser = null;
 
-    /**
-     * {@inheritDoc}
-     */
+    #[Override]
     public function supports(\ReflectionObject $reflectionObject) : bool
     {
         return $reflectionObject->getName() === \Closure::class;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    #[Override]
     public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
         assert($object instanceof Closure);

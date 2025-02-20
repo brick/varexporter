@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\Internal\ObjectExporter;
+use Override;
 
 /**
  * Handles instances of classes with __serialize() and __unserialize() methods.
@@ -13,18 +14,14 @@ use Brick\VarExporter\Internal\ObjectExporter;
  */
 class SerializeExporter extends ObjectExporter
 {
-    /**
-     * {@inheritDoc}
-     */
+    #[Override]
     public function supports(\ReflectionObject $reflectionObject) : bool
     {
         return $reflectionObject->hasMethod('__serialize')
             && $reflectionObject->hasMethod('__unserialize');
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    #[Override]
     public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
         $lines = $this->getCreateObjectCode($reflectionObject);

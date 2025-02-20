@@ -6,6 +6,7 @@ namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Internal\ObjectExporter;
+use Override;
 
 /**
  * Handles instances of classes with a __set_state() method.
@@ -14,9 +15,7 @@ use Brick\VarExporter\Internal\ObjectExporter;
  */
 class SetStateExporter extends ObjectExporter
 {
-    /**
-     * {@inheritDoc}
-     */
+    #[Override]
     public function supports(\ReflectionObject $reflectionObject) : bool
     {
         if ($reflectionObject->hasMethod('__set_state')) {
@@ -28,9 +27,7 @@ class SetStateExporter extends ObjectExporter
         return false;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    #[Override]
     public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
         $className = $reflectionObject->getName();

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\Internal\ObjectExporter;
+use Override;
 
 /**
  * Handles any class through direct property access and bound closures.
@@ -16,19 +17,16 @@ use Brick\VarExporter\Internal\ObjectExporter;
  */
 class AnyObjectExporter extends ObjectExporter
 {
-    /**
-     * {@inheritDoc}
-     */
+    #[Override]
     public function supports(\ReflectionObject $reflectionObject) : bool
     {
         return true;
     }
 
     /**
-     * {@inheritDoc}
-     *
      * @psalm-suppress MixedAssignment
      */
+    #[Override]
     public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
         $lines = $this->getCreateObjectCode($reflectionObject);

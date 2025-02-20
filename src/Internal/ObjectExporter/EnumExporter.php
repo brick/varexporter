@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\Internal\ObjectExporter;
+use Override;
 use UnitEnum;
 
 /**
@@ -15,19 +16,16 @@ use UnitEnum;
 class EnumExporter extends ObjectExporter
 {
     /**
-     * {@inheritDoc}
-     *
      * See: https://github.com/vimeo/psalm/pull/8117
      * @psalm-suppress RedundantCondition
      */
+    #[Override]
     public function supports(\ReflectionObject $reflectionObject) : bool
     {
         return method_exists($reflectionObject, 'isEnum') && $reflectionObject->isEnum();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    #[Override]
     public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
     {
         assert($object instanceof UnitEnum);

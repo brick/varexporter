@@ -15,14 +15,10 @@ use UnitEnum;
  */
 final class EnumExporter extends ObjectExporter
 {
-    /**
-     * See: https://github.com/vimeo/psalm/pull/8117
-     * @psalm-suppress RedundantCondition
-     */
     #[Override]
     public function supports(\ReflectionObject $reflectionObject) : bool
     {
-        return method_exists($reflectionObject, 'isEnum') && $reflectionObject->isEnum();
+        return $reflectionObject->isEnum();
     }
 
     #[Override]

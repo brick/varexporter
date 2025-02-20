@@ -71,25 +71,25 @@ final class GenericExporter
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
 
-        if (! ($options & VarExporter::NO_CLOSURES)) {
+        if (($options & VarExporter::NO_CLOSURES) === 0) {
             $this->objectExporters[] = new ObjectExporter\ClosureExporter($this);
         }
 
-        if (! ($options & VarExporter::NO_SET_STATE)) {
+        if (($options & VarExporter::NO_SET_STATE) === 0) {
             $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
         }
 
         $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
 
-        if (! ($options & VarExporter::NO_SERIALIZE)) {
+        if (($options & VarExporter::NO_SERIALIZE) === 0) {
             $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
         }
 
-        if (! ($options & VarExporter::NO_ENUMS)) {
+        if (($options & VarExporter::NO_ENUMS) === 0) {
             $this->objectExporters[] = new ObjectExporter\EnumExporter($this);
         }
 
-        if (! ($options & VarExporter::NOT_ANY_OBJECT)) {
+        if (($options & VarExporter::NOT_ANY_OBJECT) === 0) {
             $this->objectExporters[] = new ObjectExporter\AnyObjectExporter($this);
         }
 

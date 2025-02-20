@@ -99,7 +99,7 @@ final class VarExporter
             $export = $firstLine . PHP_EOL . implode(PHP_EOL, $lines);
         }
 
-        if ($options & self::ADD_RETURN) {
+        if (($options & self::ADD_RETURN) !== 0) {
             return 'return ' . $export . ';' . PHP_EOL;
         }
 

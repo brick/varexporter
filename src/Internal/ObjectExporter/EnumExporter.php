@@ -27,7 +27,7 @@ final class EnumExporter extends ObjectExporter
         assert($object instanceof UnitEnum);
 
         return [
-            get_class($object) . '::' . $object->name
+            $object::class . '::' . $object->name
         ];
     }
 }

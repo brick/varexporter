@@ -261,7 +261,7 @@ final class GenericExporter
                 throw new ExportException(sprintf(
                     'Object of class "%s" has a circular reference at %s. ' .
                     'Circular references are currently not supported.',
-                    get_class($object),
+                    $object::class,
                     ExportException::pathToString($this->visitedObjects[$parentId][$id])
                 ), $path);
             }

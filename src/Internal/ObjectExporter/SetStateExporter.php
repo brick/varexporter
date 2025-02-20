@@ -74,7 +74,7 @@ final class SetStateExporter extends ObjectExporter
             }
 
             if (array_key_exists($name, $result)) {
-                $className = get_class($object);
+                $className = $object::class;
 
                 throw new ExportException(
                     'Class "' . $className . '" has overridden private property "' . $name . '". ' .

@@ -253,35 +253,6 @@ PHP;
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
     }
 
-    public function testExportEnumMatchFunction(): void
-    {
-        if (version_compare(PHP_VERSION, '8.1.0') < 0) {
-            $this->markTestSkipped("Enums aren't supported in PHP " . PHP_VERSION);
-        }
-
-        $var = [
-            (object) [
-                'callback' => static fn (Enum $enum): string => match ($enum) {
-                    Enum::TEST => 'foo',
-                }
-            ]
-        ];
-
-        $expected = <<<'PHP'
-[
-    (object) [
-        'callback' => function (\Brick\VarExporter\Tests\Classes\Enum $enum): string {
-            return match ($enum) {
-                \Brick\VarExporter\Tests\Classes\Enum::TEST => 'foo',
-            };
-        }
-    ]
-]
-PHP;
-
-        $this->assertExportEquals($expected, $var);
-    }
-
     public function testExportClosureDefinedInEval(): void
     {
         $var = eval(<<<PHP

@@ -108,16 +108,16 @@ class VarExporterTest extends AbstractTestCase
         $object->{'$ref'} = '#/components/schemas/User';
 
         $expected = <<<'PHP'
-(static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+            (static function() {
+                $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 
-    $object->foo = null;
-    $object->bar = null;
-    $object->{'$ref'} = '#/components/schemas/User';
+                $object->foo = null;
+                $object->bar = null;
+                $object->{'$ref'} = '#/components/schemas/User';
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -138,8 +138,8 @@ PHP;
         ];
 
         $expected = <<<'PHP'
-['one' => ['hello', 'world', 123, true, false, null, 7.5], 'two' => ['hello', 'world', [1 => 'one', 2 => 'two', 3 => 'three']]]
-PHP;
+            ['one' => ['hello', 'world', 123, true, false, null, 7.5], 'two' => ['hello', 'world', [1 => 'one', 2 => 'two', 3 => 'three']]]
+            PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::INLINE_ARRAY);
     }
@@ -152,15 +152,15 @@ PHP;
         ];
 
         $expected = <<<'PHP'
-[
-    'one' => ['hello', 'world', 123, true, false, null, 7.5],
-    'two' => [
-        'hello',
-        'world',
-        ['one', 'two', 'three']
-    ]
-]
-PHP;
+            [
+                'one' => ['hello', 'world', 123, true, false, null, 7.5],
+                'two' => [
+                    'hello',
+                    'world',
+                    ['one', 'two', 'three']
+                ]
+            ]
+            PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::INLINE_SCALAR_LIST);
     }
@@ -173,15 +173,15 @@ PHP;
         ];
 
         $expected = <<<'PHP'
-[
-    'one' => ['hello', 'world', 123, true, false, null, 7.5],
-    'two' => [
-        'hello',
-        'world',
-        ['one', 'two', 'three'],
-    ],
-]
-PHP;
+            [
+                'one' => ['hello', 'world', 123, true, false, null, 7.5],
+                'two' => [
+                    'hello',
+                    'world',
+                    ['one', 'two', 'three'],
+                ],
+            ]
+            PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::INLINE_SCALAR_LIST | VarExporter::TRAILING_COMMA_IN_ARRAY);
     }
@@ -194,12 +194,12 @@ PHP;
         $var = \DateTime::createFromFormat($format, '2020-03-09 18:51:23.000000', $timezone);
 
         $expected = <<<'PHP'
-\DateTime::__set_state([
-    'date' => '2020-03-09 18:51:23.000000',
-    'timezone_type' => 3,
-    'timezone' => 'Europe/Berlin'
-])
-PHP;
+            \DateTime::__set_state([
+                'date' => '2020-03-09 18:51:23.000000',
+                'timezone_type' => 3,
+                'timezone' => 'Europe/Berlin'
+            ])
+            PHP;
 
         $this->assertExportEquals($expected, $var);
     }
@@ -212,12 +212,12 @@ PHP;
         $var = \DateTimeImmutable::createFromFormat($format, '2020-03-10 17:06:19.000000', $timezone);
 
         $expected = <<<'PHP'
-\DateTimeImmutable::__set_state([
-    'date' => '2020-03-10 17:06:19.000000',
-    'timezone_type' => 3,
-    'timezone' => 'Europe/Berlin'
-])
-PHP;
+            \DateTimeImmutable::__set_state([
+                'date' => '2020-03-10 17:06:19.000000',
+                'timezone_type' => 3,
+                'timezone' => 'Europe/Berlin'
+            ])
+            PHP;
 
         $this->assertExportEquals($expected, $var);
     }
@@ -261,25 +261,25 @@ PHP;
         ];
 
         $expected = <<<'PHP'
-[
-    'x' => (static function() {
-        $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+            [
+                'x' => (static function() {
+                    $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 
-        $object->foo = 'Foo';
-        $object->bar = 'Bar';
+                    $object->foo = 'Foo';
+                    $object->bar = 'Bar';
 
-        return $object;
-    })(),
-    'y' => (static function() {
-        $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+                    return $object;
+                })(),
+                'y' => (static function() {
+                    $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 
-        $object->foo = 'Foo';
-        $object->bar = 'Bar';
+                    $object->foo = 'Foo';
+                    $object->bar = 'Bar';
 
-        return $object;
-    })()
-]
-PHP;
+                    return $object;
+                })()
+            ]
+            PHP;
 
         $this->assertExportEquals($expected, $var);
     }
@@ -308,11 +308,11 @@ PHP;
     public function testExportIndented(mixed $var, string $expected, int $options): void
     {
         $template = <<<'TPL'
-public function foo()
-{
-    $data = {{exported}};
-}
-TPL;
+            public function foo()
+            {
+                $data = {{exported}};
+            }
+            TPL;
 
         $exported = VarExporter::export($var, $options, 1);
         $result = str_replace('{{exported}}', $exported, $template);
@@ -325,27 +325,27 @@ TPL;
         // Array
         $var = ['one' => ['hello', true], 'two' => 2];
         $expected = <<<'PHP'
-public function foo()
-{
-    $data = [
-        'one' => [
-            'hello',
-            true
-        ],
-        'two' => 2
-    ];
-}
-PHP;
+            public function foo()
+            {
+                $data = [
+                    'one' => [
+                        'hello',
+                        true
+                    ],
+                    'two' => 2
+                ];
+            }
+            PHP;
         yield [$var, $expected, 0];
 
         // Null
         $var = null;
         $expected = <<<'PHP'
-public function foo()
-{
-    $data = null;
-}
-PHP;
+            public function foo()
+            {
+                $data = null;
+            }
+            PHP;
         yield [$var, $expected, 0];
 
         // Closure
@@ -353,13 +353,13 @@ PHP;
             return 'Hello, world!';
         };
         $expected = <<<'PHP'
-public function foo()
-{
-    $data = function () {
-        return 'Hello, world!';
-    };
-}
-PHP;
+            public function foo()
+            {
+                $data = function () {
+                    return 'Hello, world!';
+                };
+            }
+            PHP;
         yield [$var, $expected, 0];
 
         $foo = 'bar';
@@ -371,17 +371,17 @@ PHP;
         };
 
         $expected = <<<'PHP'
-public function foo()
-{
-    $data = function () {
-        $sub = function () {
-            $foo = 'bar';
-            return $foo;
-        };
-        return $sub();
-    };
-}
-PHP;
+            public function foo()
+            {
+                $data = function () {
+                    $sub = function () {
+                        $foo = 'bar';
+                        return $foo;
+                    };
+                    return $sub();
+                };
+            }
+            PHP;
         yield [$var, $expected, VarExporter::CLOSURE_SNAPSHOT_USES];
 
         $var = function () {
@@ -389,36 +389,36 @@ PHP;
 World!';
 
             $b = <<<TXT
-Hello,
-world!
-TXT;
+            Hello,
+            world!
+            TXT;
 
             $c = <<<'TXT'
-Hello,
-world!
-TXT;
+            Hello,
+            world!
+            TXT;
 
             return $a . $b . $c;
         };
 
         $expected = <<<'PHP'
-public function foo()
-{
-    $data = function () {
-        $a = 'Hello,
-World!';
-        $b = <<<TXT
-        Hello,
-        world!
-        TXT;
-        $c = <<<'TXT'
-        Hello,
-        world!
-        TXT;
-        return $a . $b . $c;
-    };
-}
-PHP;
+            public function foo()
+            {
+                $data = function () {
+                    $a = 'Hello,
+            World!';
+                    $b = <<<TXT
+                    Hello,
+                    world!
+                    TXT;
+                    $c = <<<'TXT'
+                    Hello,
+                    world!
+                    TXT;
+                    return $a . $b . $c;
+                };
+            }
+            PHP;
 
         yield [$var, $expected, 0];
     }

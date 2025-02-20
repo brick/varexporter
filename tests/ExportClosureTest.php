@@ -28,10 +28,10 @@ class ExportClosureTest extends AbstractTestCase
         };
 
         $expected = <<<'PHP'
-function () {
-    return 'Hello, world!';
-}
-PHP;
+            function () {
+                return 'Hello, world!';
+            }
+            PHP;
 
         $this->assertExportEquals($expected, $var);
     }
@@ -59,20 +59,20 @@ PHP;
         ];
 
         $expected = <<<'PHP'
-[
-    (object) [
-        'callback' => function () {
-            return function (\Brick\VarExporter\Tests\Classes\PublicPropertiesOnly $a, int $b, string &$c, string ...$d): ?string {
-                $a->foo += $b;
-                $c = $a->bar;
-                $a->bar = implode('', $d);
-                $this->someProp = [$a->foo, $a->bar, $c];
-                return $this->someProp['c'];
-            };
-        }
-    ]
-]
-PHP;
+            [
+                (object) [
+                    'callback' => function () {
+                        return function (\Brick\VarExporter\Tests\Classes\PublicPropertiesOnly $a, int $b, string &$c, string ...$d): ?string {
+                            $a->foo += $b;
+                            $c = $a->bar;
+                            $a->bar = implode('', $d);
+                            $this->someProp = [$a->foo, $a->bar, $c];
+                            return $this->someProp['c'];
+                        };
+                    }
+                ]
+            ]
+            PHP;
 
         $this->assertExportEquals($expected, $var);
     }
@@ -92,15 +92,15 @@ PHP;
         };
 
         $expected = <<<'PHP'
-function (\Brick\VarExporter\Tests\Classes\SetState $a): array {
-    return ['callback' => function (\Brick\VarExporter\Tests\Classes\SetState $a): \Brick\VarExporter\Tests\Classes\NoProperties {
-        strlen(PHP_VERSION);
-        \Brick\VarExporter\Dummy\Functions\imported_function(\Brick\VarExporter\Dummy\Constants\IMPORTED_CONSTANT);
-        \Brick\VarExporter\Dummy\Functions\explicitly_namespaced_function(\Brick\VarExporter\Dummy\Constants\EXPLICITLY_NAMESPACED_CONSTANT);
-        return new \Brick\VarExporter\Tests\Classes\NoProperties();
-    }];
-}
-PHP;
+            function (\Brick\VarExporter\Tests\Classes\SetState $a): array {
+                return ['callback' => function (\Brick\VarExporter\Tests\Classes\SetState $a): \Brick\VarExporter\Tests\Classes\NoProperties {
+                    strlen(PHP_VERSION);
+                    \Brick\VarExporter\Dummy\Functions\imported_function(\Brick\VarExporter\Dummy\Constants\IMPORTED_CONSTANT);
+                    \Brick\VarExporter\Dummy\Functions\explicitly_namespaced_function(\Brick\VarExporter\Dummy\Constants\EXPLICITLY_NAMESPACED_CONSTANT);
+                    return new \Brick\VarExporter\Tests\Classes\NoProperties();
+                }];
+            }
+            PHP;
 
         $this->assertExportEquals($expected, $var);
     }
@@ -112,34 +112,34 @@ PHP;
 World!';
 
             $b = <<<TXT
-Hello,
-world!
-TXT;
+                Hello,
+                world!
+                TXT;
 
             $c = <<<'TXT'
-Hello,
-world!
-TXT;
+                Hello,
+                world!
+                TXT;
 
             return $a . $b . $c;
         };
 
         $expected = <<<'PHP'
-return function () {
-    $a = 'Hello,
-World!';
-    $b = <<<TXT
-    Hello,
-    world!
-    TXT;
-    $c = <<<'TXT'
-    Hello,
-    world!
-    TXT;
-    return $a . $b . $c;
-};
+            return function () {
+                $a = 'Hello,
+            World!';
+                $b = <<<TXT
+                Hello,
+                world!
+                TXT;
+                $c = <<<'TXT'
+                Hello,
+                world!
+                TXT;
+                return $a . $b . $c;
+            };
 
-PHP;
+            PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
@@ -168,12 +168,12 @@ PHP;
         };
 
         $expected = <<<'PHP'
-return function () {
-    $foo = 'bar';
-    return $foo;
-};
+            return function () {
+                $foo = 'bar';
+                return $foo;
+            };
 
-PHP;
+            PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
     }
@@ -191,32 +191,31 @@ PHP;
         };
 
         $expected = <<<'PHP'
-return function () {
-    $sub = function () {
-        $foo = 'bar';
-        return $foo;
-    };
-    return $sub();
-};
+            return function () {
+                $sub = function () {
+                    $foo = 'bar';
+                    return $foo;
+                };
+                return $sub();
+            };
 
-PHP;
+            PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
     }
-
 
     public function testExportArrowFunction(): void
     {
         $var = [fn ($planet) => 'hello ' . $planet]; // Wrapping in array for valid syntax PHP <7.4
 
         $expected = <<<'PHP'
-return [
-    function ($planet) {
-        return 'hello ' . $planet;
-    }
-];
+            return [
+                function ($planet) {
+                    return 'hello ' . $planet;
+                }
+            ];
 
-PHP;
+            PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN);
     }
@@ -241,14 +240,14 @@ PHP;
         $var = [fn ($planet) => $greet . ' ' . $planet];
 
         $expected = <<<'PHP'
-return [
-    function ($planet) {
-        $greet = 'hello';
-        return $greet . ' ' . $planet;
-    }
-];
+            return [
+                function ($planet) {
+                    $greet = 'hello';
+                    return $greet . ' ' . $planet;
+                }
+            ];
 
-PHP;
+            PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::ADD_RETURN | VarExporter::CLOSURE_SNAPSHOT_USES);
     }
@@ -264,16 +263,16 @@ PHP;
         ];
 
         $expected = <<<'PHP'
-[
-    (object) [
-        'callback' => function (\Brick\VarExporter\Tests\Classes\Enum $enum): string {
-            return match ($enum) {
-                \Brick\VarExporter\Tests\Classes\Enum::TEST => 'foo',
-            };
-        }
-    ]
-]
-PHP;
+            [
+                (object) [
+                    'callback' => function (\Brick\VarExporter\Tests\Classes\Enum $enum): string {
+                        return match ($enum) {
+                            \Brick\VarExporter\Tests\Classes\Enum::TEST => 'foo',
+                        };
+                    }
+                ]
+            ]
+            PHP;
 
         $this->assertExportEquals($expected, $var);
     }
@@ -281,11 +280,11 @@ PHP;
     public function testExportClosureDefinedInEval(): void
     {
         $var = eval(<<<PHP
-return function() {
-    return 'Hello, world!';
-};
-PHP
-);
+            return function() {
+                return 'Hello, world!';
+            };
+            PHP
+        );
         $this->assertExportThrows("Closure defined in eval()'d code cannot be exported.", $var);
     }
 

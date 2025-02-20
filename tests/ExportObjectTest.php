@@ -33,14 +33,14 @@ class ExportObjectTest extends AbstractTestCase
         $object->baz->foo = 'Hello';
 
         $expected = <<<'PHP'
-(object) [
-    'foo' => 'Hello',
-    'bar' => 'bar',
-    'baz' => (object) [
-        'foo' => 'Hello'
-    ]
-]
-PHP;
+            (object) [
+                'foo' => 'Hello',
+                'bar' => 'bar',
+                'baz' => (object) [
+                    'foo' => 'Hello'
+                ]
+            ]
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -63,17 +63,17 @@ PHP;
         $object->{'123'} = 'Numeric dynamic prop';
 
         $expected = <<<'PHP'
-(static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\NoProperties;
+            (static function() {
+                $object = new \Brick\VarExporter\Tests\Classes\NoProperties;
 
-    $object->x = 1.0;
-    $object->dynamicProp = 'Hello';
-    $object->{'$weird%Prop'} = 'World';
-    $object->{'123'} = 'Numeric dynamic prop';
+                $object->x = 1.0;
+                $object->dynamicProp = 'Hello';
+                $object->{'$weird%Prop'} = 'World';
+                $object->{'123'} = 'Numeric dynamic prop';
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -94,13 +94,13 @@ PHP;
         $object = new ConstructorAndNoProperties();
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ConstructorAndNoProperties::class);
-    $object = $class->newInstanceWithoutConstructor();
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ConstructorAndNoProperties::class);
+                $object = $class->newInstanceWithoutConstructor();
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object, VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
@@ -112,15 +112,15 @@ PHP;
         $object->bar = 'World';
 
         $expected = <<<'PHP'
-(static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+            (static function() {
+                $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 
-    $object->foo = 'Hello';
-    $object->bar = 'World';
+                $object->foo = 'Hello';
+                $object->bar = 'World';
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -133,16 +133,16 @@ PHP;
         $object->dynamic = 'Dynamic';
 
         $expected = <<<'PHP'
-(static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+            (static function() {
+                $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 
-    $object->foo = 'Hello';
-    $object->bar = 'World';
-    $object->dynamic = 'Dynamic';
+                $object->foo = 'Hello';
+                $object->bar = 'World';
+                $object->dynamic = 'Dynamic';
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -155,15 +155,15 @@ PHP;
         $object->dynamic = 'Dynamic';
 
         $expected = <<<'PHP'
-(static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
+            (static function() {
+                $object = new \Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 
-    $object->foo = 'Hello';
-    $object->bar = 'World';
+                $object->foo = 'Hello';
+                $object->bar = 'World';
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object, VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
@@ -257,16 +257,16 @@ PHP;
         $object->bar = 'Bar';
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\PrivateConstructor::class);
-    $object = $class->newInstanceWithoutConstructor();
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\PrivateConstructor::class);
+                $object = $class->newInstanceWithoutConstructor();
 
-    $object->foo = 'Foo';
-    $object->bar = 'Bar';
+                $object->foo = 'Foo';
+                $object->bar = 'Bar';
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -276,16 +276,16 @@ PHP;
         $object = new PublicPropertiesWithConstructor();
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor::class);
-    $object = $class->newInstanceWithoutConstructor();
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor::class);
+                $object = $class->newInstanceWithoutConstructor();
 
-    $object->foo = 'DefaultFoo';
-    $object->bar = 0;
+                $object->foo = 'DefaultFoo';
+                $object->bar = 0;
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -298,20 +298,20 @@ PHP;
         $object = new ReadonlyPropertiesWithConstructor('public readonly', 'private readonly', 'public');
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor::class);
-    $object = $class->newInstanceWithoutConstructor();
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor::class);
+                $object = $class->newInstanceWithoutConstructor();
 
-    $object->baz = 'public';
+                $object->baz = 'public';
 
-    (function() {
-        $this->foo = 'public readonly';
-        $this->bar = 'private readonly';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor::class)();
+                (function() {
+                    $this->foo = 'public readonly';
+                    $this->bar = 'private readonly';
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor::class)();
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -328,19 +328,19 @@ PHP;
         })->bindTo($object, PublicReadonlyPropertiesWithoutConstructor::class)();
 
         $expected = <<<'PHP'
-(static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor;
+            (static function() {
+                $object = new \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor;
 
-    unset($object->baz);
+                unset($object->baz);
 
-    (function() {
-        $this->foo = 'foo';
-        unset($this->bar);
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor::class)();
+                (function() {
+                    $this->foo = 'foo';
+                    unset($this->bar);
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor::class)();
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -353,20 +353,20 @@ PHP;
         $object->bar = [1, 2];
 
         $expected = <<<'PHP'
-(static function() {
-    $object = new \Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
+            (static function() {
+                $object = new \Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 
-    $object->__unserialize([
-        'foo' => 'Foo',
-        'bar' => [
-            1,
-            2
-        ]
-    ]);
+                $object->__unserialize([
+                    'foo' => 'Foo',
+                    'bar' => [
+                        1,
+                        2
+                    ]
+                ]);
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -376,18 +376,18 @@ PHP;
         $object = new SerializeMagicMethodsWithConstructor('Test', 1234);
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor::class);
-    $object = $class->newInstanceWithoutConstructor();
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor::class);
+                $object = $class->newInstanceWithoutConstructor();
 
-    $object->__unserialize([
-        'foo' => 'Test',
-        'bar' => 1234
-    ]);
+                $object->__unserialize([
+                    'foo' => 'Test',
+                    'bar' => 1234
+                ]);
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -397,20 +397,20 @@ PHP;
         $object = new SerializeMagicMethodsWithConstructor('Test', 1234);
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor::class);
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor::class);
 
-    /** @var \Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor $object */
-    $object = $class->newInstanceWithoutConstructor();
+                /** @var \Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor $object */
+                $object = $class->newInstanceWithoutConstructor();
 
-    $object->__unserialize([
-        'foo' => 'Test',
-        'bar' => 1234
-    ]);
+                $object->__unserialize([
+                    'foo' => 'Test',
+                    'bar' => 1234
+                ]);
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object, VarExporter::ADD_TYPE_HINTS);
     }
@@ -421,36 +421,36 @@ PHP;
         $object->dynamicProperty = 'A property declared dynamically';
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
-    $object = $class->newInstanceWithoutConstructor();
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
+                $object = $class->newInstanceWithoutConstructor();
 
-    $object->publicInC = 'public in C';
-    $object->publicInB = 'public in B';
-    $object->publicInA = 'public in A';
-    $object->dynamicProperty = 'A property declared dynamically';
+                $object->publicInC = 'public in C';
+                $object->publicInB = 'public in B';
+                $object->publicInA = 'public in A';
+                $object->dynamicProperty = 'A property declared dynamically';
 
-    (function() {
-        $this->privateInC = 'private in C';
-        $this->protectedInC = 'protected in C';
-        $this->privateOverridden = 'in C';
-        $this->protectedInB = 'protected in B';
-        $this->protectedInA = 'protected in A';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\C::class)();
+                (function() {
+                    $this->privateInC = 'private in C';
+                    $this->protectedInC = 'protected in C';
+                    $this->privateOverridden = 'in C';
+                    $this->protectedInB = 'protected in B';
+                    $this->protectedInA = 'protected in A';
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\C::class)();
 
-    (function() {
-        $this->privateInB = 'private in B';
-        $this->privateOverridden = 'in B';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\B::class)();
+                (function() {
+                    $this->privateInB = 'private in B';
+                    $this->privateOverridden = 'in B';
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\B::class)();
 
-    (function() {
-        $this->privateInA = 'private in A';
-        $this->privateOverridden = 'in A';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\A::class)();
+                (function() {
+                    $this->privateInA = 'private in A';
+                    $this->privateOverridden = 'in A';
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\A::class)();
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -461,40 +461,40 @@ PHP;
         $object->dynamicProperty = 'A property declared dynamically';
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
 
-    /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\C $object */
-    $object = $class->newInstanceWithoutConstructor();
+                /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\C $object */
+                $object = $class->newInstanceWithoutConstructor();
 
-    $object->publicInC = 'public in C';
-    $object->publicInB = 'public in B';
-    $object->publicInA = 'public in A';
+                $object->publicInC = 'public in C';
+                $object->publicInB = 'public in B';
+                $object->publicInA = 'public in A';
 
-    (function() {
-        /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\C $this */
-        $this->privateInC = 'private in C';
-        $this->protectedInC = 'protected in C';
-        $this->privateOverridden = 'in C';
-        $this->protectedInB = 'protected in B';
-        $this->protectedInA = 'protected in A';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\C::class)();
+                (function() {
+                    /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\C $this */
+                    $this->privateInC = 'private in C';
+                    $this->protectedInC = 'protected in C';
+                    $this->privateOverridden = 'in C';
+                    $this->protectedInB = 'protected in B';
+                    $this->protectedInA = 'protected in A';
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\C::class)();
 
-    (function() {
-        /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\B $this */
-        $this->privateInB = 'private in B';
-        $this->privateOverridden = 'in B';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\B::class)();
+                (function() {
+                    /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\B $this */
+                    $this->privateInB = 'private in B';
+                    $this->privateOverridden = 'in B';
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\B::class)();
 
-    (function() {
-        /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\A $this */
-        $this->privateInA = 'private in A';
-        $this->privateOverridden = 'in A';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\A::class)();
+                (function() {
+                    /** @var \Brick\VarExporter\Tests\Classes\Hierarchy\A $this */
+                    $this->privateInA = 'private in A';
+                    $this->privateOverridden = 'in A';
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\A::class)();
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object, VarExporter::ADD_TYPE_HINTS | VarExporter::SKIP_DYNAMIC_PROPERTIES);
     }
@@ -518,35 +518,35 @@ PHP;
         })->bindTo($object, Hierarchy\A::class)();
 
         $expected = <<<'PHP'
-(static function() {
-    $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
-    $object = $class->newInstanceWithoutConstructor();
+            (static function() {
+                $class = new \ReflectionClass(\Brick\VarExporter\Tests\Classes\Hierarchy\C::class);
+                $object = $class->newInstanceWithoutConstructor();
 
-    $object->publicInC = 'public in C';
-    $object->publicInA = null;
-    unset($object->publicInB);
+                $object->publicInC = 'public in C';
+                $object->publicInA = null;
+                unset($object->publicInB);
 
-    (function() {
-        $this->protectedInC = 'protected in C';
-        $this->privateOverridden = 'in C';
-        $this->protectedInA = 'protected in A';
-        unset($this->privateInC);
-        unset($this->protectedInB);
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\C::class)();
+                (function() {
+                    $this->protectedInC = 'protected in C';
+                    $this->privateOverridden = 'in C';
+                    $this->protectedInA = 'protected in A';
+                    unset($this->privateInC);
+                    unset($this->protectedInB);
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\C::class)();
 
-    (function() {
-        $this->privateInB = 'private in B';
-        $this->privateOverridden = 'in B';
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\B::class)();
+                (function() {
+                    $this->privateInB = 'private in B';
+                    $this->privateOverridden = 'in B';
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\B::class)();
 
-    (function() {
-        $this->privateInA = 'private in A';
-        unset($this->privateOverridden);
-    })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\A::class)();
+                (function() {
+                    $this->privateInA = 'private in A';
+                    unset($this->privateOverridden);
+                })->bindTo($object, \Brick\VarExporter\Tests\Classes\Hierarchy\A::class)();
 
-    return $object;
-})()
-PHP;
+                return $object;
+            })()
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }
@@ -570,8 +570,8 @@ PHP;
         $object = Enum::TEST;
 
         $expected = <<<'PHP'
-Brick\VarExporter\Tests\Classes\Enum::TEST
-PHP;
+            Brick\VarExporter\Tests\Classes\Enum::TEST
+            PHP;
 
         $this->assertExportEquals($expected, $object);
     }

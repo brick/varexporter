@@ -6,7 +6,10 @@ namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\Internal\ObjectExporter;
 use Override;
+use ReflectionObject;
 use UnitEnum;
+
+use function assert;
 
 /**
  * Handles enums.
@@ -16,18 +19,18 @@ use UnitEnum;
 final class EnumExporter extends ObjectExporter
 {
     #[Override]
-    public function supports(\ReflectionObject $reflectionObject) : bool
+    public function supports(ReflectionObject $reflectionObject): bool
     {
         return $reflectionObject->isEnum();
     }
 
     #[Override]
-    public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
+    public function export(object $object, ReflectionObject $reflectionObject, array $path, array $parentIds): array
     {
         assert($object instanceof UnitEnum);
 
         return [
-            $object::class . '::' . $object->name
+            $object::class . '::' . $object->name,
         ];
     }
 }

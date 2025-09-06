@@ -10,17 +10,18 @@ namespace Brick\VarExporter\Tests\Classes;
 class SerializeMagicMethods
 {
     public $foo;
+
     public $bar;
 
-    public function __serialize() : array
+    public function __serialize(): array
     {
         return [
             'foo' => $this->foo,
-            'bar' => $this->bar
+            'bar' => $this->bar,
         ];
     }
 
-    public function __unserialize(array $array) : void
+    public function __unserialize(array $array): void
     {
         $this->foo = $array['foo'];
         $this->bar = $array['bar'];

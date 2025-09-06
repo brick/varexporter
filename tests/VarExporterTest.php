@@ -4,11 +4,21 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Tests;
 
+use ArrayIterator;
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\VarExporter;
+use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
 use PHPUnit\Framework\Attributes\DataProvider;
+use stdClass;
+
+use function fopen;
+use function str_replace;
+
+use const PHP_EOL;
 
 class VarExporterTest extends AbstractTestCase
 {
@@ -28,29 +38,29 @@ class VarExporterTest extends AbstractTestCase
             'aFloat' => 0.75,
             'anInt' => 123,
             'aNumericArray' => ['a', 'b', null, [
-                'c' => 'd'
+                'c' => 'd',
             ]],
             'anAssociativeArray' => [
                 'a' => 'b',
                 'c' => [
                     'd' => 'e',
                     'f' => [
-                        'g' => [[]]
-                    ]
-                ]
+                        'g' => [[]],
+                    ],
+                ],
             ],
             'anObject' => (object) [
                 'type' => 'string',
                 '$ref' => '#/components/schema/User',
                 'items' => (object) [
                     'foo' => 'bar',
-                    'empty' => (object) []
-                ]
+                    'empty' => (object) [],
+                ],
             ],
-            'aCustomObject' => $myObject
+            'aCustomObject' => $myObject,
         ];
 
-            $expected = <<<'PHP'
+        $expected = <<<'PHP'
                 [
                     'aString' => 'Hello',
                     'aTrue' => true,
@@ -105,7 +115,7 @@ class VarExporterTest extends AbstractTestCase
 
     public function testExportObjectPropWithSpecialChars(): void
     {
-        $object = new PublicPropertiesOnly;
+        $object = new PublicPropertiesOnly();
         $object->{'$ref'} = '#/components/schemas/User';
 
         $expected = <<<'PHP'
@@ -135,7 +145,7 @@ class VarExporterTest extends AbstractTestCase
     {
         $var = [
             'one' => ['hello', 'world', 123, true, false, null, 7.5],
-            'two' => ['hello', 'world', [1 => 'one', 'two', 'three']]
+            'two' => ['hello', 'world', [1 => 'one', 'two', 'three']],
         ];
 
         $expected = <<<'PHP'
@@ -149,7 +159,7 @@ class VarExporterTest extends AbstractTestCase
     {
         $var = [
             'one' => ['hello', 'world', 123, true, false, null, 7.5],
-            'two' => ['hello', 'world', ['one', 'two', 'three']]
+            'two' => ['hello', 'world', ['one', 'two', 'three']],
         ];
 
         $expected = <<<'PHP'
@@ -170,7 +180,7 @@ class VarExporterTest extends AbstractTestCase
     {
         $var = [
             'one' => ['hello', 'world', 123, true, false, null, 7.5],
-            'two' => ['hello', 'world', ['one', 'two', 'three']]
+            'two' => ['hello', 'world', ['one', 'two', 'three']],
         ];
 
         $expected = <<<'PHP'
@@ -189,10 +199,10 @@ class VarExporterTest extends AbstractTestCase
 
     public function testExportDateTime(): void
     {
-        $timezone = new \DateTimeZone('Europe/Berlin');
+        $timezone = new DateTimeZone('Europe/Berlin');
         $format = 'Y-m-d H:i:s.u';
 
-        $var = \DateTime::createFromFormat($format, '2020-03-09 18:51:23.000000', $timezone);
+        $var = DateTime::createFromFormat($format, '2020-03-09 18:51:23.000000', $timezone);
 
         $expected = <<<'PHP'
             \DateTime::__set_state([
@@ -207,10 +217,10 @@ class VarExporterTest extends AbstractTestCase
 
     public function testExportDateTimeImmutable(): void
     {
-        $timezone = new \DateTimeZone('Europe/Berlin');
+        $timezone = new DateTimeZone('Europe/Berlin');
         $format = 'Y-m-d H:i:s.u';
 
-        $var = \DateTimeImmutable::createFromFormat($format, '2020-03-10 17:06:19.000000', $timezone);
+        $var = DateTimeImmutable::createFromFormat($format, '2020-03-10 17:06:19.000000', $timezone);
 
         $expected = <<<'PHP'
             \DateTimeImmutable::__set_state([
@@ -225,8 +235,8 @@ class VarExporterTest extends AbstractTestCase
 
     public function testExportInternalClass(): void
     {
-        $object = new \stdClass;
-        $object->iterator = new \ArrayIterator();
+        $object = new stdClass();
+        $object->iterator = new ArrayIterator();
 
         $expectedMessage = 'Class "ArrayIterator" is internal, and cannot be exported.';
 
@@ -240,8 +250,8 @@ class VarExporterTest extends AbstractTestCase
         // bury it deep
         $object = (object) [
             'foo' => (object) [
-                'bar' => $handle
-            ]
+                'bar' => $handle,
+            ],
         ];
 
         $this->expectException(ExportException::class);
@@ -252,13 +262,13 @@ class VarExporterTest extends AbstractTestCase
 
     public function testExportObjectTwiceWithoutCircularReference(): void
     {
-        $a = new PublicPropertiesOnly;
+        $a = new PublicPropertiesOnly();
         $a->foo = 'Foo';
         $a->bar = 'Bar';
 
         $var = [
             'x' => $a,
-            'y' => $a
+            'y' => $a,
         ];
 
         $expected = <<<'PHP'
@@ -287,8 +297,8 @@ class VarExporterTest extends AbstractTestCase
 
     public function testExportObjectWithCircularReference(): void
     {
-        $a = new PublicPropertiesOnly;
-        $b = new PublicPropertiesOnly;
+        $a = new PublicPropertiesOnly();
+        $b = new PublicPropertiesOnly();
 
         $a->foo = $b;
         $b->foo = $a;
@@ -298,8 +308,8 @@ class VarExporterTest extends AbstractTestCase
 
         VarExporter::export([
             'x' => [
-                'y' => $a
-            ]
+                'y' => $a,
+            ],
         ]);
     }
 
@@ -316,7 +326,7 @@ class VarExporterTest extends AbstractTestCase
         $exported = VarExporter::export($var, $options, 1);
         $result = str_replace('{{exported}}', $exported, $template);
 
-        $this->assertEquals($expected, $result);
+        self::assertSame($expected, $result);
     }
 
     public static function providerExportIndented(): iterable

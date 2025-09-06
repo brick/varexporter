@@ -7,6 +7,12 @@ namespace Brick\VarExporter\Internal\ObjectExporter;
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Internal\ObjectExporter;
 use Override;
+use ReflectionClass;
+use ReflectionObject;
+
+use function array_key_exists;
+use function strrpos;
+use function substr;
 
 /**
  * Handles instances of classes with a __set_state() method.
@@ -16,7 +22,7 @@ use Override;
 final class SetStateExporter extends ObjectExporter
 {
     #[Override]
-    public function supports(\ReflectionObject $reflectionObject) : bool
+    public function supports(ReflectionObject $reflectionObject): bool
     {
         if ($reflectionObject->hasMethod('__set_state')) {
             $method = $reflectionObject->getMethod('__set_state');
@@ -28,7 +34,7 @@ final class SetStateExporter extends ObjectExporter
     }
 
     #[Override]
-    public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
+    public function export(object $object, ReflectionObject $reflectionObject, array $path, array $parentIds): array
     {
         $className = $reflectionObject->getName();
 
@@ -36,7 +42,7 @@ final class SetStateExporter extends ObjectExporter
 
         $exportedVars = $this->exporter->exportArray($vars, $path, $parentIds);
 
-        return $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(',  ')');
+        return $this->exporter->wrap($exportedVars, '\\' . $className . '::__set_state(', ')');
     }
 
     /**
@@ -51,16 +57,16 @@ final class SetStateExporter extends ObjectExporter
      *
      * This way we offer a better safety guarantee, while staying compatible with var_export() in the output.
      *
-     * @psalm-suppress MixedAssignment
-     *
      * @param object   $object The object to dump.
      * @param string[] $path   The path to the object, in the array/object graph.
      *
      * @return array<string, mixed> An associative array of property name to value.
      *
      * @throws ExportException
+     *
+     * @psalm-suppress MixedAssignment
      */
-    private function getObjectVars(object $object, array $path) : array
+    private function getObjectVars(object $object, array $path): array
     {
         $result = [];
 
@@ -78,7 +84,7 @@ final class SetStateExporter extends ObjectExporter
                 throw new ExportException(
                     'Class "' . $className . '" has overridden private property "' . $name . '". ' .
                     'This is not supported for exporting objects with __set_state().',
-                    $path
+                    $path,
                 );
             }
 
@@ -92,10 +98,10 @@ final class SetStateExporter extends ObjectExporter
         return $result;
     }
 
-    private function isDynamicProperty(object $object, string $name) : bool
+    private function isDynamicProperty(object $object, string $name): bool
     {
-        $reflectionClass = new \ReflectionClass($object);
-        $reflectionObject = new \ReflectionObject($object);
+        $reflectionClass = new ReflectionClass($object);
+        $reflectionObject = new ReflectionObject($object);
 
         return $reflectionObject->hasProperty($name) && ! $reflectionClass->hasProperty($name);
     }

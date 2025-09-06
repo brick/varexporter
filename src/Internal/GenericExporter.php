@@ -6,6 +6,21 @@ namespace Brick\VarExporter\Internal;
 
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\VarExporter;
+use ReflectionObject;
+
+use function array_keys;
+use function array_merge;
+use function array_unshift;
+use function count;
+use function gettype;
+use function implode;
+use function is_array;
+use function is_object;
+use function is_scalar;
+use function range;
+use function spl_object_id;
+use function sprintf;
+use function var_export;
 
 /**
  * The main exporter implementation, that handles variables of any type.
@@ -18,20 +33,6 @@ use Brick\VarExporter\VarExporter;
  */
 final class GenericExporter
 {
-    /**
-     * @var ObjectExporter[]
-     */
-    private array $objectExporters = [];
-
-    /**
-     * The visited objects, to detect circular references.
-     *
-     * This is a two-level map of parent object id => child object id => path where the object first appeared.
-     *
-     * @var array<int, array<int, string[]>>
-     */
-    private array $visitedObjects = [];
-
     /**
      * @psalm-readonly
      */
@@ -67,6 +68,20 @@ final class GenericExporter
      */
     public int $indentLevel;
 
+    /**
+     * @var ObjectExporter[]
+     */
+    private array $objectExporters = [];
+
+    /**
+     * The visited objects, to detect circular references.
+     *
+     * This is a two-level map of parent object id => child object id => path where the object first appeared.
+     *
+     * @var array<int, array<int, string[]>>
+     */
+    private array $visitedObjects = [];
+
     public function __construct(int $options, int $indentLevel = 0)
     {
         $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
@@ -93,12 +108,12 @@ final class GenericExporter
             $this->objectExporters[] = new ObjectExporter\AnyObjectExporter($this);
         }
 
-        $this->addTypeHints             = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
-        $this->skipDynamicProperties    = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
-        $this->inlineArray              = (bool) ($options & VarExporter::INLINE_ARRAY);
-        $this->inlineScalarList         = (bool) ($options & VarExporter::INLINE_SCALAR_LIST);
-        $this->closureSnapshotUses      = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
-        $this->trailingCommaInArray     = (bool) ($options & VarExporter::TRAILING_COMMA_IN_ARRAY);
+        $this->addTypeHints = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
+        $this->skipDynamicProperties = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
+        $this->inlineArray = (bool) ($options & VarExporter::INLINE_ARRAY);
+        $this->inlineScalarList = (bool) ($options & VarExporter::INLINE_SCALAR_LIST);
+        $this->closureSnapshotUses = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
+        $this->trailingCommaInArray = (bool) ($options & VarExporter::TRAILING_COMMA_IN_ARRAY);
 
         $this->indentLevel = $indentLevel;
     }
@@ -112,7 +127,7 @@ final class GenericExporter
      *
      * @throws ExportException
      */
-    public function export(mixed $var, array $path, array $parentIds) : array
+    public function export(mixed $var, array $path, array $parentIds): array
     {
         if ($var === null) {
             return ['null'];
@@ -136,8 +151,6 @@ final class GenericExporter
     }
 
     /**
-     * @psalm-suppress MixedAssignment
-     *
      * @param array    $array     The array to export.
      * @param string[] $path      The path to the current array in the array/object graph.
      * @param int[]    $parentIds The ids of all objects higher in the graph.
@@ -145,8 +158,10 @@ final class GenericExporter
      * @return string[] The lines of code.
      *
      * @throws ExportException
+     *
+     * @psalm-suppress MixedAssignment
      */
-    public function exportArray(array $array, array $path, array $parentIds) : array
+    public function exportArray(array $array, array $path, array $parentIds): array
     {
         if (! $array) {
             return ['[]'];
@@ -201,24 +216,6 @@ final class GenericExporter
     }
 
     /**
-     * Returns whether the given array only contains scalar values.
-     *
-     * Types considered scalar here are int, bool, float, string and null.
-     * If the array is empty, this method returns true.
-     *
-     */
-    private function isScalarList(array $array) : bool
-    {
-        foreach ($array as $value) {
-            if ($value !== null && ! is_scalar($value)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
      * @param object   $object    The object to export.
      * @param string[] $path      The path to the current object in the array/object graph.
      * @param int[]    $parentIds The ids of all objects higher in the graph.
@@ -227,7 +224,7 @@ final class GenericExporter
      *
      * @throws ExportException
      */
-    public function exportObject(object $object, array $path, array $parentIds) : array
+    public function exportObject(object $object, array $path, array $parentIds): array
     {
         $id = spl_object_id($object);
 
@@ -237,14 +234,14 @@ final class GenericExporter
                     'Object of class "%s" has a circular reference at %s. ' .
                     'Circular references are currently not supported.',
                     $object::class,
-                    ExportException::pathToString($this->visitedObjects[$parentId][$id])
+                    ExportException::pathToString($this->visitedObjects[$parentId][$id]),
                 ), $path);
             }
 
             $this->visitedObjects[$parentId][$id] = $path;
         }
 
-        $reflectionObject = new \ReflectionObject($object);
+        $reflectionObject = new ReflectionObject($object);
 
         foreach ($this->objectExporters as $objectExporter) {
             if ($objectExporter->supports($reflectionObject)) {
@@ -266,9 +263,9 @@ final class GenericExporter
      *
      * @return string[] The indented lines of code.
      */
-    public function indent(array $lines) : array
+    public function indent(array $lines): array
     {
-        foreach ($lines as & $value) {
+        foreach ($lines as &$value) {
             if ($value !== '') {
                 $value = '    ' . $value;
             }
@@ -284,11 +281,28 @@ final class GenericExporter
      *
      * @return string[]
      */
-    public function wrap(array $lines, string $prepend, string $append) : array
+    public function wrap(array $lines, string $prepend, string $append): array
     {
         $lines[0] = $prepend . $lines[0];
         $lines[count($lines) - 1] .= $append;
 
         return $lines;
+    }
+
+    /**
+     * Returns whether the given array only contains scalar values.
+     *
+     * Types considered scalar here are int, bool, float, string and null.
+     * If the array is empty, this method returns true.
+     */
+    private function isScalarList(array $array): bool
+    {
+        foreach ($array as $value) {
+            if ($value !== null && ! is_scalar($value)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

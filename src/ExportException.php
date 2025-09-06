@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter;
 
+use Exception;
 use Throwable;
 
-final class ExportException extends \Exception
+use function implode;
+
+final class ExportException extends Exception
 {
     /**
      * @param string[] $path
@@ -25,7 +28,7 @@ final class ExportException extends \Exception
      *
      * @param string[] $path
      */
-    public static function pathToString(array $path) : string
+    public static function pathToString(array $path): string
     {
         return '[' . implode('][', $path) . ']';
     }

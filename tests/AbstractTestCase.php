@@ -6,7 +6,14 @@ namespace Brick\VarExporter\Tests;
 
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\VarExporter;
+use Closure;
 use PHPUnit\Framework\TestCase;
+use ReflectionFunction;
+
+use function array_map;
+use function explode;
+use function implode;
+use function preg_quote;
 
 abstract class AbstractTestCase extends TestCase
 {
@@ -17,7 +24,7 @@ abstract class AbstractTestCase extends TestCase
      * @param mixed  $var      The variable to export.
      * @param int    $options  The options to pass to export().
      */
-    public function assertExportEquals(string $expected, mixed $var, int $options = 0) : void
+    public function assertExportEquals(string $expected, mixed $var, int $options = 0): void
     {
         // test the string output of export()
 
@@ -37,14 +44,14 @@ abstract class AbstractTestCase extends TestCase
         // only test if SKIP_DYNAMIC_PROPERTIES is not set, as this might create a non-equal object
 
         if (0 === ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES)) {
-            $this->assertEquals($var, $exportedVar, 'The eval()ed exported var is different from the original var.');
+            self::assertEquals($var, $exportedVar, 'The eval()ed exported var is different from the original var.');
         }
 
         // if the exported value is a closure with no parameters, test that the exported closure returns the same
         // value as the original closure
 
-        if ($var instanceof \Closure && (new \ReflectionFunction($var))->getNumberOfRequiredParameters() === 0) {
-            $this->assertSame($var(), ($exportedVar()), 'The exported closure does not return the same value as the original closure.');
+        if ($var instanceof Closure && (new ReflectionFunction($var))->getNumberOfRequiredParameters() === 0) {
+            self::assertSame($var(), ($exportedVar()), 'The exported closure does not return the same value as the original closure.');
         }
     }
 
@@ -55,9 +62,9 @@ abstract class AbstractTestCase extends TestCase
      * @param mixed  $var             The variable to export.
      * @param int    $options         The options to pass to export().
      */
-    public function assertExportThrows(string $expectedMessage, mixed $var, int $options = 0) : void
+    public function assertExportThrows(string $expectedMessage, mixed $var, int $options = 0): void
     {
-        $expectedMessageRegExp = '/' . implode('.*', array_map(fn(string $str) => preg_quote($str, '/'), explode('*', $expectedMessage))) . '/';
+        $expectedMessageRegExp = '/' . implode('.*', array_map(fn (string $str) => preg_quote($str, '/'), explode('*', $expectedMessage))) . '/';
 
         $this->expectException(ExportException::class);
         $this->expectExceptionMessageMatches($expectedMessageRegExp);

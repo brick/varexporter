@@ -7,6 +7,8 @@ namespace Brick\VarExporter\Internal\ObjectExporter\ClosureExporter;
 use Override;
 use PhpParser\PrettyPrinter\Standard;
 
+use function str_repeat;
+
 /**
  * Extends the standard pretty-printer to allow for a base indent level.
  *
@@ -16,13 +18,13 @@ final class PrettyPrinter extends Standard
 {
     private int $varExporterNestingLevel = 0;
 
-    public function setVarExporterNestingLevel(int $level) : void
+    public function setVarExporterNestingLevel(int $level): void
     {
         $this->varExporterNestingLevel = $level;
     }
 
     #[Override]
-    protected function resetState() : void
+    protected function resetState(): void
     {
         parent::resetState();
 

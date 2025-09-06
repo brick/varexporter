@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Brick\VarExporter\Internal;
 
 use Brick\VarExporter\ExportException;
+use ReflectionClass;
+use ReflectionObject;
+
+use function array_merge;
 
 /**
  * An exporter that handles a specific type of object.
@@ -23,23 +27,23 @@ abstract class ObjectExporter
     /**
      * Returns whether this exporter supports the given object.
      *
-     * @param \ReflectionObject $reflectionObject A reflection of the object.
+     * @param ReflectionObject $reflectionObject A reflection of the object.
      */
-    abstract public function supports(\ReflectionObject $reflectionObject) : bool;
+    abstract public function supports(ReflectionObject $reflectionObject): bool;
 
     /**
      * Exports the given object.
      *
-     * @param object            $object           The object to export.
-     * @param \ReflectionObject $reflectionObject A reflection of the object.
-     * @param string[]          $path             The path to the current object in the array/object graph.
-     * @param int[]             $parentIds        The ids of all objects higher in the graph.
+     * @param object           $object           The object to export.
+     * @param ReflectionObject $reflectionObject A reflection of the object.
+     * @param string[]         $path             The path to the current object in the array/object graph.
+     * @param int[]            $parentIds        The ids of all objects higher in the graph.
      *
      * @return string[] The lines of code.
      *
      * @throws ExportException
      */
-    abstract public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array;
+    abstract public function export(object $object, ReflectionObject $reflectionObject, array $path, array $parentIds): array;
 
     /**
      * Returns the code to create a new object of the given class.
@@ -48,7 +52,7 @@ abstract class ObjectExporter
      *
      * @return string[] The lines of code.
      */
-    final protected function getCreateObjectCode(\ReflectionClass $class) : array
+    final protected function getCreateObjectCode(ReflectionClass $class): array
     {
         $className = '\\' . $class->getName();
 
@@ -75,12 +79,12 @@ abstract class ObjectExporter
      *
      * @return string[] The lines of code, wrapped in a closure.
      */
-    final protected function wrapInClosure(array $code) : array
+    final protected function wrapInClosure(array $code): array
     {
         return array_merge(
             ['(static function() {'],
             $this->exporter->indent($code),
-            ['})()']
+            ['})()'],
         );
     }
 }

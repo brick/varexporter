@@ -12,6 +12,6 @@ class PrivateConstructor extends PublicPropertiesOnly
 
     public static function create()
     {
-        return new self;
+        return new self();
     }
 }

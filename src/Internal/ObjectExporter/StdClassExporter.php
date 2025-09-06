@@ -6,6 +6,8 @@ namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\Internal\ObjectExporter;
 use Override;
+use ReflectionObject;
+use stdClass;
 
 /**
  * Handles stdClass objects.
@@ -15,13 +17,13 @@ use Override;
 final class StdClassExporter extends ObjectExporter
 {
     #[Override]
-    public function supports(\ReflectionObject $reflectionObject) : bool
+    public function supports(ReflectionObject $reflectionObject): bool
     {
-        return $reflectionObject->getName() === \stdClass::class;
+        return $reflectionObject->getName() === stdClass::class;
     }
 
     #[Override]
-    public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
+    public function export(object $object, ReflectionObject $reflectionObject, array $path, array $parentIds): array
     {
         $exported = $this->exporter->exportArray((array) $object, $path, $parentIds);
 

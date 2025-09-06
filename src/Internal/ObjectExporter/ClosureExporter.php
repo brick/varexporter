@@ -15,8 +15,20 @@ use PhpParser\NodeVisitor\FindingVisitor;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
-use PhpParser\PhpVersion;
 use ReflectionFunction;
+use ReflectionObject;
+
+use function array_keys;
+use function array_merge;
+use function assert;
+use function count;
+use function file_get_contents;
+use function implode;
+use function is_string;
+use function sprintf;
+use function str_ends_with;
+
+use const PHP_EOL;
 
 /**
  * Handles closures.
@@ -28,17 +40,17 @@ final class ClosureExporter extends ObjectExporter
     private ?Parser $parser = null;
 
     #[Override]
-    public function supports(\ReflectionObject $reflectionObject) : bool
+    public function supports(ReflectionObject $reflectionObject): bool
     {
-        return $reflectionObject->getName() === \Closure::class;
+        return $reflectionObject->getName() === Closure::class;
     }
 
     #[Override]
-    public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
+    public function export(object $object, ReflectionObject $reflectionObject, array $path, array $parentIds): array
     {
         assert($object instanceof Closure);
 
-        $reflectionFunction = new \ReflectionFunction($object);
+        $reflectionFunction = new ReflectionFunction($object);
 
         $file = $reflectionFunction->getFileName();
         $line = $reflectionFunction->getStartLine();
@@ -62,7 +74,7 @@ final class ClosureExporter extends ObjectExporter
     private function getParser(): Parser
     {
         if ($this->parser === null) {
-            $this->parser = (new ParserFactory)->createForHostVersion();
+            $this->parser = (new ParserFactory())->createForHostVersion();
         }
 
         return $this->parser;
@@ -78,13 +90,13 @@ final class ClosureExporter extends ObjectExporter
      *
      * @throws ExportException
      */
-    private function parseFile(string $filename, array $path) : array
+    private function parseFile(string $filename, array $path): array
     {
         if (str_ends_with($filename, " : eval()'d code")) {
             throw new ExportException("Closure defined in eval()'d code cannot be exported.", $path);
         }
 
-        $source = @ file_get_contents($filename);
+        $source = @file_get_contents($filename);
 
         if ($source === false) {
             // @codeCoverageIgnoreStart
@@ -113,7 +125,7 @@ final class ClosureExporter extends ObjectExporter
      *
      * @return Node[]
      */
-    private function resolveNames(array $ast) : array
+    private function resolveNames(array $ast): array
     {
         $nameResolver = new NameResolver();
         $nodeTraverser = new NodeTraverser();
@@ -138,11 +150,11 @@ final class ClosureExporter extends ObjectExporter
         array $ast,
         string $file,
         int $line,
-        array $path
-    ) : Node\Expr\Closure {
+        array $path,
+    ): Node\Expr\Closure {
         $finder = new FindingVisitor(
-            fn(Node $node): bool => ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction)
-            && $node->getStartLine() === $line
+            fn (Node $node): bool => ($node instanceof Node\Expr\Closure || $node instanceof Node\Expr\ArrowFunction)
+            && $node->getStartLine() === $line,
         );
 
         $traverser = new NodeTraverser();
@@ -157,11 +169,11 @@ final class ClosureExporter extends ObjectExporter
                 'Expected exactly 1 closure in %s on line %d, found %d.',
                 $file,
                 $line,
-                $count
+                $count,
             ), $path);
         }
 
-        /** @var Node\Expr\Closure|Node\Expr\ArrowFunction $closure */
+        /** @var Node\Expr\ArrowFunction|Node\Expr\Closure $closure */
         $closure = $closures[0];
 
         if ($closure instanceof Node\Expr\ArrowFunction) {
@@ -178,13 +190,13 @@ final class ClosureExporter extends ObjectExporter
     /**
      * Convert a parsed arrow function to a closure.
      *
-     * @param ReflectionFunction       $reflectionFunction  Reflection of the closure.
-     * @param Node\Expr\ArrowFunction  $arrowFunction       Parsed arrow function.
+     * @param ReflectionFunction      $reflectionFunction Reflection of the closure.
+     * @param Node\Expr\ArrowFunction $arrowFunction      Parsed arrow function.
      */
     private function convertArrowFunction(
         ReflectionFunction $reflectionFunction,
-        Node\Expr\ArrowFunction $arrowFunction
-    ) : Node\Expr\Closure {
+        Node\Expr\ArrowFunction $arrowFunction,
+    ): Node\Expr\Closure {
         $closure = new Node\Expr\Closure([], ['arrow_function' => true]);
 
         $closure->static = false;
@@ -199,7 +211,7 @@ final class ClosureExporter extends ObjectExporter
             assert(is_string($var));
 
             $closure->uses[] = new Node\Expr\ClosureUse(
-                new Node\Expr\Variable($var)
+                new Node\Expr\Variable($var),
             );
         }
 
@@ -218,11 +230,11 @@ final class ClosureExporter extends ObjectExporter
     private function closureHandleUses(
         ReflectionFunction $reflectionFunction,
         Node\Expr\Closure $closure,
-        array $path
-    ) : void {
+        array $path,
+    ): void {
         if (! $this->exporter->closureSnapshotUses) {
             $message = $closure->hasAttribute('arrow_function')
-                ? "The arrow function uses variables in the parent scope, this is not supported by default"
+                ? 'The arrow function uses variables in the parent scope, this is not supported by default'
                 : "The closure has bound variables through 'use', this is not supported by default";
 
             throw new ExportException("$message. Use the CLOSURE_SNAPSHOT_USE option to export them.", $path);
@@ -249,7 +261,7 @@ final class ClosureExporter extends ObjectExporter
 
             $assign = new Node\Expr\Assign(
                 new Node\Expr\Variable($var),
-                $expr->expr
+                $expr->expr,
             );
             $stmts[] = new Node\Stmt\Expression($assign);
         }

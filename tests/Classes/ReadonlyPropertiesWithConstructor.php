@@ -9,7 +9,7 @@ class ReadonlyPropertiesWithConstructor
     public function __construct(
         public readonly string $foo,
         private readonly string $bar,
-        public string $baz
+        public string $baz,
     ) {
     }
 }

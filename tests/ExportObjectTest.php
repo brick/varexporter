@@ -11,13 +11,14 @@ use Brick\VarExporter\Tests\Classes\NoProperties;
 use Brick\VarExporter\Tests\Classes\PrivateConstructor;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesWithConstructor;
-use Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor;
 use Brick\VarExporter\Tests\Classes\PublicReadonlyPropertiesWithoutConstructor;
+use Brick\VarExporter\Tests\Classes\ReadonlyPropertiesWithConstructor;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethods;
 use Brick\VarExporter\Tests\Classes\SerializeMagicMethodsWithConstructor;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\Tests\Classes\SetStateWithOverriddenPrivateProperties;
 use Brick\VarExporter\VarExporter;
+use stdClass;
 
 /**
  * Tests exporting various objects.
@@ -26,10 +27,10 @@ class ExportObjectTest extends AbstractTestCase
 {
     public function testExportStdClass(): void
     {
-        $object = new \stdClass;
+        $object = new stdClass();
         $object->foo = 'Hello';
         $object->bar = 'bar';
-        $object->baz = new \stdClass;
+        $object->baz = new stdClass();
         $object->baz->foo = 'Hello';
 
         $expected = <<<'PHP'
@@ -47,7 +48,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithNoProperties(): void
     {
-        $object = new NoProperties;
+        $object = new NoProperties();
 
         $expected = 'new \Brick\VarExporter\Tests\Classes\NoProperties';
 
@@ -56,7 +57,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithDynamicPropertiesOnly(): void
     {
-        $object = new NoProperties;
+        $object = new NoProperties();
         $object->x = 1.0;
         $object->dynamicProp = 'Hello';
         $object->{'$weird%Prop'} = 'World';
@@ -80,7 +81,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithDynamicPropertiesOnly_SkipDynamicProperties(): void
     {
-        $object = new NoProperties;
+        $object = new NoProperties();
         $object->dynamicProp = 'Hello';
         $object->{'$weird%Prop'} = 'World';
 
@@ -107,7 +108,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithPublicPropertiesOnly(): void
     {
-        $object = new PublicPropertiesOnly;
+        $object = new PublicPropertiesOnly();
         $object->foo = 'Hello';
         $object->bar = 'World';
 
@@ -127,7 +128,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportObjectWithPublicAndDynamicProperties(): void
     {
-        $object = new PublicPropertiesOnly;
+        $object = new PublicPropertiesOnly();
         $object->foo = 'Hello';
         $object->bar = 'World';
         $object->dynamic = 'Dynamic';
@@ -149,7 +150,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportObjectWithPublicAndDynamicProperties_SkipDynamicProperties(): void
     {
-        $object = new PublicPropertiesOnly;
+        $object = new PublicPropertiesOnly();
         $object->foo = 'Hello';
         $object->bar = 'World';
         $object->dynamic = 'Dynamic';
@@ -170,7 +171,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithSetState(): void
     {
-        $object = new SetState;
+        $object = new SetState();
         $object->foo = 'Hello';
         $object->bar = 'World';
 
@@ -187,7 +188,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithSetStateAndUnsetProperties(): void
     {
-        $object = new SetState;
+        $object = new SetState();
         $object->foo = null;
 
         unset($object->bar);
@@ -204,7 +205,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithSetStateAndDynamicProperties(): void
     {
-        $object = new SetState;
+        $object = new SetState();
         $object->foo = 'Hello';
         $object->bar = 'World';
         $object->dynamic = 'Dynamic property';
@@ -225,7 +226,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithSetStateAndDynamicProperties_SkipDynamicProperties(): void
     {
-        $object = new SetState;
+        $object = new SetState();
         $object->foo = 'Hello';
         $object->bar = 'World';
         $object->dynamic = 'Dynamic property';
@@ -243,7 +244,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithSetStateAndOverriddenPrivateProperties(): void
     {
-        $object = new SetStateWithOverriddenPrivateProperties;
+        $object = new SetStateWithOverriddenPrivateProperties();
 
         $expectedMessage = 'Class "Brick\VarExporter\Tests\Classes\SetStateWithOverriddenPrivateProperties" has overridden private property "baz". This is not supported for exporting objects with __set_state().';
 
@@ -323,7 +324,7 @@ class ExportObjectTest extends AbstractTestCase
     {
         $object = new PublicReadonlyPropertiesWithoutConstructor();
 
-        (function () {
+        (function (): void {
             $this->foo = 'foo';
         })->bindTo($object, PublicReadonlyPropertiesWithoutConstructor::class)();
 
@@ -347,7 +348,7 @@ class ExportObjectTest extends AbstractTestCase
 
     public function testExportClassWithSerializeMagicMethods(): void
     {
-        $object = new SerializeMagicMethods;
+        $object = new SerializeMagicMethods();
 
         $object->foo = 'Foo';
         $object->bar = [1, 2];
@@ -506,13 +507,13 @@ class ExportObjectTest extends AbstractTestCase
         $object->publicInA = null;
         unset($object->publicInB);
 
-        (function() {
+        (function (): void {
             /** @var Hierarchy\C $this */
             unset($this->privateInC);
             unset($this->protectedInB);
         })->bindTo($object, Hierarchy\C::class)();
 
-        (function() {
+        (function (): void {
             /** @var Hierarchy\A $this */
             unset($this->privateOverridden);
         })->bindTo($object, Hierarchy\A::class)();

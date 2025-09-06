@@ -8,12 +8,12 @@ class PublicAndPrivateProperties extends PublicPropertiesOnly
 {
     private string $baz = 'defaultValue';
 
-    protected function setBaz($baz) : void
+    protected function setBaz($baz): void
     {
         $this->baz = $baz;
     }
 
-    protected function unsetBaz() : void
+    protected function unsetBaz(): void
     {
         unset($this->baz);
     }

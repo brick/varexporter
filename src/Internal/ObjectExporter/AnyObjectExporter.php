@@ -6,6 +6,16 @@ namespace Brick\VarExporter\Internal\ObjectExporter;
 
 use Brick\VarExporter\Internal\ObjectExporter;
 use Override;
+use ReflectionClass;
+use ReflectionObject;
+use ReflectionProperty;
+
+use function array_key_exists;
+use function array_merge;
+use function method_exists;
+use function preg_match;
+use function spl_object_id;
+use function var_export;
 
 /**
  * Handles any class through direct property access and bound closures.
@@ -18,7 +28,7 @@ use Override;
 final class AnyObjectExporter extends ObjectExporter
 {
     #[Override]
-    public function supports(\ReflectionObject $reflectionObject) : bool
+    public function supports(ReflectionObject $reflectionObject): bool
     {
         return true;
     }
@@ -27,15 +37,15 @@ final class AnyObjectExporter extends ObjectExporter
      * @psalm-suppress MixedAssignment
      */
     #[Override]
-    public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
+    public function export(object $object, ReflectionObject $reflectionObject, array $path, array $parentIds): array
     {
         $lines = $this->getCreateObjectCode($reflectionObject);
 
         $objectAsArray = (array) $object;
 
         $current = $this->exporter->skipDynamicProperties
-            ? new \ReflectionClass($object) // properties from class definition only
-            : $reflectionObject;            // properties from class definition + dynamic properties
+            ? new ReflectionClass($object) // properties from class definition only
+            : $reflectionObject; // properties from class definition + dynamic properties
 
         $isParentClass = false;
 
@@ -68,13 +78,13 @@ final class AnyObjectExporter extends ObjectExporter
                 if (array_key_exists($key, $objectAsArray)) {
                     $value = $objectAsArray[$key];
 
-                    if ($property->isPublic() && !(method_exists($property, 'isReadOnly') && $property->isReadOnly())) {
+                    if ($property->isPublic() && ! (method_exists($property, 'isReadOnly') && $property->isReadOnly())) {
                         $publicNonReadonlyProperties[$name] = $value;
                     } else {
                         $nonPublicOrPublicReadonlyProperties[$name] = $value;
                     }
                 } else {
-                    if ($property->isPublic() && !(method_exists($property, 'isReadOnly') && $property->isReadOnly())) {
+                    if ($property->isPublic() && ! (method_exists($property, 'isReadOnly') && $property->isReadOnly())) {
                         $unsetPublicNonReadonlyProperties[] = $name;
                     } else {
                         $unsetNonPublicOrPublicReadonlyProperties[] = $name;
@@ -153,9 +163,8 @@ final class AnyObjectExporter extends ObjectExporter
 
     /**
      * Returns the key of the given property in the object-to-array cast.
-     *
      */
-    private function getPropertyKey(\ReflectionProperty $property) : string
+    private function getPropertyKey(ReflectionProperty $property): string
     {
         $name = $property->getName();
 
@@ -170,7 +179,7 @@ final class AnyObjectExporter extends ObjectExporter
         return $name;
     }
 
-    private function escapePropName(string $var) : string
+    private function escapePropName(string $var): string
     {
         if (preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $var) === 1) {
             return $var;

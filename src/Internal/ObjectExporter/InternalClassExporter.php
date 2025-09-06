@@ -7,6 +7,7 @@ namespace Brick\VarExporter\Internal\ObjectExporter;
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\Internal\ObjectExporter;
 use Override;
+use ReflectionObject;
 
 /**
  * Throws on internal classes.
@@ -16,13 +17,13 @@ use Override;
 final class InternalClassExporter extends ObjectExporter
 {
     #[Override]
-    public function supports(\ReflectionObject $reflectionObject) : bool
+    public function supports(ReflectionObject $reflectionObject): bool
     {
         return $reflectionObject->isInternal();
     }
 
     #[Override]
-    public function export(object $object, \ReflectionObject $reflectionObject, array $path, array $parentIds) : array
+    public function export(object $object, ReflectionObject $reflectionObject, array $path, array $parentIds): array
     {
         $className = $reflectionObject->getName();
 

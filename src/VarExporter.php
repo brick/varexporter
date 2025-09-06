@@ -6,6 +6,14 @@ namespace Brick\VarExporter;
 
 use Brick\VarExporter\Internal\GenericExporter;
 
+use function array_map;
+use function array_shift;
+use function count;
+use function implode;
+use function str_repeat;
+
+use const PHP_EOL;
+
 final class VarExporter
 {
     /**
@@ -75,14 +83,14 @@ final class VarExporter
     public const INLINE_ARRAY = 1 << 11;
 
     /**
-     * @param mixed $var       The variable to export.
-     * @param int   $options   A bitmask of options. Possible values are `VarExporter::*` constants.
-     *                         Combine multiple options with a bitwise OR `|` operator.
-     * @param int $indentLevel The base output indentation level.
+     * @param mixed $var         The variable to export.
+     * @param int   $options     A bitmask of options. Possible values are `VarExporter::*` constants.
+     *                           Combine multiple options with a bitwise OR `|` operator.
+     * @param int   $indentLevel The base output indentation level.
      *
      * @throws ExportException
      */
-    public static function export(mixed $var, int $options = 0, int $indentLevel = 0) : string
+    public static function export(mixed $var, int $options = 0, int $indentLevel = 0): string
     {
         $exporter = new GenericExporter($options, $indentLevel);
         $lines = $exporter->export($var, [], []);
@@ -92,7 +100,7 @@ final class VarExporter
         } else {
             $firstLine = array_shift($lines);
             $lines = array_map(
-                fn($line) => str_repeat('    ', $indentLevel) . $line,
+                fn ($line) => str_repeat('    ', $indentLevel) . $line,
                 $lines,
             );
 

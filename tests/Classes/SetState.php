@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Brick\VarExporter\Tests\Classes;
 
+use function array_key_exists;
+
 class SetState extends PublicAndPrivateProperties
 {
-    public static function __set_state(array $array) : self
+    public static function __set_state(array $array): self
     {
-        $object = new self;
+        $object = new self();
 
         // note: these checks would usually not be necessary in a typical app; they're just here because
         // we need to test our implementation against edge cases, such as unset properties.

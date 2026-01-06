@@ -291,9 +291,6 @@ class ExportObjectTest extends AbstractTestCase
         $this->assertExportEquals($expected, $object);
     }
 
-    /**
-     * @requires PHP 8.1
-     */
     public function testExportClassWithReadonlyPublicPropertiesAndConstructor(): void
     {
         $object = new ReadonlyPropertiesWithConstructor('public readonly', 'private readonly', 'public');
@@ -317,9 +314,6 @@ class ExportObjectTest extends AbstractTestCase
         $this->assertExportEquals($expected, $object);
     }
 
-    /**
-     * @requires PHP 8.1
-     */
     public function testExportClassWithStateAndReadonlyPublicProperties(): void
     {
         $object = new PublicReadonlyPropertiesWithoutConstructor();
@@ -563,9 +557,6 @@ class ExportObjectTest extends AbstractTestCase
         $this->assertExportThrows($expectedMessage, $object, VarExporter::NOT_ANY_OBJECT);
     }
 
-    /**
-     * @requires PHP 8.1
-     */
     public function testExportEnum(): void
     {
         $object = Enum::TEST;

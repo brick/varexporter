@@ -33,50 +33,26 @@ use function var_export;
  */
 final class GenericExporter
 {
-    /**
-     * @psalm-readonly
-     */
-    public bool $addTypeHints;
+    public readonly bool $addTypeHints;
 
-    /**
-     * @psalm-readonly
-     */
-    public bool $skipDynamicProperties;
+    public readonly bool $skipDynamicProperties;
 
-    /**
-     * @psalm-readonly
-     */
-    public bool $inlineArray;
+    public readonly bool $inlineArray;
 
-    /**
-     * @psalm-readonly
-     */
-    public bool $inlineScalarList;
+    public readonly bool $inlineScalarList;
 
-    /**
-     * @psalm-readonly
-     */
-    public bool $inlineLiteralList;
+    public readonly bool $inlineLiteralList;
 
-    /**
-     * @psalm-readonly
-     */
-    public bool $closureSnapshotUses;
+    public readonly bool $closureSnapshotUses;
 
-    /**
-     * @psalm-readonly
-     */
-    public bool $trailingCommaInArray;
+    public readonly bool $trailingCommaInArray;
 
-    /**
-     * @psalm-readonly
-     */
-    public int $indentLevel;
+    public readonly int $indentLevel;
 
     /**
      * @var ObjectExporter[]
      */
-    private array $objectExporters = [];
+    private readonly array $objectExporters;
 
     /**
      * The visited objects, to detect circular references.
@@ -89,29 +65,33 @@ final class GenericExporter
 
     public function __construct(int $options, int $indentLevel = 0)
     {
-        $this->objectExporters[] = new ObjectExporter\StdClassExporter($this);
+        $objectExporters = [
+            new ObjectExporter\StdClassExporter($this),
+        ];
 
         if (($options & VarExporter::NO_CLOSURES) === 0) {
-            $this->objectExporters[] = new ObjectExporter\ClosureExporter($this);
+            $objectExporters[] = new ObjectExporter\ClosureExporter($this);
         }
 
         if (($options & VarExporter::NO_SET_STATE) === 0) {
-            $this->objectExporters[] = new ObjectExporter\SetStateExporter($this);
+            $objectExporters[] = new ObjectExporter\SetStateExporter($this);
         }
 
-        $this->objectExporters[] = new ObjectExporter\InternalClassExporter($this);
+        $objectExporters[] = new ObjectExporter\InternalClassExporter($this);
 
         if (($options & VarExporter::NO_SERIALIZE) === 0) {
-            $this->objectExporters[] = new ObjectExporter\SerializeExporter($this);
+            $objectExporters[] = new ObjectExporter\SerializeExporter($this);
         }
 
         if (($options & VarExporter::NO_ENUMS) === 0) {
-            $this->objectExporters[] = new ObjectExporter\EnumExporter($this);
+            $objectExporters[] = new ObjectExporter\EnumExporter($this);
         }
 
         if (($options & VarExporter::NOT_ANY_OBJECT) === 0) {
-            $this->objectExporters[] = new ObjectExporter\AnyObjectExporter($this);
+            $objectExporters[] = new ObjectExporter\AnyObjectExporter($this);
         }
+
+        $this->objectExporters = $objectExporters;
 
         $this->addTypeHints = (bool) ($options & VarExporter::ADD_TYPE_HINTS);
         $this->skipDynamicProperties = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);

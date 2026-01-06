@@ -17,7 +17,7 @@ use function array_merge;
  */
 abstract class ObjectExporter
 {
-    protected GenericExporter $exporter;
+    protected readonly GenericExporter $exporter;
 
     public function __construct(GenericExporter $exporter)
     {

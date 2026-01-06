@@ -7,6 +7,7 @@ namespace Brick\VarExporter\Internal;
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\VarExporter;
 use ReflectionObject;
+use UnitEnum;
 
 use function array_is_list;
 use function array_merge;
@@ -51,6 +52,11 @@ final class GenericExporter
      * @psalm-readonly
      */
     public bool $inlineScalarList;
+
+    /**
+     * @psalm-readonly
+     */
+    public bool $inlineLiteralList;
 
     /**
      * @psalm-readonly
@@ -111,6 +117,7 @@ final class GenericExporter
         $this->skipDynamicProperties = (bool) ($options & VarExporter::SKIP_DYNAMIC_PROPERTIES);
         $this->inlineArray = (bool) ($options & VarExporter::INLINE_ARRAY);
         $this->inlineScalarList = (bool) ($options & VarExporter::INLINE_SCALAR_LIST);
+        $this->inlineLiteralList = (bool) ($options & VarExporter::INLINE_LITERAL_LIST);
         $this->closureSnapshotUses = (bool) ($options & VarExporter::CLOSURE_SNAPSHOT_USES);
         $this->trailingCommaInArray = (bool) ($options & VarExporter::TRAILING_COMMA_IN_ARRAY);
 
@@ -173,7 +180,9 @@ final class GenericExporter
 
         $current = 0;
 
-        $inline = $this->inlineArray || ($this->inlineScalarList && $isList && $this->isScalarList($array));
+        $inline = $this->inlineArray
+            || ($this->inlineScalarList && $isList && $this->isScalarList($array))
+            || ($this->inlineLiteralList && $isList && $this->isLiteralList($array));
 
         foreach ($array as $key => $value) {
             $isLast = (++$current === $count);
@@ -298,6 +307,23 @@ final class GenericExporter
     {
         foreach ($array as $value) {
             if ($value !== null && ! is_scalar($value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Returns whether the given array only contains literal values.
+     *
+     * Values considered literal are: int, float, string, bool, null, and enum values.
+     * If the array is empty, this method returns true.
+     */
+    private function isLiteralList(array $array): bool
+    {
+        foreach ($array as $value) {
+            if ($value !== null && ! is_scalar($value) && ! $value instanceof UnitEnum) {
                 return false;
             }
         }

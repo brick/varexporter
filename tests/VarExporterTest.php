@@ -6,6 +6,7 @@ namespace Brick\VarExporter\Tests;
 
 use ArrayIterator;
 use Brick\VarExporter\ExportException;
+use Brick\VarExporter\Tests\Classes\Enum;
 use Brick\VarExporter\Tests\Classes\PublicPropertiesOnly;
 use Brick\VarExporter\Tests\Classes\SetState;
 use Brick\VarExporter\VarExporter;
@@ -174,6 +175,57 @@ class VarExporterTest extends AbstractTestCase
             PHP;
 
         $this->assertExportEquals($expected, $var, VarExporter::INLINE_SCALAR_LIST);
+    }
+
+    public function testInlineScalarListWithEnum(): void
+    {
+        $var = [
+            'one' => ['hello', 'world', 123, true, false, null, 7.5, Enum::TEST],
+            'two' => ['hello', 'world', ['one', 'two', 'three']],
+        ];
+
+        $expected = <<<'PHP'
+            [
+                'one' => [
+                    'hello',
+                    'world',
+                    123,
+                    true,
+                    false,
+                    null,
+                    7.5,
+                    Brick\VarExporter\Tests\Classes\Enum::TEST
+                ],
+                'two' => [
+                    'hello',
+                    'world',
+                    ['one', 'two', 'three']
+                ]
+            ]
+            PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::INLINE_SCALAR_LIST);
+    }
+
+    public function testInlineLiteralList(): void
+    {
+        $var = [
+            'one' => ['hello', 'world', 123, true, false, null, 7.5, Enum::TEST],
+            'two' => ['hello', 'world', ['one', 'two', 'three']],
+        ];
+
+        $expected = <<<'PHP'
+            [
+                'one' => ['hello', 'world', 123, true, false, null, 7.5, Brick\VarExporter\Tests\Classes\Enum::TEST],
+                'two' => [
+                    'hello',
+                    'world',
+                    ['one', 'two', 'three']
+                ]
+            ]
+            PHP;
+
+        $this->assertExportEquals($expected, $var, VarExporter::INLINE_LITERAL_LIST);
     }
 
     public function testTrailingCommaInArray(): void

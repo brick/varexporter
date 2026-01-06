@@ -58,7 +58,7 @@ final class VarExporter
     /**
      * Formats lists (0-based numeric arrays) containing only scalar values on a single line.
      * Types considered scalar here are int, bool, float, string and null.
-     * This option is a subset of INLINE_ARRAY, and has no effect when INLINE_ARRAY is used.
+     * This option is a subset of INLINE_ARRAY and INLINE_LITERAL_LIST and has no effect when either is used.
      */
     public const INLINE_SCALAR_LIST = 1 << 7;
 
@@ -81,6 +81,13 @@ final class VarExporter
      * Formats all arrays on a single line.
      */
     public const INLINE_ARRAY = 1 << 11;
+
+    /**
+     * Formats lists (0-based numeric arrays) containing only literal values on a single line.
+     * Values considered literal are: int, float, string, bool, null, and enum values.
+     * This option is a subset of INLINE_ARRAY and has no effect when INLINE_ARRAY is used.
+     */
+    public const INLINE_LITERAL_LIST = 1 << 12;
 
     /**
      * @param mixed $var         The variable to export.

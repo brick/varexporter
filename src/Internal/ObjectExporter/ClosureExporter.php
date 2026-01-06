@@ -210,7 +210,7 @@ final class ClosureExporter extends ObjectExporter
         foreach (array_keys($static) as $var) {
             assert(is_string($var));
 
-            $closure->uses[] = new Node\Expr\ClosureUse(
+            $closure->uses[] = new Node\ClosureUse(
                 new Node\Expr\Variable($var),
             );
         }

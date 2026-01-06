@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED (0.7.0)
+## [0.7.0](https://github.com/brick/varexporter/releases/tag/0.7.0) - 2026-01-06
 
 ✨ **New features**
 

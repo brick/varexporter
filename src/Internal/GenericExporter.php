@@ -8,7 +8,7 @@ use Brick\VarExporter\ExportException;
 use Brick\VarExporter\VarExporter;
 use ReflectionObject;
 
-use function array_keys;
+use function array_is_list;
 use function array_merge;
 use function array_unshift;
 use function count;
@@ -17,7 +17,6 @@ use function implode;
 use function is_array;
 use function is_object;
 use function is_scalar;
-use function range;
 use function spl_object_id;
 use function sprintf;
 use function var_export;
@@ -170,7 +169,7 @@ final class GenericExporter
         $result = [];
 
         $count = count($array);
-        $isList = array_keys($array) === range(0, $count - 1);
+        $isList = array_is_list($array);
 
         $current = 0;
 

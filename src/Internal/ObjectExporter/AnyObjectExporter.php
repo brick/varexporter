@@ -32,9 +32,6 @@ final class AnyObjectExporter extends ObjectExporter
         return true;
     }
 
-    /**
-     * @psalm-suppress MixedAssignment
-     */
     #[Override]
     public function export(object $object, ReflectionObject $reflectionObject, array $path, array $parentIds): array
     {
@@ -97,9 +94,7 @@ final class AnyObjectExporter extends ObjectExporter
                 $lines[] = '';
 
                 foreach ($publicNonReadonlyProperties as $name => $value) {
-                    /** @psalm-suppress RedundantCast See: https://github.com/vimeo/psalm/issues/4891 */
                     $name = (string) $name;
-
                     $newPath = $path;
                     $newPath[] = $name;
 

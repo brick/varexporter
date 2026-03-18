@@ -11,8 +11,6 @@ use function str_repeat;
 
 /**
  * Extends the standard pretty-printer to allow for a base indent level.
- *
- * @psalm-suppress PropertyNotSetInConstructor
  */
 final class PrettyPrinter extends Standard
 {

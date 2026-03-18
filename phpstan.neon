@@ -1,0 +1,9 @@
+parameters:
+    level: 10
+    checkUninitializedProperties: true
+    paths:
+        - src
+    ignoreErrors:
+        -
+            message: '#^Method .* has parameter \$array with no value type specified in iterable type array\.$#'
+            path: src/Internal/GenericExporter.php

@@ -63,8 +63,6 @@ final class SetStateExporter extends ObjectExporter
      * @return array<string, mixed> An associative array of property name to value.
      *
      * @throws ExportException
-     *
-     * @psalm-suppress MixedAssignment
      */
     private function getObjectVars(object $object, array $path): array
     {

@@ -48,6 +48,8 @@ abstract class ObjectExporter
      *
      * If the class has a constructor, reflection will be used to bypass it.
      *
+     * @param ReflectionClass<object> $class
+     *
      * @return string[] The lines of code.
      */
     final protected function getCreateObjectCode(ReflectionClass $class): array

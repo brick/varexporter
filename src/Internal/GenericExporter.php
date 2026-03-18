@@ -144,8 +144,6 @@ final class GenericExporter
      * @return string[] The lines of code.
      *
      * @throws ExportException
-     *
-     * @psalm-suppress MixedAssignment
      */
     public function exportArray(array $array, array $path, array $parentIds): array
     {

@@ -55,6 +55,10 @@ final class ClosureExporter extends ObjectExporter
         $file = $reflectionFunction->getFileName();
         $line = $reflectionFunction->getStartLine();
 
+        if ($file === false || $line === false) {
+            throw new ExportException('Internal closures cannot be exported.', $path);
+        }
+
         $ast = $this->parseFile($file, $path);
         $ast = $this->resolveNames($ast);
 

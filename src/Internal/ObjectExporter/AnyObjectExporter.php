@@ -12,7 +12,6 @@ use ReflectionProperty;
 
 use function array_key_exists;
 use function array_merge;
-use function method_exists;
 use function preg_match;
 use function spl_object_id;
 use function var_export;
@@ -78,13 +77,13 @@ final class AnyObjectExporter extends ObjectExporter
                 if (array_key_exists($key, $objectAsArray)) {
                     $value = $objectAsArray[$key];
 
-                    if ($property->isPublic() && ! (method_exists($property, 'isReadOnly') && $property->isReadOnly())) {
+                    if ($property->isPublic() && ! $property->isReadOnly()) {
                         $publicNonReadonlyProperties[$name] = $value;
                     } else {
                         $nonPublicOrPublicReadonlyProperties[$name] = $value;
                     }
                 } else {
-                    if ($property->isPublic() && ! (method_exists($property, 'isReadOnly') && $property->isReadOnly())) {
+                    if ($property->isPublic() && ! $property->isReadOnly()) {
                         $unsetPublicNonReadonlyProperties[] = $name;
                     } else {
                         $unsetNonPublicOrPublicReadonlyProperties[] = $name;
